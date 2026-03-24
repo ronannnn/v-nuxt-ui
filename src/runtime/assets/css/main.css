@@ -1,0 +1,48 @@
+/* Custom styles - Tailwind directives are handled by the host app's @nuxt/ui */
+
+:root {
+  --ui-header-height: 3.5rem;
+  --ui-table-header-height: 3rem;
+  --ui-footer-height: 3rem;
+}
+
+::-webkit-scrollbar {
+  width: 0.25rem;
+  height: 0.25rem;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #404040;
+}
+
+:root {
+  --chart-1: var(--ui-color-primary-300);
+  --chart-2: var(--ui-color-primary-500);
+  --chart-3: var(--ui-color-primary-700);
+  --chart-4: var(--ui-color-primary-900);
+}
+
+.dark {
+  --chart-1: var(--ui-color-primary-300);
+  --chart-2: var(--ui-color-primary-500);
+  --chart-3: var(--ui-color-primary-700);
+  --chart-4: var(--ui-color-primary-900);
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: none !important;
+}
