@@ -1,3 +1,4 @@
+import { computed, ref, type Ref } from 'vue'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { Pagination } from '../../types'
 

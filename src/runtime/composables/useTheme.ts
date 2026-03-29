@@ -1,7 +1,11 @@
+import { computed } from 'vue'
+import { useAppConfig, useColorMode, useI18n } from '#imports'
+import { createSharedComposable } from '@vueuse/core'
 import colors from 'tailwindcss/colors'
 import { omit } from '@nuxt/ui/utils'
 import type { I18nLocale } from '../types'
 import { en, zh_cn } from '@nuxt/ui/locale'
+import { useApp } from './useApp'
 
 const _useTheme = () => {
   const appConfig = useAppConfig()

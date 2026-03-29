@@ -1,8 +1,10 @@
+import { computed, ref, h, type Ref, type ComputedRef } from 'vue'
 import type { ColumnPinningState } from '@tanstack/table-core'
 import type { VColumn } from '../../types/components'
 import type { OrderQuery, OrderQueryOpr } from '../../types'
 import { ProTableColumnActionHeader, UBadge, UCheckbox, UIcon } from '#components'
 import { defu } from 'defu'
+import { cloneJson } from '../../utils/string'
 
 interface UseTableColumnsReturn<T> {
   selectionColumn: VColumn<T>

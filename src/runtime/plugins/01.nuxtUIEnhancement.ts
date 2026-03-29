@@ -1,4 +1,5 @@
 import { defineNuxtPlugin } from '#app'
+import { useToast } from '#imports'
 
 export default defineNuxtPlugin(() => {
   const toast = useToast()

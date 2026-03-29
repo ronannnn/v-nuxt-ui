@@ -1,10 +1,4 @@
-// Use string literals matching @vue-flow/core Position enum to avoid SSR import
-const Position = {
-  Left: 'left',
-  Right: 'right',
-  Top: 'top',
-  Bottom: 'bottom'
-} as const
+import { Position } from '@vue-flow/core'
 
 export type HandlePosition
   = | 'tl' | 'tr' | 'bl' | 'br' // 4 corners
@@ -17,33 +11,34 @@ export type ResizeDirection = 'horizontal' | 'vertical' | 'both'
 
 export interface FlowHandle {
   id: HandlePosition
-  position: string
+  position: Position
   offsetPercent?: { x?: number, y?: number }
 }
 
+// 定义16个固定连接点位置
 export const FLOW_HANDLES: FlowHandle[] = [
-  // 4 corners
+  // 4个角 - 可以双向调整
   { id: 'tl', position: Position.Top, offsetPercent: { x: 0 } },
   { id: 'tr', position: Position.Top, offsetPercent: { x: 100 } },
   { id: 'bl', position: Position.Bottom, offsetPercent: { x: 0 } },
   { id: 'br', position: Position.Bottom, offsetPercent: { x: 100 } },
 
-  // top edge - 3 points
+  // top边3个点 - 只能垂直调整
   { id: 't1', position: Position.Top, offsetPercent: { x: 25 } },
   { id: 't2', position: Position.Top, offsetPercent: { x: 50 } },
   { id: 't3', position: Position.Top, offsetPercent: { x: 75 } },
 
-  // right edge - 3 points
+  // right边3个点 - 只能水平调整
   { id: 'r1', position: Position.Right, offsetPercent: { y: 25 } },
   { id: 'r2', position: Position.Right, offsetPercent: { y: 50 } },
   { id: 'r3', position: Position.Right, offsetPercent: { y: 75 } },
 
-  // bottom edge - 3 points
+  // bottom边3个点 - 只能垂直调整
   { id: 'b1', position: Position.Bottom, offsetPercent: { x: 25 } },
   { id: 'b2', position: Position.Bottom, offsetPercent: { x: 50 } },
   { id: 'b3', position: Position.Bottom, offsetPercent: { x: 75 } },
 
-  // left edge - 3 points
+  // left边3个点 - 只能水平调整
   { id: 'l1', position: Position.Left, offsetPercent: { y: 25 } },
   { id: 'l2', position: Position.Left, offsetPercent: { y: 50 } },
   { id: 'l3', position: Position.Left, offsetPercent: { y: 75 } }

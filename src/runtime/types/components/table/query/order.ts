@@ -1,5 +1,5 @@
 import type { ButtonProps } from '@nuxt/ui'
-import type { OrderQuery, OrderQueryColumnOption, VColumn } from '../../../types'
+import type { OrderQuery, OrderQueryColumnOption, VColumn } from '../../..'
 
 export type OrderQueryOption<T> = {
   field: keyof T

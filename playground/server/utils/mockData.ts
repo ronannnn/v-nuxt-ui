@@ -1,0 +1,213 @@
+// Mock user data for the playground
+export interface MockUser {
+  id: number
+  nickname: string
+  username: string
+  email: string
+  gender: string
+  departmentId: number
+  department?: { id: number, name: string }
+  isAdmin: boolean
+  status: string
+  entryDate: string
+  resignDate?: string
+  telNo?: string
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockDepartment {
+  id: number
+  name: string
+  parentId?: number
+  createdAt: string
+  updatedAt: string
+  version: number
+}
+
+const departments: MockDepartment[] = [
+  { id: 1, name: '工程部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
+  { id: 2, name: '产品部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
+  { id: 3, name: '设计部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
+  { id: 4, name: '市场部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
+  { id: 5, name: '人力资源部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
+  { id: 6, name: '财务部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
+  { id: 7, name: '运营部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
+  { id: 8, name: '销售部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 }
+]
+
+const users: MockUser[] = [
+  { id: 1, nickname: '张三', username: 'zhangsan', email: 'zhangsan@example.com', gender: 'male', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: true, status: 'active', entryDate: '2022-03-15', telNo: '13800001111', createdAt: '2022-03-15T08:00:00Z', updatedAt: '2025-01-10T10:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 5 },
+  { id: 2, nickname: '李四', username: 'lisi', email: 'lisi@example.com', gender: 'female', departmentId: 2, department: { id: 2, name: '产品部' }, isAdmin: false, status: 'active', entryDate: '2022-06-20', telNo: '13800002222', createdAt: '2022-06-20T08:00:00Z', updatedAt: '2025-02-15T14:30:00Z', createdBy: 'system', updatedBy: 'zhangsan', version: 3 },
+  { id: 3, nickname: '王五', username: 'wangwu', email: 'wangwu@example.com', gender: 'male', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: false, status: 'active', entryDate: '2022-09-01', telNo: '13800003333', createdAt: '2022-09-01T08:00:00Z', updatedAt: '2025-03-20T09:15:00Z', createdBy: 'system', updatedBy: 'zhangsan', version: 2 },
+  { id: 4, nickname: '赵六', username: 'zhaoliu', email: 'zhaoliu@example.com', gender: 'female', departmentId: 3, department: { id: 3, name: '设计部' }, isAdmin: false, status: 'active', entryDate: '2023-01-10', telNo: '13800004444', createdAt: '2023-01-10T08:00:00Z', updatedAt: '2025-01-05T11:20:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 5, nickname: '孙七', username: 'sunqi', email: 'sunqi@example.com', gender: 'male', departmentId: 4, department: { id: 4, name: '市场部' }, isAdmin: false, status: 'active', entryDate: '2023-03-22', telNo: '13800005555', createdAt: '2023-03-22T08:00:00Z', updatedAt: '2025-02-28T16:45:00Z', createdBy: 'lisi', updatedBy: 'lisi', version: 2 },
+  { id: 6, nickname: '周八', username: 'zhouba', email: 'zhouba@example.com', gender: 'male', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: false, status: 'inactive', entryDate: '2021-08-15', resignDate: '2024-12-31', telNo: '13800006666', createdAt: '2021-08-15T08:00:00Z', updatedAt: '2024-12-31T17:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 4 },
+  { id: 7, nickname: '吴九', username: 'wujiu', email: 'wujiu@example.com', gender: 'female', departmentId: 5, department: { id: 5, name: '人力资源部' }, isAdmin: false, status: 'active', entryDate: '2023-07-01', telNo: '13800007777', createdAt: '2023-07-01T08:00:00Z', updatedAt: '2025-03-15T10:30:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 8, nickname: '郑十', username: 'zhengshi', email: 'zhengshi@example.com', gender: 'male', departmentId: 6, department: { id: 6, name: '财务部' }, isAdmin: false, status: 'active', entryDate: '2023-09-15', telNo: '13800008888', createdAt: '2023-09-15T08:00:00Z', updatedAt: '2025-01-20T13:00:00Z', createdBy: 'wujiu', updatedBy: 'wujiu', version: 1 },
+  { id: 9, nickname: '钱十一', username: 'qianshiyi', email: 'qianshiyi@example.com', gender: 'female', departmentId: 2, department: { id: 2, name: '产品部' }, isAdmin: false, status: 'active', entryDate: '2024-01-08', telNo: '13800009999', createdAt: '2024-01-08T08:00:00Z', updatedAt: '2025-03-01T15:20:00Z', createdBy: 'lisi', updatedBy: 'lisi', version: 1 },
+  { id: 10, nickname: '陈十二', username: 'chenshier', email: 'chenshier@example.com', gender: 'male', departmentId: 7, department: { id: 7, name: '运营部' }, isAdmin: false, status: 'active', entryDate: '2024-03-20', telNo: '13800010000', createdAt: '2024-03-20T08:00:00Z', updatedAt: '2025-02-10T09:45:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 11, nickname: '林十三', username: 'linshisan', email: 'linshisan@example.com', gender: 'female', departmentId: 3, department: { id: 3, name: '设计部' }, isAdmin: false, status: 'active', entryDate: '2024-05-15', telNo: '13800011111', createdAt: '2024-05-15T08:00:00Z', updatedAt: '2025-03-18T11:00:00Z', createdBy: 'zhaoliu', updatedBy: 'zhaoliu', version: 1 },
+  { id: 12, nickname: '黄十四', username: 'huangshisi', email: 'huangshisi@example.com', gender: 'male', departmentId: 8, department: { id: 8, name: '销售部' }, isAdmin: false, status: 'active', entryDate: '2024-07-01', telNo: '13800012222', createdAt: '2024-07-01T08:00:00Z', updatedAt: '2025-01-30T14:15:00Z', createdBy: 'sunqi', updatedBy: 'sunqi', version: 1 },
+  { id: 13, nickname: '杨十五', username: 'yangshiwu', email: 'yangshiwu@example.com', gender: 'male', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: false, status: 'active', entryDate: '2024-09-10', telNo: '13800013333', createdAt: '2024-09-10T08:00:00Z', updatedAt: '2025-03-05T16:30:00Z', createdBy: 'wangwu', updatedBy: 'wangwu', version: 1 },
+  { id: 14, nickname: '许十六', username: 'xushiliu', email: 'xushiliu@example.com', gender: 'female', departmentId: 4, department: { id: 4, name: '市场部' }, isAdmin: false, status: 'inactive', entryDate: '2022-11-01', resignDate: '2025-02-28', telNo: '13800014444', createdAt: '2022-11-01T08:00:00Z', updatedAt: '2025-02-28T17:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 3 },
+  { id: 15, nickname: '何十七', username: 'heshiqi', email: 'heshiqi@example.com', gender: 'male', departmentId: 5, department: { id: 5, name: '人力资源部' }, isAdmin: false, status: 'active', entryDate: '2025-01-06', telNo: '13800015555', createdAt: '2025-01-06T08:00:00Z', updatedAt: '2025-03-20T10:00:00Z', createdBy: 'wujiu', updatedBy: 'wujiu', version: 1 },
+  { id: 16, nickname: '宋十八', username: 'songshiba', email: 'songshiba@example.com', gender: 'female', departmentId: 2, department: { id: 2, name: '产品部' }, isAdmin: false, status: 'active', entryDate: '2025-02-17', telNo: '13800016666', createdAt: '2025-02-17T08:00:00Z', updatedAt: '2025-03-22T09:30:00Z', createdBy: 'qianshiyi', updatedBy: 'qianshiyi', version: 1 },
+  { id: 17, nickname: '唐十九', username: 'tangshijiu', email: 'tangshijiu@example.com', gender: 'male', departmentId: 6, department: { id: 6, name: '财务部' }, isAdmin: false, status: 'active', entryDate: '2025-03-01', telNo: '13800017777', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-24T08:00:00Z', createdBy: 'zhengshi', updatedBy: 'zhengshi', version: 1 },
+  { id: 18, nickname: '冯二十', username: 'fengershi', email: 'fengershi@example.com', gender: 'female', departmentId: 7, department: { id: 7, name: '运营部' }, isAdmin: true, status: 'active', entryDate: '2021-05-20', telNo: '13800018888', createdAt: '2021-05-20T08:00:00Z', updatedAt: '2025-03-10T12:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 6 },
+  { id: 19, nickname: '曹廿一', username: 'caonianyi', email: 'caonianyi@example.com', gender: 'male', departmentId: 8, department: { id: 8, name: '销售部' }, isAdmin: false, status: 'active', entryDate: '2024-11-11', telNo: '13800019999', createdAt: '2024-11-11T08:00:00Z', updatedAt: '2025-03-15T15:45:00Z', createdBy: 'huangshisi', updatedBy: 'huangshisi', version: 1 },
+  { id: 20, nickname: '魏廿二', username: 'weinianer', email: 'weinianer@example.com', gender: 'female', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: false, status: 'active', entryDate: '2025-03-15', telNo: '13800020000', createdAt: '2025-03-15T08:00:00Z', updatedAt: '2025-03-24T08:00:00Z', createdBy: 'yangshiwu', updatedBy: 'yangshiwu', version: 1 },
+  { id: 21, nickname: '蒋廿三', username: 'jiangniansan', email: 'jiangniansan@example.com', gender: 'male', departmentId: 3, department: { id: 3, name: '设计部' }, isAdmin: false, status: 'active', entryDate: '2024-04-01', telNo: '13800021111', createdAt: '2024-04-01T08:00:00Z', updatedAt: '2025-02-20T11:30:00Z', createdBy: 'linshisan', updatedBy: 'linshisan', version: 1 },
+  { id: 22, nickname: '沈廿四', username: 'shenniansi', email: 'shenniansi@example.com', gender: 'female', departmentId: 4, department: { id: 4, name: '市场部' }, isAdmin: false, status: 'inactive', entryDate: '2023-02-14', resignDate: '2025-01-15', telNo: '13800022222', createdAt: '2023-02-14T08:00:00Z', updatedAt: '2025-01-15T17:00:00Z', createdBy: 'sunqi', updatedBy: 'admin', version: 2 },
+  { id: 23, nickname: '韩廿五', username: 'hannianwu', email: 'hannianwu@example.com', gender: 'male', departmentId: 5, department: { id: 5, name: '人力资源部' }, isAdmin: false, status: 'active', entryDate: '2024-08-20', telNo: '13800023333', createdAt: '2024-08-20T08:00:00Z', updatedAt: '2025-03-12T14:00:00Z', createdBy: 'heshiqi', updatedBy: 'heshiqi', version: 1 },
+  { id: 24, nickname: '朱廿六', username: 'zhunianliu', email: 'zhunianliu@example.com', gender: 'female', departmentId: 6, department: { id: 6, name: '财务部' }, isAdmin: false, status: 'active', entryDate: '2024-10-01', telNo: '13800024444', createdAt: '2024-10-01T08:00:00Z', updatedAt: '2025-03-18T10:15:00Z', createdBy: 'tangshijiu', updatedBy: 'tangshijiu', version: 1 },
+  { id: 25, nickname: '秦廿七', username: 'qinnianqi', email: 'qinnianqi@example.com', gender: 'male', departmentId: 8, department: { id: 8, name: '销售部' }, isAdmin: false, status: 'active', entryDate: '2025-01-20', telNo: '13800025555', createdAt: '2025-01-20T08:00:00Z', updatedAt: '2025-03-22T16:00:00Z', createdBy: 'caonianyi', updatedBy: 'caonianyi', version: 1 }
+]
+
+let nextId = 26
+
+export function getUsers() {
+  return users
+}
+
+export function getDepartments() {
+  return departments
+}
+
+export function getUserById(id: number) {
+  return users.find(u => u.id === id)
+}
+
+export function createUser(data: Partial<MockUser>): MockUser {
+  const now = new Date().toISOString()
+  const dept = departments.find(d => d.id === data.departmentId)
+  const user: MockUser = {
+    id: nextId++,
+    nickname: data.nickname || '',
+    username: data.username || '',
+    email: data.email || '',
+    gender: data.gender || 'male',
+    departmentId: data.departmentId || 1,
+    department: dept ? { id: dept.id, name: dept.name } : undefined,
+    isAdmin: data.isAdmin || false,
+    status: data.status || 'active',
+    entryDate: data.entryDate || now.split('T')[0]!,
+    resignDate: data.resignDate,
+    telNo: data.telNo,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  users.push(user)
+  return user
+}
+
+export function updateUser(data: Partial<MockUser>): MockUser | null {
+  const idx = users.findIndex(u => u.id === data.id)
+  if (idx === -1) return null
+  const dept = departments.find(d => d.id === (data.departmentId || users[idx]!.departmentId))
+  const updated = {
+    ...users[idx]!,
+    ...data,
+    department: dept ? { id: dept.id, name: dept.name } : users[idx]!.department,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: users[idx]!.version + 1
+  }
+  users[idx] = updated
+  return updated
+}
+
+export function deleteUsers(ids: number[]): void {
+  for (const id of ids) {
+    const idx = users.findIndex(u => u.id === id)
+    if (idx !== -1) users.splice(idx, 1)
+  }
+}
+
+// Query engine for mock data
+export function queryUsers(body: any) {
+  let filtered = [...users]
+
+  // Apply where query
+  if (body.whereQuery?.items) {
+    for (const item of body.whereQuery.items) {
+      if (item.value === null || item.value === undefined || item.value === '') continue
+      const field = item.field as string
+      const opr = item.opr as string
+      const value = item.value
+
+      filtered = filtered.filter((user) => {
+        const fieldValue = getNestedValue(user, field)
+        switch (opr) {
+          case 'eq': return fieldValue === value
+          case 'ne': return fieldValue !== value
+          case 'like': return String(fieldValue ?? '').toLowerCase().includes(String(value).toLowerCase())
+          case 'start_like': return String(fieldValue ?? '').toLowerCase().startsWith(String(value).toLowerCase())
+          case 'in': return Array.isArray(value) ? value.includes(fieldValue) : fieldValue === value
+          case 'not_in': return Array.isArray(value) ? !value.includes(fieldValue) : fieldValue !== value
+          case 'gt': return (fieldValue as any) > value
+          case 'gte': return (fieldValue as any) >= value
+          case 'lt': return (fieldValue as any) < value
+          case 'lte': return (fieldValue as any) <= value
+          case 'is_null': return fieldValue === null || fieldValue === undefined
+          case 'is_not_null': return fieldValue !== null && fieldValue !== undefined
+          case 'range_gte_lte':
+            if (value.start && value.end) return fieldValue! >= value.start && fieldValue! <= value.end
+            if (value.start) return fieldValue! >= value.start
+            if (value.end) return fieldValue! <= value.end
+            return true
+          case 'range_gte_lt':
+            if (value.start && value.end) return fieldValue! >= value.start && fieldValue! < value.end
+            if (value.start) return fieldValue! >= value.start
+            if (value.end) return fieldValue! < value.end
+            return true
+          default: return true
+        }
+      })
+    }
+  }
+
+  // Apply order query
+  if (body.orderQuery && body.orderQuery.length > 0) {
+    filtered.sort((a, b) => {
+      for (const order of body.orderQuery) {
+        const field = order.field as string
+        const aVal = getNestedValue(a, field)
+        const bVal = getNestedValue(b, field)
+        if (aVal === bVal) continue
+        const dir = order.order === 'desc' ? -1 : 1
+        if (aVal == null) return dir
+        if (bVal == null) return -dir
+        return aVal < bVal ? -dir : dir
+      }
+      return 0
+    })
+  }
+
+  // Pagination
+  const total = filtered.length
+  const pageNum = body.pagination?.pageNum || 1
+  const pageSize = body.pagination?.pageSize || 10
+
+  if (pageSize > 0) {
+    const start = (pageNum - 1) * pageSize
+    filtered = filtered.slice(start, start + pageSize)
+  }
+
+  return {
+    list: filtered,
+    total,
+    pageNum,
+    pageSize: pageSize || total
+  }
+}
+
+function getNestedValue(obj: any, path: string): any {
+  return path.split('.').reduce((o, k) => o?.[k], obj)
+}

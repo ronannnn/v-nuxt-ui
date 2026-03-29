@@ -1,4 +1,6 @@
+import { ref, computed, watch, onMounted, onUnmounted, nextTick, useTemplateRef } from 'vue'
 import type { VTableProps } from '../../types/components'
+import { useTable } from './useTable'
 
 // 固定列阴影样式常量
 const PINNED_SHADOW_CLASSES = {

@@ -9,11 +9,22 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "allowArbitraryExtensions": true,
     "jsx": "preserve",
     "paths": {
-      "#components": ["./.nuxt/components"]
+      "#v/*": [
+        "./src/runtime/*"
+      ],
+      "#components": [
+        "./.nuxt/components"
+      ]
     }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

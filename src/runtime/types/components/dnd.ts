@@ -1,5 +1,5 @@
 import type { SortableEvent } from 'vue-draggable-plus'
-import type { GroupOptions } from 'Sortablejs'
+import type { GroupOptions } from 'sortablejs'
 
 export type DndProps<T> = {
   handle?: string

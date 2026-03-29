@@ -1,3 +1,6 @@
+import { noDupPrimitiveArray } from './array'
+import { isObject } from './type'
+
 // 比较原始类型数组（如 string[], number[] 等）
 function comparePrimitiveArrays(arr1: any, arr2: any): boolean {
   if (!arr1 || !arr2)

@@ -1,4 +1,8 @@
+import { createSharedComposable } from '@vueuse/core'
 import { defu } from 'defu'
+import { useApp } from './useApp'
+import { useTheme } from './useTheme'
+import { triggerFileDownloadFromUrl } from '../utils/download/tagA'
 
 const _useEChart = () => {
   const app = useApp()

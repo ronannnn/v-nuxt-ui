@@ -1,4 +1,4 @@
-import { defineNuxtModule, createResolver, addComponentsDir, addImportsDir, addPlugin, installModule } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, addComponentsDir, addImportsDir, addPlugin, addTypeTemplate } from '@nuxt/kit'
 
 export interface ModuleOptions {
   /**
@@ -14,7 +14,8 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'vNuxtUI',
     compatibility: {
       nuxt: '>=4.0.0'
-    }
+    },
+    dependencies: ['@nuxt/ui']
   },
   defaults: {
     prefix: 'V'
@@ -22,8 +23,8 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
-    // Ensure @nuxt/ui is installed
-    await installModule('@nuxt/ui')
+    // Register #runtime alias for cleaner imports within module components
+    nuxt.options.alias['#v'] = resolve('./runtime')
 
     // Register components (pathPrefix: true uses directory structure for naming)
     // e.g., pro/table/header/index.vue → ProTableHeader
@@ -35,6 +36,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Register composables
     addImportsDir(resolve('./runtime/composables'))
     addImportsDir(resolve('./runtime/composables/api'))
+    addImportsDir(resolve('./runtime/composables/flow'))
     addImportsDir(resolve('./runtime/composables/table'))
 
     // Register utils
@@ -55,6 +57,12 @@ export default defineNuxtModule<ModuleOptions>({
     // Add types
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({ path: resolve('./runtime/types/index.ts') })
+    })
+
+    // Expose types as importable module: import type { VColumn } from '#build/types/v-nuxt-ui'
+    addTypeTemplate({
+      filename: 'types/v-nuxt-ui.d.ts',
+      getContents: () => `export * from '${resolve('./runtime/types/index.ts')}'`
     })
   }
 })

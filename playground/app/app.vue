@@ -1,30 +1,32 @@
 <script setup lang="ts">
 const route = useRoute()
 
-const navigation = [
-  { label: 'Home', to: '/', icon: 'i-lucide-home' },
-  { label: 'Table', to: '/table', icon: 'i-lucide-table-2' },
-  { label: 'Form', to: '/form', icon: 'i-lucide-file-text' },
-  { label: 'Components', to: '/components', icon: 'i-lucide-box' }
-]
+const { data: navigation } = await useAsyncData('navigation', () =>
+  queryCollectionNavigation('docs', ['category', 'description']),
+)
+
+const { rootNavigation } = useNavigation(navigation)
+
+provide('navigation', rootNavigation)
 </script>
 
 <template>
   <UApp>
-    <div class="flex min-h-screen">
-      <!-- Sidebar -->
-      <aside class="w-60 border-r border-default bg-elevated/50 p-4 flex flex-col gap-2">
-        <h1 class="text-lg font-bold px-2 mb-4">V Nuxt UI</h1>
-        <UNavigationMenu
-          :items="navigation"
-          orientation="vertical"
-        />
-      </aside>
+    <NuxtLoadingIndicator
+      color="var(--ui-primary)"
+      :height="2"
+    />
 
-      <!-- Main Content -->
-      <main class="flex-1 p-6">
-        <NuxtPage />
-      </main>
+    <div class="flex">
+      <div class="flex-1 min-w-0">
+        <template v-if="!route.path.startsWith('/examples')">
+          <Header />
+        </template>
+
+        <NuxtLayout>
+          <NuxtPage />
+        </NuxtLayout>
+      </div>
     </div>
   </UApp>
 </template>

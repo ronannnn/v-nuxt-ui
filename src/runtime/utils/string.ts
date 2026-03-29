@@ -1,5 +1,3 @@
-import { v4 as uuidV4 } from 'uuid'
-
 export function cloneJson<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj))
 }
@@ -17,7 +15,7 @@ export function filterNumberAndDot(value: string | null): string {
 }
 
 export function uuid() {
-  return uuidV4()
+  return crypto.randomUUID()
 }
 
 export function stringsJoin(arr: (string | undefined | null)[], separator = ', ') {

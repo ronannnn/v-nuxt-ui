@@ -1,5 +1,7 @@
-import { breakpointsTailwind } from '@vueuse/core'
+import { ref, computed } from 'vue'
+import { breakpointsTailwind, createSharedComposable, useBreakpoints, useLocalStorage } from '@vueuse/core'
 import { StorageKey, type CustomAppConfig, type I18nLocale } from '../types'
+import { cloneJson } from '#v/utils'
 
 export const defaultAppSettings: CustomAppConfig = {
   headerHeight: 48,
@@ -37,8 +39,12 @@ const _useApp = () => {
   }
 
   const keepalive = computed<boolean>({
-    get() { return appConfig.value.keepalive ?? true },
-    set(value: boolean) { appConfig.value = { ...appConfig.value, keepalive: value } }
+    get() {
+      return appConfig.value.keepalive ?? true
+    },
+    set(value: boolean) {
+      appConfig.value = { ...appConfig.value, keepalive: value }
+    }
   })
   const setKeepalive = (value: boolean) => keepalive.value = value
 

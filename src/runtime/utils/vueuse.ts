@@ -1,3 +1,5 @@
+import { useTimeAgo } from '@vueuse/core'
+
 export const useCnTimeAgo = (time: string | Date) => {
   return useTimeAgo(time, {
     messages: {

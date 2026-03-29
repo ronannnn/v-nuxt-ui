@@ -1,3 +1,5 @@
+import { ref, h } from 'vue'
+import { useI18n, useOverlay } from '#imports'
 import type { VColumn } from '../../types/components'
 import type { DropdownMenuItem, TableRow } from '@nuxt/ui'
 import { ProDeleteModal, UButton, UDropdownMenu } from '#components'

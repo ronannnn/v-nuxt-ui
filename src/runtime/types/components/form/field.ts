@@ -1,3 +1,4 @@
+import type { VNode } from 'vue'
 import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, SelectProps, TreeItem } from '@nuxt/ui'
 import type { ZodType } from 'zod'
 import type { ListApi } from '../table'

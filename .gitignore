@@ -5,12 +5,16 @@ node_modules
 dist
 .nuxt
 .output
+.data
 
 # IDE
 .idea
 .vscode
 *.swp
 *.swo
+
+# Superpowers
+.superpowers
 
 # OS
 .DS_Store

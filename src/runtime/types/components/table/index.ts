@@ -1,10 +1,13 @@
+import type { Ref, VNode } from 'vue'
 import type { BatchOprCommand, BatchSaveCommand, PageResult, RequestResult } from '../../request'
 import type { QueryTemplate, WhereQuery } from '../../query'
-import type { UseFetchOptions } from '#app'
 import type { VColumn } from './column'
 import type { TableHeaderProps } from './header'
 import type { OrderQueryOption, WhereQueryOption } from './query'
 import type { ButtonProps, DropdownMenuItem } from '@nuxt/ui'
+
+/** Nuxt's UseFetchOptions type — redeclared locally to avoid #app import in library types */
+type UseFetchOptions<T> = Record<string, any>
 
 export * from './header'
 export * from './pagination'

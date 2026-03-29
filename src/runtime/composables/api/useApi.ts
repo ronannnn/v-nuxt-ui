@@ -1,6 +1,9 @@
+import type { Ref } from 'vue'
+import { useFetch, useNuxtApp } from '#imports'
 import type { UseFetchOptions } from '#app'
 import type { ApiGroup, BatchOprCommand, BatchSaveCommand, PageResult, RequestResult } from '../../types'
 import type { QueryTemplate } from '../../types/query'
+import { uuid, cloneJson } from '../../utils/string'
 
 // 使用了带有auth的$fetch
 export async function useApiFetch<T>(

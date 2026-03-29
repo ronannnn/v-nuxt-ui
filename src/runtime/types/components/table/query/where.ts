@@ -1,4 +1,4 @@
-import type { VColumn, WhereQuery, WhereQueryColumnOption, WhereQueryItem, WhereQueryItemGroup } from '../../../types'
+import type { VColumn, WhereQuery, WhereQueryColumnOption, WhereQueryItem, WhereQueryItemGroup } from '../../..'
 
 export type WhereQueryOption<T> = {
   field: keyof T | string
