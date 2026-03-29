@@ -16,6 +16,9 @@ dist
 # Superpowers
 .superpowers
 
+# Worktrees
+.worktrees
+
 # OS
 .DS_Store
 Thumbs.db
