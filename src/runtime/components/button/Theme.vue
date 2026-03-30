@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { getEmojiFlag } from '#v/utils/emoji'
+import { useColorMode } from '@vueuse/core'
 
-defineProps<{
+const props = defineProps<{
   label: string
   icon?: string
   chip?: string
@@ -12,6 +14,14 @@ defineProps<{
 const slots = defineSlots<{
   leading: () => any
 }>()
+
+const colorMode = useColorMode()
+const chipColor = computed(() => {
+  if (!props.chip) return undefined
+  if (props.chip === 'black') return 'black'
+  const shade = colorMode.value === 'dark' ? '400' : '500'
+  return `var(--color-${props.chip}-${shade})`
+})
 </script>
 
 <template>
@@ -28,11 +38,7 @@ const slots = defineSlots<{
       <slot v-if="chip" name="leading">
         <span
           class="inline-block size-2 rounded-full"
-          :class="`bg-(--chip-light) dark:bg-(--chip-dark)`"
-          :style="{
-            '--chip-light': chip === 'black' ? 'black' : `var(--color-${chip}-500)`,
-            '--chip-dark': chip === 'black' ? 'white' : `var(--color-${chip}-400)`
-          }"
+          :style="{ backgroundColor: chipColor }"
         />
       </slot>
       <slot v-else-if="locale" name="leading">
