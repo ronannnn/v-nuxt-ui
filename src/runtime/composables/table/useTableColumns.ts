@@ -82,7 +82,7 @@ export function useTableColumns<T>(props: {
           'name': 'i-lucide-chevron-left',
           'aria-label': 'Expand',
           'role': 'expand-col',
-          'class': `${row.getIsExpanded() && '-rotate-90'} duration-200 cursor-pointer size-4 text-dimmed`,
+          'class': `${row.getIsExpanded() ? '-rotate-90' : ''} duration-200 cursor-pointer size-4 text-dimmed`,
           'onClick': () => row.toggleExpanded()
         })
       ]),

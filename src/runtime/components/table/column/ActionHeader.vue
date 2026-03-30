@@ -152,7 +152,7 @@ const dropdownItems = computed<DropdownMenuItem[]>(() => {
           trailing-icon="i-lucide-arrow-up-narrow-wide"
           class="px-2 font-bold rounded-none w-full h-[calc(var(--ui-table-header-height)/2)]"
           :ui="{
-            trailingIcon: `${!isOrderedAsc && 'text-neutral-300 dark:text-neutral-500'} size-4 transition-all`
+            trailingIcon: `${!isOrderedAsc ? 'text-neutral-300 dark:text-neutral-500' : ''} size-4 transition-all`
           }"
           @click="onClickAsc"
         />
@@ -170,7 +170,7 @@ const dropdownItems = computed<DropdownMenuItem[]>(() => {
           trailing-icon="i-lucide-arrow-down-wide-narrow"
           class="px-2 font-bold rounded-none w-full h-[calc(var(--ui-table-header-height)/2)]"
           :ui="{
-            trailingIcon: `${!isOrderedDesc && 'text-neutral-300 dark:text-neutral-500'} size-4 transition-all`
+            trailingIcon: `${!isOrderedDesc ? 'text-neutral-300 dark:text-neutral-500' : ''} size-4 transition-all`
           }"
           @click="onClickDesc"
         />

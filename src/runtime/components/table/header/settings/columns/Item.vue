@@ -16,7 +16,7 @@ const checked = defineModel<boolean | undefined>('checked', { required: true })
     class="flex items-center border border-default bg-default rounded-md p-2 group transition-colors"
     :class="!(checked ?? true) && 'text-neutral-400 dark:text-neutral-500'"
   >
-    <UIcon name="i-lucide-grip-vertical" class="col-settings-handle cursor-move flex-center" />
+    <UIcon name="i-lucide-grip-vertical" class="col-settings-handle cursor-move flex items-center justify-center" />
     <span class="text-sm font-semibold ml-2 mr-12">
       {{ columns.find(col => (col as any)['accessorKey'] === stgCol.accessorKey)?.header ?? '未知列名' }}
     </span>
