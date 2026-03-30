@@ -19,7 +19,6 @@ import {
   ProTable,
   ProTablePage,
   ProButtonDropdown,
-  ProButtonChip,
   ProButtonTheme,
   ProBadgeCodeModal,
   ProBadgeCodeTooltip
@@ -42,7 +41,6 @@ const componentMap: Record<string, any> = {
   ProTable,
   ProTablePage,
   ProButtonDropdown,
-  ProButtonChip,
   ProButtonTheme,
   ProBadgeCodeModal,
   ProBadgeCodeTooltip

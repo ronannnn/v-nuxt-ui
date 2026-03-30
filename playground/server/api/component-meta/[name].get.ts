@@ -129,19 +129,6 @@ const componentMeta: Record<string, ComponentMetaEntry> = {
     events: []
   },
 
-  ProButtonChip: {
-    props: [
-      { name: 'label', type: 'string', required: true, description: 'Display text' },
-      { name: 'color', type: 'string', required: true, description: 'CSS color value for the indicator dot' },
-      { name: 'onClick', type: '() => void', required: true, description: 'Click handler' },
-      { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state (strikethrough text, semi-transparent dot)' }
-    ],
-    slots: [
-      { name: 'trailing', type: '{}', description: 'Content after the label' }
-    ],
-    events: []
-  },
-
   ProButtonDropdown: {
     props: [
       { name: 'groups', type: 'CommandPaletteGroup[]', required: true, description: 'Dropdown item groups' },

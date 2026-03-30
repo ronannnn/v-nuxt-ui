@@ -29,22 +29,6 @@ const themeSelected = ref(true)
         </UFormField>
         <USwitch v-model="chipDisabled" label="Disabled" />
       </div>
-      <div class="flex gap-2">
-        <ProButtonChip
-          :label="chipLabel"
-          :color="chipColor"
-          :disabled="chipDisabled"
-          :on-click="() => {}"
-        />
-        <ProButtonChip label="Success" color="#22c55e" :on-click="() => {}" />
-        <ProButtonChip label="Warning" color="#f59e0b" :on-click="() => {}" />
-        <ProButtonChip
-          label="Disabled"
-          color="#ef4444"
-          disabled
-          :on-click="() => {}"
-        />
-      </div>
     </div>
 
     <USeparator />
