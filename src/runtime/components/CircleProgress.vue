@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { ButtonProps } from '@nuxt/ui'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   text?: string
@@ -17,8 +17,11 @@ const props = withDefaults(defineProps<{
   items: () => []
 })
 
+const RADIUS = 16
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS // ≈ 100.53
+
 // 规范 percent：如果所有 percent <= 1，则视为小数（乘 100）；
-// 然后缩放使总和为 100（保证“所有 circle 加起来是一个完整的圈”）
+// 不再强制缩放到 100，保留原始百分比，总和超过 100 时才裁剪
 const normalizedSegments = computed(() => {
   const raw = props.arcs || []
   if (!raw.length) return []
@@ -29,31 +32,32 @@ const normalizedSegments = computed(() => {
   const total = percents.reduce((s, v) => s + v, 0)
   if (total <= 0) return raw.map(() => ({ percent: 0, color: undefined }))
 
-  // 缩放到总和为 100（保留颜色）
+  // 仅当总和超过 100 时才按比例缩放，否则保留原始百分比（未填满的部分显示灰色背景）
+  const scale = total > 100 ? 100 / total : 1
   return raw.map((it, idx) => ({
-    percent: (percents[idx]! / total) * 100,
+    percent: percents[idx]! * scale,
     color: it.color
   }))
 })
 
-const colorMap: Record<string, string> = {
-  primary: 'text-primary duration-512',
-  secondary: 'text-secondary duration-512',
-  success: 'text-success duration-512',
-  info: 'text-info duration-512',
-  warning: 'text-warning duration-512',
-  error: 'text-error duration-512'
+// 将百分比转换为 SVG stroke-dasharray 的实际长度
+const dashLength = (percent: number) => (percent / 100) * CIRCUMFERENCE
+// 计算 stroke-dashoffset：正 offset 让 dash 向绘制方向的反方向偏移
+// SVG circle 原生逆时针绘制，配合 rotate(-90deg)，正 offset 实现视觉上的顺时针排列
+const dashOffset = (idx: number) => {
+  const preceding = normalizedSegments.value.slice(0, idx).reduce((s, v) => s + dashLength(v.percent), 0)
+  return -preceding
 }
 
 const colorClassOf = (color?: ButtonProps['color']) => {
-  if (!color || color === 'neutral') return 'text-neutral-300 dark:text-neutral-600 duration-512'
-  return colorMap[color as string] ?? 'text-neutral-300 dark:text-neutral-600 duration-512'
+  if (!color || color === 'neutral') return 'text-dimmed duration-512'
+  return `text-${String(color)} duration-512`
 }
 </script>
 
 <template>
   <div class="relative">
-    <svg style="width: 100%; height: 100%; transform: rotate(-90deg);" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <svg style="transform: rotate(-90deg);" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
       <!-- 背景圆 -->
       <circle
         cx="18"
@@ -61,11 +65,11 @@ const colorClassOf = (color?: ButtonProps['color']) => {
         r="16"
         fill="none"
         stroke="currentColor"
-        class="text-neutral-200 dark:text-neutral-700"
+        class="text-dimmed"
         :stroke-width="strokeWidth"
       />
 
-      <!-- 分段进度（从第一个到最后按顺序渲染，合起来为一整圈） -->
+      <!-- 分段进度（从第一个到最后按顺序渲染，未填满部分透出灰色背景） -->
       <template v-for="(seg, idx) in normalizedSegments" :key="idx">
         <circle
           v-if="seg.percent > 0.0001"
@@ -73,11 +77,12 @@ const colorClassOf = (color?: ButtonProps['color']) => {
           cy="18"
           r="16"
           fill="none"
-          stroke="currentColor"
           stroke-linecap="round"
           :stroke-width="strokeWidth"
-          :stroke-dasharray="`${seg.percent} ${100}`"
-          :stroke-dashoffset="`${-normalizedSegments.slice(0, idx).reduce((s, v) => s + v.percent, 0)}`"
+          :stroke-dasharray="`${dashLength(seg.percent)} ${CIRCUMFERENCE}`"
+          :stroke-dashoffset="dashOffset(idx)"
+          stroke="currentColor"
+          class="transition-discrete"
           :class="colorClassOf(seg.color)"
         />
       </template>
