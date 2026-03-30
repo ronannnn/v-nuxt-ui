@@ -1,8 +1,7 @@
 import { createSharedComposable } from '@vueuse/core'
 import { toZoned, parseAbsolute, type DateValue } from '@internationalized/date'
 import dayjs from 'dayjs'
-
-export const TIME_ZONE = 'Asia/Shanghai'
+import { TIME_ZONE } from '#v/constants/time'
 
 const _useDate = () => {
   const dayjsToDateValue = (date: dayjs.Dayjs | null | undefined): DateValue | undefined => {

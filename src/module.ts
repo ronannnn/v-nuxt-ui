@@ -30,6 +30,7 @@ export default defineNuxtModule<ModuleOptions>({
     // e.g., pro/table/header/index.vue → ProTableHeader
     addComponentsDir({
       path: resolve('./runtime/components'),
+      prefix: options.prefix,
       pathPrefix: true
     })
 

@@ -1,5 +1,7 @@
 import type { SelectOption } from '../types'
 
+export const TIME_ZONE = 'Asia/Shanghai'
+
 export const timeUnitOptions: SelectOption[] = [
   { label: 'Year', value: 'year' },
   { label: 'Quarter', value: 'quarter' },

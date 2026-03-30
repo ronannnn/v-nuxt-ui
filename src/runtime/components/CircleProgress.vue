@@ -36,9 +36,9 @@ const normalizedSegments = computed(() => {
   }))
 })
 
-const colorClassOf = (color?: string) => {
+const colorClassOf = (color?: ButtonProps['color']) => {
   if (!color || color === 'neutral') return 'text-neutral-300 dark:text-neutral-600 duration-512'
-  return `text-${color} duration-512`
+  return `text-${String(color)} duration-512`
 }
 </script>
 
