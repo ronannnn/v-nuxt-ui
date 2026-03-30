@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { ref, computed, useTemplateRef, onMounted, onUnmounted } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
-import { ScrollAreaRoot, ScrollAreaScrollbar, ScrollAreaThumb, ScrollAreaViewport } from 'reka-ui'
+import {
+  ScrollAreaRoot,
+  ScrollAreaScrollbar,
+  ScrollAreaThumb,
+  ScrollAreaViewport
+} from 'reka-ui'
 
 const props = defineProps<{
   enableTopTransparent?: boolean
@@ -25,7 +30,7 @@ const reference = computed(() => ({
       top: anchor.value.y,
       bottom: anchor.value.y,
       ...anchor.value
-    } as DOMRect)
+    }) as DOMRect
 }))
 
 // 用于判断是否滑到底
@@ -39,7 +44,14 @@ const onDetectBoundary = () => {
   if (!viewport) {
     return
   }
-  const { scrollTop, scrollLeft, clientHeight, clientWidth, scrollHeight, scrollWidth } = viewport
+  const {
+    scrollTop,
+    scrollLeft,
+    clientHeight,
+    clientWidth,
+    scrollHeight,
+    scrollWidth
+  } = viewport
   isAtTop.value = scrollTop <= 1
   isAtBottom.value = scrollTop + clientHeight >= scrollHeight - 1
   isAtLeft.value = scrollLeft <= 1
@@ -64,7 +76,10 @@ const scrollHorizontally = (targetX: number) => {
   const viewportRect = viewport.getBoundingClientRect()
 
   viewport.scrollTo({
-    left: targetX - (viewportRect.left + viewportRect.width / 2) + viewport.scrollLeft,
+    left:
+      targetX
+      - (viewportRect.left + viewportRect.width / 2)
+      + viewport.scrollLeft,
     behavior: 'smooth'
   })
 }
@@ -80,13 +95,19 @@ const scrollVertically = (targetY: number) => {
   const viewportRect = viewport.getBoundingClientRect()
 
   viewport.scrollTo({
-    top: targetY - (viewportRect.top + viewportRect.height / 2) + viewport.scrollTop,
+    top:
+      targetY
+      - (viewportRect.top + viewportRect.height / 2)
+      + viewport.scrollTop,
     behavior: 'smooth'
   })
 }
 
 // 相对增量的滚动方法
-const scrollHorizontallyBy = (deltaX: number, behavior: ScrollBehavior = 'auto') => {
+const scrollHorizontallyBy = (
+  deltaX: number,
+  behavior: ScrollBehavior = 'auto'
+) => {
   const viewport = scrollArea.value?.viewport
   if (!viewport) {
     return
@@ -99,7 +120,10 @@ const scrollHorizontallyBy = (deltaX: number, behavior: ScrollBehavior = 'auto')
 }
 
 // 相对增量的滚动方法
-const scrollVerticallyBy = (deltaY: number, behavior: ScrollBehavior = 'auto') => {
+const scrollVerticallyBy = (
+  deltaY: number,
+  behavior: ScrollBehavior = 'auto'
+) => {
   const viewport = scrollArea.value?.viewport
   if (!viewport) {
     return
@@ -132,21 +156,34 @@ onUnmounted(() => {
 <template>
   <ScrollAreaRoot
     ref="scrollArea"
-    class="relative overflow-hidden"
+    class="relative overflow-hidden size-full"
+    type="hover"
     :scroll-hide-delay="256"
   >
     <!-- 边缘渐变装饰 -->
     <Transition name="fade">
-      <div v-if="enableTopTransparent && !isAtTop" class="absolute top-0 z-10 w-full h-6 bg-linear-to-t from-transparent to-default" />
+      <div
+        v-if="enableTopTransparent && !isAtTop"
+        class="absolute top-0 z-10 w-full h-6 bg-linear-to-t from-transparent to-default"
+      />
     </Transition>
     <Transition name="fade">
-      <div v-if="enableBottomTransparent && !isAtBottom" class="absolute bottom-0 z-10 w-full h-6 bg-linear-to-b from-transparent to-default" />
+      <div
+        v-if="enableBottomTransparent && !isAtBottom"
+        class="absolute bottom-0 z-10 w-full h-6 bg-linear-to-b from-transparent to-default"
+      />
     </Transition>
     <Transition name="fade">
-      <div v-if="enableLeftTransparent && !isAtLeft" class="absolute left-0 z-10 h-full w-6 bg-linear-to-l from-transparent to-default" />
+      <div
+        v-if="enableLeftTransparent && !isAtLeft"
+        class="absolute left-0 z-10 h-full w-6 bg-linear-to-l from-transparent to-default"
+      />
     </Transition>
     <Transition name="fade">
-      <div v-if="enableRightTransparent && !isAtRight" class="absolute right-0 z-10 h-full w-6 bg-linear-to-r from-transparent to-default" />
+      <div
+        v-if="enableRightTransparent && !isAtRight"
+        class="absolute right-0 z-10 h-full w-6 bg-linear-to-r from-transparent to-default"
+      />
     </Transition>
 
     <ScrollAreaViewport class="size-full overscroll-contain" @scroll="onScroll">
@@ -170,7 +207,11 @@ onUnmounted(() => {
         :delay-duration="100"
         :open="open && enableHorizontalTooltip === true"
         :reference="reference"
-        :content="{ side: 'top', sideOffset: 10, updatePositionStrategy: 'always' }"
+        :content="{
+          side: 'top',
+          sideOffset: 10,
+          updatePositionStrategy: 'always'
+        }"
         :disabled="!enableHorizontalTooltip"
       >
         <ScrollAreaThumb
@@ -178,13 +219,18 @@ onUnmounted(() => {
           :class="enableHorizontalTooltip && 'before:min-w-10 before:min-h-10'"
           @pointerenter="open = true"
           @pointerleave="open = false"
-          @pointermove="(ev) => {
-            anchor.x = ev.clientX
-            anchor.y = ev.clientY
-          }"
+          @pointermove="
+            (ev: PointerEvent) => {
+              anchor.x = ev.clientX;
+              anchor.y = ev.clientY;
+            }
+          "
         />
         <template #content>
-          <UKbd value="Shift" size="sm" />+<UKbd value="鼠标滚轮" size="sm" />可进行左右滚动
+          <UKbd value="Shift" size="sm" />+<UKbd
+            value="鼠标滚轮"
+            size="sm"
+          />可进行左右滚动
         </template>
       </UTooltip>
     </ScrollAreaScrollbar>

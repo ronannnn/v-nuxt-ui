@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "description": "Veken UI Component Library - Reusable Nuxt UI components, composables, and utilities for enterprise applications",
   "type": "module",
+  "style": "./dist/runtime/index.css",
   "exports": {
     ".": {
       "types": "./dist/types.d.mts",
+      "style": "./dist/runtime/index.css",
       "import": "./dist/module.mjs"
     }
   },

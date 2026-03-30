@@ -1,0 +1,12 @@
+/*
+ * v-nuxt-ui Tailwind CSS source scanning
+ *
+ * Consumers must @import this file in their main CSS (alongside tailwindcss
+ * and @nuxt/ui) so Tailwind v4 scans the module's runtime components for
+ * class extraction:
+ *
+ *   @import "tailwindcss" theme(static);
+ *   @import "@nuxt/ui";
+ *   @import "v-nuxt-ui";
+ */
+@source "./components";
