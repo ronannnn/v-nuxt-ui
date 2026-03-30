@@ -36,22 +36,32 @@ const normalizedSegments = computed(() => {
   }))
 })
 
+const colorMap: Record<string, string> = {
+  primary: 'text-primary duration-512',
+  secondary: 'text-secondary duration-512',
+  success: 'text-success duration-512',
+  info: 'text-info duration-512',
+  warning: 'text-warning duration-512',
+  error: 'text-error duration-512'
+}
+
 const colorClassOf = (color?: ButtonProps['color']) => {
   if (!color || color === 'neutral') return 'text-neutral-300 dark:text-neutral-600 duration-512'
-  return `text-${String(color)} duration-512`
+  return colorMap[color as string] ?? 'text-neutral-300 dark:text-neutral-600 duration-512'
 }
 </script>
 
 <template>
   <div class="relative">
-    <svg class="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+    <svg style="width: 100%; height: 100%; transform: rotate(-90deg);" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
       <!-- 背景圆 -->
       <circle
         cx="18"
         cy="18"
         r="16"
         fill="none"
-        class="stroke-current text-neutral-200 dark:text-neutral-700"
+        stroke="currentColor"
+        class="text-neutral-200 dark:text-neutral-700"
         :stroke-width="strokeWidth"
       />
 
@@ -63,11 +73,11 @@ const colorClassOf = (color?: ButtonProps['color']) => {
           cy="18"
           r="16"
           fill="none"
+          stroke="currentColor"
           stroke-linecap="round"
           :stroke-width="strokeWidth"
           :stroke-dasharray="`${seg.percent} ${100}`"
           :stroke-dashoffset="`${-normalizedSegments.slice(0, idx).reduce((s, v) => s + v.percent, 0)}`"
-          class="stroke-current transition-discrete"
           :class="colorClassOf(seg.color)"
         />
       </template>

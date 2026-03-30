@@ -1,5 +1,17 @@
 /* Custom styles - Tailwind directives are handled by the host app's @nuxt/ui */
 
+/*
+ * TODO: Tailwind v4 @source scanning for module components
+ * The following @source directives SHOULD work but are silently ignored when
+ * this CSS is processed through @nuxt/ui's Vite pipeline. This means any
+ * Tailwind class used ONLY in src/runtime/components/ (and not also in the
+ * consuming app) will NOT be generated. Workarounds needed:
+ *   (a) Hook into @nuxt/ui's @source generation via Nuxt hooks
+ *   (b) Register this module as a Nuxt layer (not just a module)
+ *   (c) Configure @tailwindcss/vite to add source paths programmatically
+ * See: docs/superpowers/specs/2026-03-29-import-fix-and-playground-design.md
+ */
+
 :root {
   --ui-header-height: 3.5rem;
   --ui-table-header-height: 3rem;
