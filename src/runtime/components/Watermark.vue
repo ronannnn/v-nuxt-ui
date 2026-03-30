@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { useColorMode } from '@vueuse/core'
 import { ref, onMounted, watch } from 'vue'
-import { useNuxtApp } from '#imports'
 
 interface Props {
   text?: string | string[]
@@ -201,8 +201,8 @@ watch(
 )
 
 // 监听主题变化
-const { $colorMode } = useNuxtApp()
-watch(() => $colorMode.preference, generateWatermark)
+const colorMode = useColorMode()
+watch(() => colorMode.value, generateWatermark)
 
 onMounted(() => {
   generateWatermark()
