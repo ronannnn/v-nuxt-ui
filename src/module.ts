@@ -1,4 +1,4 @@
-import { defineNuxtModule, createResolver, addComponentsDir, addImportsDir, addPlugin, addTypeTemplate } from '@nuxt/kit'
+import { defineNuxtModule, createResolver, addComponentsDir, addImportsDir, addPlugin, addTypeTemplate, addTemplate } from '@nuxt/kit'
 
 export interface ModuleOptions {
   /**
@@ -25,6 +25,19 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Register #runtime alias for cleaner imports within module components
     nuxt.options.alias['#v'] = resolve('./runtime')
+
+    // Generate a CSS file with @source directive for Tailwind CSS v4 scanning.
+    // Without this, Tailwind won't extract class names from our module's runtime
+    // files (components, composables, utils). We use addTemplate with absolute
+    // paths instead of registering as a Nuxt layer (which would cause component
+    // auto-scanning conflicts with our explicit prefix-based registration).
+    const runtimeDir = resolve('./runtime')
+    addTemplate({
+      filename: 'v-nuxt-ui-sources.css',
+      write: true,
+      getContents: () => `@source "${runtimeDir}/**/*";`,
+    })
+    nuxt.options.css.unshift('#build/v-nuxt-ui-sources.css')
 
     // Register components (pathPrefix: true uses directory structure for naming)
     // e.g., pro/table/header/index.vue → ProTableHeader
