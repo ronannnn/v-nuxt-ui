@@ -9,12 +9,12 @@ dist
 
 # IDE
 .idea
-.vscode
 *.swp
 *.swo
 
 # Superpowers
 .superpowers
+.ruff_cache
 
 # Worktrees
 .worktrees
