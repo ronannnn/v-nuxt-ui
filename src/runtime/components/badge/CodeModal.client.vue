@@ -63,9 +63,9 @@ watch([codeText, () => colorMode.value], updateHighlight, { immediate: true })
       <div class="overflow-hidden text-sm">
         <template v-if="highlightedHtml">
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div v-html="highlightedHtml" />
+          <div class="overflow-auto" v-html="highlightedHtml" />
         </template>
-        <pre v-else class="whitespace-pre-line">{{ codeText }}</pre>
+        <pre v-else class="whitespace-pre-wrap">{{ codeText }}</pre>
       </div>
     </template>
     <template #footer="{ close }">
