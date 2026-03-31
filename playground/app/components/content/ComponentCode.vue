@@ -256,22 +256,8 @@ function buildCode() {
   return code
 }
 
-function wrapCode(markdown: string, cssClass: string) {
-  if (props.collapse) {
-    return markdown.replace('::code-collapse', `::code-collapse{class="${cssClass}"}`)
-  }
-  return `::div{class="${cssClass}"}\n${markdown}\n::`
-}
-
 const code = computed(() => {
-  const nuxtCode = buildCode()
-  const vueCode = addVueImports(nuxtCode)
-
-  if (vueCode !== nuxtCode) {
-    return wrapCode(nuxtCode, 'nuxt-only') + '\n\n' + wrapCode(vueCode, 'vue-only')
-  }
-
-  return nuxtCode
+  return buildCode()
 })
 
 const playgroundUrl = computed(() => {
@@ -283,9 +269,6 @@ const playgroundUrl = computed(() => {
 
 const codeKey = computed(() => `component-code-${name}-${hash(props)}`)
 
-const wrapperContainer = ref<HTMLElement | null>(null)
-const componentContainer = ref<HTMLElement | null>(null)
-
 const { data: ast } = useAsyncData(codeKey, async () => {
   return cachedParseMarkdown(code.value)
 }, { lazy: import.meta.client, watch: [code] })
@@ -294,7 +277,6 @@ const { data: ast } = useAsyncData(codeKey, async () => {
 <template>
   <div
     class="my-5"
-    :style="{ '--ui-header-height': '4rem' }"
   >
     <div
       ref="wrapperContainer"

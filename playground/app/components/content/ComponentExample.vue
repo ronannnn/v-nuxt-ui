@@ -71,13 +71,7 @@ ${codeFence}
 }
 
 const code = computed(() => {
-  const rawCode = data.value?.code ?? ''
-  const vueCode = addVueImports(rawCode)
-
-  if (vueCode !== rawCode) {
-    return buildCodeBlock(rawCode, 'nuxt-only') + '\n\n' + buildCodeBlock(vueCode, 'vue-only')
-  }
-
+  const rawCode = (data.value as any)?.code ?? ''
   return buildCodeBlock(rawCode)
 })
 
@@ -86,14 +80,14 @@ const { data: ast } = useAsyncData(`component-example-${camelName}${hash({ props
 }, { lazy: import.meta.client, watch: [code] })
 
 const playgroundUrl = computed(() => {
-  const rawCode = data.value?.code
+  const rawCode = (data.value as any)?.code
   if (!rawCode) return null
   return getPlaygroundUrl(addVueImports(rawCode))
 })
 </script>
 
 <template>
-  <div class="my-5" :style="{ '--ui-header-height': '4rem' }">
+  <div class="my-5">
     <template v-if="preview">
       <div class="relative group/component">
         <div class="border border-muted relative z-1" :class="[{ 'border-b-0 rounded-t-md': props.source, 'rounded-md': !props.source, 'overflow-hidden': props.overflowHidden }]">
