@@ -1,12 +1,13 @@
 <script setup lang="ts" generic="T">
-import type { ListApi, VColumn, WhereQuery, WhereQueryOption } from '../../types'
+import type { ListApi, VColumn, WhereQuery, WhereQueryOption } from '#v/types'
 import { ref } from 'vue'
 import { now } from '@internationalized/date'
 import { defu } from 'defu'
 import { useExporting } from '#v/composables/useBoolean'
 import { useDate } from '#v/composables/useDate'
-import { dateFormat, TIME_ZONE } from '#v/constants/time'
-import { genTableExcel } from '#v/utils/excel'
+import { dateFormat, TIME_ZONE } from '#v/constants'
+import { genTableExcel } from '#v/utils'
+import TableQueryWhere from '#v/components/table/query/where/index.vue'
 
 const props = defineProps<{
   filename?: string
@@ -59,7 +60,7 @@ const exportExcel = async () => {
   >
     <template #body>
       <UFormField label="筛选条件">
-        <ProTableQueryWhere
+        <TableQueryWhere
           :where-query="whereQuery"
           :where-options="whereQueryOptions"
           :trigger-fetching="async () => {}"

@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import type { WhereQueryOption, WhereQueryItem } from '../../../../../../../types'
+import type { WhereQueryOption, WhereQueryItem } from '#v/types'
 import { computed, watch, useTemplateRef } from 'vue'
+import TableQueryWhereSimpleItemOprInput from '#v/components/table/query/where/simple/item/opr/Input.vue'
+import TableQueryWhereSimpleItemOprInputNumber from '#v/components/table/query/where/simple/item/opr/InputNumber.vue'
+import TableQueryWhereSimpleItemOprSelect from '#v/components/table/query/where/simple/item/opr/Select.vue'
+import TableQueryWhereSimpleItemOprDatePicker from '#v/components/table/query/where/simple/item/opr/DatePicker.vue'
+import TableQueryWhereSimpleItemOprAsyncSelect from '#v/components/table/query/where/simple/item/opr/AsyncSelect.vue'
 
 const props = defineProps<{
   options: WhereQueryOption<any>[]
@@ -26,7 +31,7 @@ defineExpose({
 </script>
 
 <template>
-  <ProTableQueryWhereSimpleItemOprInput
+  <TableQueryWhereSimpleItemOprInput
     v-if="option!.type === 'input'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
@@ -34,7 +39,7 @@ defineExpose({
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
   />
-  <ProTableQueryWhereSimpleItemOprInputNumber
+  <TableQueryWhereSimpleItemOprInputNumber
     v-if="option!.type === 'input-number'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
@@ -42,20 +47,20 @@ defineExpose({
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
   />
-  <ProTableQueryWhereSimpleItemOprSelect
+  <TableQueryWhereSimpleItemOprSelect
     v-else-if="option!.type === 'select'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
     :items="option?.items || []"
   />
-  <ProTableQueryWhereSimpleItemOprDatePicker
+  <TableQueryWhereSimpleItemOprDatePicker
     v-else-if="option!.type === 'date-picker'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
   />
-  <ProTableQueryWhereSimpleItemOprAsyncSelect
+  <TableQueryWhereSimpleItemOprAsyncSelect
     v-else-if="option!.type === 'async-select'"
     ref="item"
     v-model:where-query-item="whereQueryItem"

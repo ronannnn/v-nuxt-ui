@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { OrderQueryOpr } from '../../../types'
+import type { OrderQueryOpr } from '#v/types'
 import type { ColumnPinningPosition } from '@tanstack/table-core'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed } from 'vue'

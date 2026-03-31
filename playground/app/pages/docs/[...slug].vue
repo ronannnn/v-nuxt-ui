@@ -52,7 +52,12 @@ useSeoMeta({
       </template>
 
       <template #description>
-        <MDC v-if="page.description" :value="page.description" unwrap="p" :cache-key="`${kebabCase(route.path)}-description`" />
+        <MDC
+          v-if="page.description"
+          :value="page.description"
+          unwrap="p"
+          :cache-key="`${kebabCase(route.path)}-description`"
+        />
       </template>
 
       <template v-if="page.links?.length" #links>
@@ -80,12 +85,14 @@ useSeoMeta({
         <template #bottom>
           <USeparator v-if="page.body?.toc?.links?.length" type="dashed" />
 
-          <UPageLinks :links="[{
-            icon: 'i-lucide-file-pen',
-            label: 'Edit this page',
-            to: `https://github.com/user/v-nuxt-ui/edit/main/playground/content/${page?.stem}.md`,
-            target: '_blank'
-          }]" />
+          <UPageLinks
+            :links="[{
+              icon: 'i-lucide-file-pen',
+              label: 'Edit this page',
+              to: `https://github.com/user/v-nuxt-ui/edit/main/playground/content/${page?.stem}.md`,
+              target: '_blank'
+            }]"
+          />
         </template>
       </UContentToc>
     </template>

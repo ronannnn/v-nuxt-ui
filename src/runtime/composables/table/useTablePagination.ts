@@ -1,6 +1,6 @@
 import { computed, ref, type Ref } from 'vue'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import type { Pagination } from '../../types'
+import type { Pagination } from '#v/types'
 
 const defaultPageSize: number = 10
 const pageSizeOptions: number[] = [5, 10, 20, 50, 100]

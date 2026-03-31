@@ -1,5 +1,4 @@
 import { defineNuxtModule, createResolver, addComponentsDir, addImportsDir, addPlugin, addTypeTemplate } from '@nuxt/kit'
-import { defu } from 'defu'
 
 export interface ModuleOptions {
   /**
@@ -7,39 +6,6 @@ export interface ModuleOptions {
    * @default 'V'
    */
   prefix?: string
-}
-
-// Default Nuxt UI theme configuration provided by v-nuxt-ui.
-// Consumers can override any of these in their own app.config.ts.
-const defaultUIConfig = {
-  colors: {
-    primary: 'sky',
-    neutral: 'zinc'
-  },
-  modal: {
-    slots: {
-      footer: 'justify-end'
-    }
-  },
-  collapsible: {
-    slots: {
-      content: 'data-[state=open]:animate-[collapsible-down_300ms_ease-in-out] data-[state=closed]:animate-[collapsible-up_300ms_ease-in-out]'
-    }
-  },
-  button: {
-    slots: {
-      base: 'cursor-pointer'
-    }
-  },
-  navigationMenu: {
-    variants: {
-      orientation: {
-        vertical: {
-          link: 'py-2.5'
-        }
-      }
-    }
-  }
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -56,14 +22,6 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
-
-    // Inject default Nuxt UI theme config into appConfig.
-    // defu merges with "defaults last" semantics, so the consumer's
-    // app.config.ts values always take priority over our defaults.
-    nuxt.options.appConfig.ui = defu(
-      nuxt.options.appConfig.ui as Record<string, unknown> || {},
-      defaultUIConfig
-    )
 
     // Register #runtime alias for cleaner imports within module components
     nuxt.options.alias['#v'] = resolve('./runtime')
@@ -84,7 +42,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Register utils
     addImportsDir(resolve('./runtime/utils'))
-    addImportsDir(resolve('./runtime/utils/download'))
 
     // Register constants
     addImportsDir(resolve('./runtime/constants'))

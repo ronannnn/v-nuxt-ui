@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed, useTemplateRef } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
@@ -6,6 +6,7 @@ import defu from 'defu'
 import { useFetching } from '#v/composables/useBoolean'
 import { isEmptyString } from '#v/utils'
 import type { VFormFieldAsyncSelectProps, WhereQueryItem, SelectOption, QueryTemplate } from '#v/types'
+import ButtonDropdown from '#v/components/button/Dropdown.vue'
 
 const props = withDefaults(defineProps<{
   label: string
@@ -123,7 +124,7 @@ defineExpose({
 </script>
 
 <template>
-  <ProButtonDropdown
+  <ButtonDropdown
     ref="dropdownBtn"
     v-model="commandPaletteValue"
     :groups="commandPaletteGroups"
@@ -153,5 +154,5 @@ defineExpose({
         </div>
       </div>
     </UButton>
-  </ProButtonDropdown>
+  </ButtonDropdown>
 </template>

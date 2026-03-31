@@ -4,7 +4,7 @@ import type { RequestResult } from '#v/types'
 
 const props = defineProps<{
   ids: number[]
-  onDelete: ((ids: number[]) => Promise<{ data: globalThis.Ref<RequestResult<any>> }>) | undefined | null
+  onDelete: ((ids: number[]) => Promise<{ data: globalThis.Ref<RequestResult<any>> }> | undefined) | undefined | null
 }>()
 const emit = defineEmits<{
   close: [boolean]

@@ -1,9 +1,9 @@
 import { createSharedComposable } from '@vueuse/core'
 import { toZoned, parseAbsolute, type DateValue } from '@internationalized/date'
 import dayjs from 'dayjs'
-import { TIME_ZONE } from '#v/constants/time'
+import { TIME_ZONE } from '#v/constants'
 import type { DateRange } from 'reka-ui'
-import type { DateShortcut } from '#v/types/components/date'
+import type { DateShortcut } from '#v/types'
 
 const _useDate = () => {
   const dayjsToDateValue = (date: dayjs.Dayjs | null | undefined): DateValue | undefined => {

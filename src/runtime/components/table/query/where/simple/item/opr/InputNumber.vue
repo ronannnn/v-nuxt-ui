@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import { noValueOprList, type WhereQueryItem } from '../../../../../../../types'
+import { noValueOprList, type WhereQueryItem } from '#v/types'
 import { computed, useTemplateRef } from 'vue'
 
 defineProps<{

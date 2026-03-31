@@ -56,6 +56,9 @@ importers:
       sql-formatter:
         specifier: ^15.7.2
         version: 15.7.2
+      vue-router:
+        specifier: ^5.0.4
+        version: 5.0.4(@vue/compiler-sfc@3.5.30)(vue@3.5.30(typescript@5.9.3))
     devDependencies:
       '@iconify-json/lucide':
         specifier: ^1.2.94

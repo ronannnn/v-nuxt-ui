@@ -1,8 +1,9 @@
 <script setup lang="ts" generic="T">
 import type { CommandPaletteGroup } from '@nuxt/ui'
-import type { WhereQueryItem, WhereQueryOpr, WhereQueryOption } from '../../../../../../types'
+import type { WhereQueryItem, WhereQueryOpr, WhereQueryOption } from '#v/types'
 import { computed, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
+import ButtonDropdown from '#v/components/button/Dropdown.vue'
 
 const props = defineProps<{
   options: WhereQueryOption<T>[]
@@ -63,7 +64,7 @@ const currentLabel = computed(() => {
 
 <template>
   <!-- NOTE: 自己实现DropdownMenu, 原生DropdownMenu的Focus有问题，会让查询字段打开的Popover关闭 -->
-  <ProButtonDropdown
+  <ButtonDropdown
     v-model="modelValue"
     :groups="items"
   >
@@ -74,5 +75,5 @@ const currentLabel = computed(() => {
       :label="currentLabel"
       :disabled="disabled"
     />
-  </ProButtonDropdown>
+  </ButtonDropdown>
 </template>

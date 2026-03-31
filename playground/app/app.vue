@@ -1,10 +1,22 @@
 <script setup lang="ts">
+import { setGlobalSidebarMenus } from '#v/composables'
+
 const route = useRoute()
 
 const { data: navigation } = await useAsyncData('navigation', () =>
-  queryCollectionNavigation('docs', ['category', 'description']),
+  queryCollectionNavigation('docs', ['category', 'description'])
 )
-
+setGlobalSidebarMenus({
+  bizMenus: [{
+    label: '文档首页',
+    icon: 'i-lucide-home',
+    to: '/docs/getting-started'
+  }, {
+    label: '用户列表',
+    icon: 'i-lucide-users',
+    to: '/examples/users'
+  }]
+})
 const { rootNavigation } = useNavigation(navigation)
 
 provide('navigation', rootNavigation)

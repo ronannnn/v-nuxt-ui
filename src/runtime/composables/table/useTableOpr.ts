@@ -1,5 +1,5 @@
 import { createSharedComposable } from '@vueuse/core'
-import type { SelectOption, WhereQueryOpr, WhereQueryType } from '../../types'
+import type { SelectOption, WhereQueryOpr, WhereQueryType } from '#v/types'
 
 const _useTableOpr = () => {
   const oprMap = new Map<WhereQueryType, WhereQueryOpr[]>([

@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import type { WhereQueryOption, WhereQueryItem } from '../../../../../../types'
+import type { WhereQueryOption, WhereQueryItem } from '#v/types'
 import { computed, watch, useTemplateRef } from 'vue'
+import TableQueryWhereSimpleItemColumnPicker from '#v/components/table/query/where/simple/item/ColumnPicker.vue'
+import TableQueryWhereSimpleItemOprPicker from '#v/components/table/query/where/simple/item/OprPicker.vue'
+import TableQueryWhereSimpleItemOpr from '#v/components/table/query/where/simple/item/opr/index.vue'
 
 const props = defineProps<{
   options: WhereQueryOption<any>[]
@@ -28,20 +31,20 @@ defineExpose({
 
 <template>
   <UFieldGroup size="sm">
-    <ProTableQueryWhereSimpleItemColumnPicker
+    <TableQueryWhereSimpleItemColumnPicker
       v-model:where-query-item="whereQueryItem"
       :options="options"
       :fetching="fetching"
       :focus="() => oprRef?.focus()"
     />
-    <ProTableQueryWhereSimpleItemOprPicker
+    <TableQueryWhereSimpleItemOprPicker
       v-model:where-query-item="whereQueryItem"
       :options="options"
       :fetching="fetching"
       :focus="() => oprRef?.focus()"
       :disabled="option?.disableOprSelector"
     />
-    <ProTableQueryWhereSimpleItemOpr
+    <TableQueryWhereSimpleItemOpr
       ref="opr"
       v-model:where-query-item="whereQueryItem"
       :options="options"

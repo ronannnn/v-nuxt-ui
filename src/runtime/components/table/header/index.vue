@@ -1,20 +1,26 @@
 <script setup lang="ts" generic="T">
-import { ProDeleteModal, ProPermissionWrapper, ProTableExcelExportModal, ProTableHeaderSettings, ProTableQueryOrder, UButton, UChip, UKbd } from '#components'
 import { computed, h } from 'vue'
 import { defu } from 'defu'
-import { useI18n, useOverlay } from '#imports'
-import type { TableHeaderProps } from '../../../types'
+import { useOverlay } from '@nuxt/ui/composables'
+import type { TableHeaderProps } from '#v/types'
+import UButton from '@nuxt/ui/components/Button.vue'
+import UChip from '@nuxt/ui/components/Chip.vue'
+import UKbd from '@nuxt/ui/components/Kbd.vue'
+import PermissionWrapper from '#v/components/PermissionWrapper.vue'
+import TableQueryOrder from '#v/components/table/query/order/index.vue'
+import DeleteModal from '#v/components/DeleteModal.vue'
+import TableHeaderSettings from '#v/components/table/header/settings/index.vue'
+import TableExcelExportModal from '#v/components/table/ExcelExportModal.vue'
 
 const props = withDefaults(defineProps<TableHeaderProps<T>>(), {
   size: 'md',
   oprOrder: () => ['create', 'refresh', 'whereQuery', 'orderQuery', 'settings', 'exportExcel', 'batchDelete']
 })
 
-const { t } = useI18n()
 const overlay = useOverlay()
-const deleteModal = overlay.create(ProDeleteModal)
-const settingsModal = overlay.create(ProTableHeaderSettings)
-const excelExportModal = overlay.create(ProTableExcelExportModal)
+const deleteModal = overlay.create(DeleteModal)
+const settingsModal = overlay.create(TableHeaderSettings)
+const excelExportModal = overlay.create(TableExcelExportModal)
 
 const oprButtons = computed(() => {
   const defaultButtons = props.oprOrder.map((opr) => {
@@ -33,7 +39,7 @@ const oprButtons = computed(() => {
               }
             }
           },
-          () => t('button.new')
+          () => '新增'
         )
       case 'refresh':
         return h(
@@ -46,7 +52,7 @@ const oprButtons = computed(() => {
             variant: 'outline',
             onClick: () => props.fetchList()
           },
-          () => t('button.refresh')
+          () => '刷新'
         )
       case 'whereQuery':
         if (props.disableWhereQuery) return null
@@ -65,13 +71,13 @@ const oprButtons = computed(() => {
                 props.whereQueryProps.onUpdateWhereQueryOpen?.(!props.whereQueryProps.whereQueryOpen)
               }
             },
-            () => t('button.query')
+            () => '查询'
           )
         )
       case 'orderQuery':
         if (props.disableOrderQuery) return null
         return h(
-            ProTableQueryOrder<T>,
+            TableQueryOrder<T>,
             { ...props.orderQueryProps, size: props.size }
         )
       case 'settings':
@@ -91,7 +97,7 @@ const oprButtons = computed(() => {
               })
             }
           },
-          () => t('button.settings')
+          () => '设置'
         )
       case 'exportExcel': {
         if (!props.exportExcel) return null
@@ -113,12 +119,12 @@ const oprButtons = computed(() => {
               })
             }
           },
-          () => t('button.export')
+          () => '导出'
         )
         if (!props.exportExcel.permissionKey) {
           return exportButton
         }
-        return h(ProPermissionWrapper, { permission: props.exportExcel.permissionKey }, {
+        return h(PermissionWrapper, { permission: props.exportExcel.permissionKey }, {
           default: () => exportButton
         })
       }

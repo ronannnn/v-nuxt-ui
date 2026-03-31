@@ -4,7 +4,7 @@ import type { ButtonProps } from '@nuxt/ui'
 import type { DateValue } from 'reka-ui'
 import dayjs from 'dayjs'
 import { useDate } from '#v/composables/useDate'
-import { dateFormat } from '#v/constants/time'
+import { dateFormat } from '#v/constants'
 import DatePickerInput from '#v/components/date-picker/Input.vue'
 
 defineProps<{

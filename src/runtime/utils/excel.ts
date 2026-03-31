@@ -1,4 +1,4 @@
-import type { VColumn } from '../types/components'
+import type { VColumn } from '#v/types'
 import { triggerFileDownload } from './download/tagA'
 
 export async function genTableExcel(columns: VColumn<any>[], data: any[], filenamePrefix: string) {

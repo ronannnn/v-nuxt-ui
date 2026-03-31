@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { UserCreateModal, UBadge } from '#components'
+import type { RowActionProps, VColumn } from '#v/types'
 import dayjs from 'dayjs'
+import { useUserApi } from '#v/composables'
 
 const overlay = useOverlay()
 const createModal = overlay.create(UserCreateModal)
@@ -119,31 +121,15 @@ const columns: VColumn<Model.User>[] = [
       : '-'
   },
   {
-    accessorKey: 'resignDate',
-    header: '离职时间',
-    sortOption: true,
-    initHide: true,
-    cell: ({ row }) => row.original.resignDate
-      ? dayjs(row.original.resignDate).format('YYYY-MM-DD')
-      : '-'
-  },
-  {
     accessorKey: 'createdAt',
     header: '创建时间',
-    sortOption: { defaultOpr: 'desc' },
-    initHide: true,
-    cell: ({ row }) => row.original.createdAt
-      ? dayjs(row.original.createdAt).format('YYYY-MM-DD HH:mm')
-      : '-'
-  },
-  {
-    accessorKey: 'updatedAt',
-    header: '更新时间',
-    sortOption: true,
-    initHide: true,
-    cell: ({ row }) => row.original.updatedAt
-      ? dayjs(row.original.updatedAt).format('YYYY-MM-DD HH:mm')
-      : '-'
+    cell: ({ row }) => dayjs(row.original.createdAt).format(dateTimeFormat),
+    filterOption: {
+      type: 'date-picker'
+    },
+    sortOption: {
+      defaultOpr: 'desc'
+    }
   }
 ]
 
@@ -214,29 +200,20 @@ const expandVNode = (row: Model.User) => {
 </script>
 
 <template>
-  <UDashboardPanel id="users">
-    <template #header>
-      <UDashboardNavbar title="用户管理" />
-    </template>
-
-    <template #body>
-      <ProTable
-        name="playground-users"
-        cn-name="用户信息"
-        :use-api-group="useUserApi"
-        :biz-columns="columns"
-        :on-edit-row-from-modal="async (row: Model.User) => await createModal.open({ model: row }).result"
-        :extra-row-actions="extraRowActions"
-        expandable
-        :expand-v-node="expandVNode"
-        :export-excel="{
-          filename: 'users-export',
-          filenameWithDateTime: true
-        }"
-        :extra-order-query-options="[
-          { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
-        ]"
-      />
-    </template>
-  </UDashboardPanel>
+  <ProLayoutDefault>
+    <ProTablePage
+      name="playground-users"
+      cn-name="用户信息"
+      :use-api-group="useUserApi"
+      :biz-columns="columns"
+      :on-edit-row-from-modal="async (row: Model.User) => await createModal.open({ model: row }).result"
+      :extra-row-actions="extraRowActions"
+      expandable
+      :expand-v-node="expandVNode"
+      :export-excel="{
+        filename: 'users-export',
+        filenameWithDateTime: true
+      }"
+    />
+  </prolayoutdefault>
 </template>

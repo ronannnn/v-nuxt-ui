@@ -1,4 +1,4 @@
-import { StorageKey } from '../../types/storage'
+import { StorageKey } from '#v/types'
 import { useLocalStorage } from '@vueuse/core'
 
 /**

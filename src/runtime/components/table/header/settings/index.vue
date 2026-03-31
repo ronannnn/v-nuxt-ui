@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T">
-import type { VColumn } from '../../../../types'
+import type { VColumn } from '#v/types'
+import TableHeaderSettingsColumns from '#v/components/table/header/settings/columns/index.vue'
 
 defineProps<{
   tblName: string
@@ -20,7 +21,7 @@ const emit = defineEmits<{
     :close="{ onClick: () => emit('close', false) }"
   >
     <template #body>
-      <ProTableHeaderSettingsColumns
+      <TableHeaderSettingsColumns
         :raw-biz-columns="rawBizColumns"
         :tbl-name="tblName"
         @update-biz-columns="onUpdateBizColumns"

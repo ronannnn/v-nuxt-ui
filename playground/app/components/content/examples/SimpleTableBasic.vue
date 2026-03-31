@@ -28,10 +28,5 @@ const columns: VColumn<any>[] = [
 </script>
 
 <template>
-  <div class="space-y-4">
-    <p class="text-sm text-muted">
-      Columns with select-type filterOption automatically render as badges.
-    </p>
-    <ProSimpleTable :data="data" :biz-columns="columns" />
-  </div>
+  <ProSimpleTable :data="data" :biz-columns="columns" class="border border-default rounded-md" />
 </template>

@@ -1,7 +1,8 @@
 <script setup lang="ts" generic="T">
-import type { SelectOption, WhereQueryItem } from '../../../../../../../types'
+import type { SelectOption, WhereQueryItem } from '#v/types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { computed, useTemplateRef } from 'vue'
+import ButtonDropdown from '#v/components/button/Dropdown.vue'
 
 const props = defineProps<{
   disabled?: boolean
@@ -36,7 +37,7 @@ defineExpose({
 </script>
 
 <template>
-  <ProButtonDropdown
+  <ButtonDropdown
     ref="dropdownBtn"
     v-model="queryValue"
     :groups="groups"
@@ -64,5 +65,5 @@ defineExpose({
         </div>
       </div>
     </UButton>
-  </ProButtonDropdown>
+  </ButtonDropdown>
 </template>

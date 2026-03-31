@@ -1,8 +1,10 @@
 import { ref, h } from 'vue'
-import { useI18n, useOverlay } from '#imports'
-import type { VColumn } from '../../types/components'
+import type { VColumn } from '#v/types'
 import type { DropdownMenuItem, TableRow } from '@nuxt/ui'
-import { ProDeleteModal, UButton, UDropdownMenu } from '#components'
+import { useOverlay } from '@nuxt/ui/composables'
+import DeleteModal from '#v/components/DeleteModal.vue'
+import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue'
+import UButton from '@nuxt/ui/components/Button.vue'
 
 export function useTableRowActions<T>(props: {
   rowKey: keyof T
@@ -29,9 +31,8 @@ export function useTableRowActions<T>(props: {
     fetchList
   } = props
 
-  const { t } = useI18n()
   const overlay = useOverlay()
-  const deleteModal = overlay.create(ProDeleteModal)
+  const deleteModal = overlay.create(DeleteModal)
   const apiGroup = useApiGroup?.()
   const actionLoadingRowIdxSet = ref<Set<number>>(new Set())
 
@@ -101,7 +102,7 @@ export function useTableRowActions<T>(props: {
         actionItems.push({ type: 'separator' })
       }
       actionItems.push({
-        label: t('button.delete'),
+        label: '删除',
         icon: 'i-lucide-trash-2',
         color: 'error',
         onSelect: async () => {

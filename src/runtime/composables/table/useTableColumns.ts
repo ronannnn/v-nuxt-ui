@@ -1,10 +1,12 @@
 import { computed, ref, h, type Ref, type ComputedRef } from 'vue'
 import type { ColumnPinningState } from '@tanstack/table-core'
-import type { VColumn } from '../../types/components'
-import type { OrderQuery, OrderQueryOpr } from '../../types'
-import { ProTableColumnActionHeader, UBadge, UCheckbox, UIcon } from '#components'
+import type { VColumn, OrderQuery, OrderQueryOpr } from '#v/types'
+import TableColumnActionHeader from '#v/components/table/column/ActionHeader.vue'
+import UBadge from '@nuxt/ui/components/Badge.vue'
+import UCheckbox from '@nuxt/ui/components/Checkbox.vue'
+import UIcon from '@nuxt/ui/components/Icon.vue'
 import { defu } from 'defu'
-import { cloneJson } from '../../utils/string'
+import { cloneJson } from '#v/utils'
 
 interface UseTableColumnsReturn<T> {
   selectionColumn: VColumn<T>
@@ -55,14 +57,14 @@ export function useTableColumns<T>(props: {
         'modelValue': table.getIsSomePageRowsSelected()
           ? 'indeterminate'
           : table.getIsAllPageRowsSelected(),
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-          table.toggleAllPageRowsSelected(!!value),
+        'onUpdate:modelValue': (value: unknown) =>
+          table.toggleAllPageRowsSelected(Boolean(value)),
         'ariaLabel': '选择所有行'
       }),
     cell: ({ row }) =>
       h(UCheckbox, {
         'modelValue': row.getIsSelected() ? true : row.getIsSomeSelected() ? 'indeterminate' : false,
-        'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
+        'onUpdate:modelValue': (value: unknown) => row.toggleSelected(Boolean(value)),
         'ariaLabel': '选择行'
       }),
     meta: {
@@ -171,7 +173,7 @@ export function useTableColumns<T>(props: {
             localStgSettings.value = { ...localStgSettings.value, columns }
           }
         }
-        return h(ProTableColumnActionHeader, {
+        return h(TableColumnActionHeader, {
           label: col.header as string,
           accessorKey,
           fetchList: debouncedFetchList as () => Promise<void>,
@@ -238,7 +240,7 @@ export function useTableColumns<T>(props: {
   })
 
   const columnPinning = computed(() => {
-    const leftPinnedKeys: (string | number)[] = []
+    const leftPinnedKeys: string[] = []
     if (!disableRowSelection) {
       leftPinnedKeys.push('select')
     }
@@ -264,8 +266,8 @@ export function useTableColumns<T>(props: {
   return {
     selectionColumn,
     expandColumn,
-    clonedBizColumns,
-    columnsWithCommonProps,
+    clonedBizColumns: clonedBizColumns as Ref<VColumn<T>[]>,
+    columnsWithCommonProps: columnsWithCommonProps as Ref<VColumn<T>[]>,
     sortedColumns,
     columnsWithFilterOptions,
     columnsWithSortableHeader,

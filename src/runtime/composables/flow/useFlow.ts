@@ -1,6 +1,7 @@
 import { ref, watch } from 'vue'
 import { MarkerType, type Edge, type Node } from '@vue-flow/core'
 import type { Ref } from 'vue'
+import { useFlowApi, useFlowNodeApi, useFlowNodeLinkApi } from '#v/composables'
 
 export interface UseFlowOptions {
   flow?: Ref<Model.Flow | undefined>

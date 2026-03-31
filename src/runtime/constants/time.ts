@@ -1,4 +1,4 @@
-import type { SelectOption } from '../types'
+import type { SelectOption } from '#v/types'
 
 export const TIME_ZONE = 'Asia/Shanghai'
 

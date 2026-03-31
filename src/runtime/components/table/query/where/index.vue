@@ -1,8 +1,10 @@
 <script setup lang="ts" generic="T">
-import type { WhereQueryProps } from '../../../../types'
+import type { WhereQueryProps } from '#v/types'
 import { computed, useTemplateRef, nextTick } from 'vue'
-import { useNuxtApp } from '#imports'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
+import { useToast } from '@nuxt/ui/composables'
+import TableQueryWhereSimple from '#v/components/table/query/where/simple/index.vue'
+import TableQueryWhereNewer from '#v/components/table/query/where/Newer.vue'
 
 const props = defineProps<WhereQueryProps<T>>()
 
@@ -17,7 +19,11 @@ const simpleWhereQueryRef = useTemplateRef('simpleWhereQuery')
 const onNewField = (field: string) => {
   const option = props.whereOptions.find(option => option.field === field)
   if (!option || !option.type) {
-    useNuxtApp().$warningToast(`未找到查询字段 ${field} 对应的WhereQueryOption`)
+    useToast().add({
+      title: '无法添加查询条件',
+      description: `无法找到字段 ${field} 的选项，或该选项缺少类型信息`,
+      color: 'warning'
+    })
     return
   }
   props.onUpdateWhereQuery({
@@ -54,7 +60,7 @@ defineExpose({ focusField })
   <div class="flex items-start gap-2 pl-4 pr-2.5 py-2.5">
     <!-- conditions -->
     <div class="flex flex-wrap gap-2.5">
-      <ProTableQueryWhereSimple
+      <TableQueryWhereSimple
         v-if="!isWhereQueryEmpty"
         v-bind="props"
         ref="simpleWhereQuery"
@@ -64,7 +70,7 @@ defineExpose({ focusField })
           items: newItems
         })"
       />
-      <ProTableQueryWhereNewer
+      <TableQueryWhereNewer
         :options="whereOptions"
         :unselected-fields="unselectedWhereFields"
         :biz-columns="bizColumns ?? []"

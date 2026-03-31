@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import type { TablePaginationProps } from '../../types'
+import type { TablePaginationProps } from '#v/types'
 import { useApp } from '#v/composables/useApp'
 
 withDefaults(defineProps<TablePaginationProps<T>>(), { size: 'sm' })

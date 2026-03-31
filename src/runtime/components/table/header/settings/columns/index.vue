@@ -1,7 +1,8 @@
 <script setup lang="ts" generic="T">
-import type { VColumn } from '../../../../../types'
 import { ref, computed, onMounted } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
+import type { VColumn } from '#v/types'
+import TableHeaderSettingsColumnsDndList from '#v/components/table/header/settings/columns/DndList.vue'
 
 export type FixType = 'left' | 'right' | 'unfixed'
 
@@ -138,7 +139,7 @@ const dragOption = ref({
 <template>
   <div class="flex flex-col p-2 gap-2">
     <div class="flex items-center">
-      <span class="font-bold text-lg">{{ $t('button.columnSetting') }}</span>
+      <span class="font-bold text-lg">列设置</span>
       <UButton
         size="sm"
         color="neutral"
@@ -154,19 +155,19 @@ const dragOption = ref({
     </div>
     <div class="grid grid-cols-1 justify-center gap-6">
       <!-- 如果不加key的话，可能会导致渲染问题，列表中如果只有最后一个元素，被拖拽掉后，还会存在，即使按了reset按钮 -->
-      <ProTableHeaderSettingsColumnsDndList
+      <TableHeaderSettingsColumnsDndList
         v-bind="dragOption"
         :key="leftFixedList.length"
         v-model:list="leftFixedList"
         name="固定在左侧"
       />
-      <ProTableHeaderSettingsColumnsDndList
+      <TableHeaderSettingsColumnsDndList
         v-bind="dragOption"
         :key="unfixedList.length"
         v-model:list="unfixedList"
         name="未固定"
       />
-      <ProTableHeaderSettingsColumnsDndList
+      <TableHeaderSettingsColumnsDndList
         v-bind="dragOption"
         :key="rightFixedList.length"
         v-model:list="rightFixedList"

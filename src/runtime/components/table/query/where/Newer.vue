@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { WhereQueryOption, VColumn, Size } from '../../../../types'
+import type { WhereQueryOption, VColumn, Size } from '#v/types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed } from 'vue'
+import ButtonDropdown from '#v/components/button/Dropdown.vue'
 
 const props = defineProps<{
   options: WhereQueryOption<any>[]
@@ -39,12 +40,12 @@ const unselectedOptions = computed(() => {
 
 <template>
   <!-- NOTE: 自己实现DropdownMenu, 原生DropdownMenu的Focus有问题，会让查询字段打开的Popover关闭 -->
-  <ProButtonDropdown :groups="unselectedOptions">
+  <ButtonDropdown :groups="unselectedOptions">
     <UButton
       :size="size"
       color="neutral"
       variant="soft"
       icon="i-lucide-list-filter-plus"
     />
-  </ProButtonDropdown>
+  </ButtonDropdown>
 </template>

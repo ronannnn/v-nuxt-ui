@@ -1,31 +1,34 @@
 import { computed } from 'vue'
-import { useAppConfig, useColorMode, useI18n } from '#imports'
-import { createSharedComposable } from '@vueuse/core'
+import { createSharedComposable, useColorMode } from '@vueuse/core'
 import colors from 'tailwindcss/colors'
 import { omit } from '@nuxt/ui/utils'
-import type { I18nLocale } from '../types'
+import type { I18nLocale } from '#v/types'
 import { en, zh_cn } from '@nuxt/ui/locale'
 import { useApp } from './useApp'
+import { useAppConfig } from 'nuxt/app'
 
 const _useTheme = () => {
   const appConfig = useAppConfig()
   const colorMode = useColorMode()
-  const i18n = useI18n()
   const app = useApp()
 
   const neutralColors = ['slate', 'gray', 'zinc', 'neutral', 'stone']
   const neutral = computed({
-    get() { return appConfig.ui.colors.neutral },
+    get() {
+      return (appConfig as any).ui.colors.neutral
+    },
     set(option) {
-      appConfig.ui.colors.neutral = option
+      (appConfig as any).ui.colors.neutral = option
       app.updateNeutralColor(option)
     }
   })
 
   const blackAsPrimary = computed({
-    get() { return appConfig.theme.blackAsPrimary },
+    get() {
+      return (appConfig as any).theme.blackAsPrimary
+    },
     set(option) {
-      appConfig.theme.blackAsPrimary = option
+      (appConfig as any).theme.blackAsPrimary = option
       app.updateBlackAsPrimary(option)
     }
   })
@@ -33,10 +36,12 @@ const _useTheme = () => {
   const colorsToOmit = ['inherit', 'current', 'transparent', 'black', 'white', ...neutralColors]
   const primaryColors = Object.keys(omit(colors, colorsToOmit as any))
   const primary = computed({
-    get() { return appConfig.ui.colors.primary },
+    get() {
+      return (appConfig as any).ui.colors.primary
+    },
     set(option) {
-      appConfig.ui.colors.primary = option
-      appConfig.theme.blackAsPrimary = false
+      (appConfig as any).ui.colors.primary = option;
+      (appConfig as any).theme.blackAsPrimary = false
       app.updatePrimaryColor(option)
     }
   })
@@ -46,29 +51,36 @@ const _useTheme = () => {
 
   const radiuses = [0, 0.125, 0.25, 0.375, 0.5]
   const radius = computed({
-    get() { return appConfig.theme.radius },
+    get() {
+      return (appConfig as any).theme.radius
+    },
     set(option) {
-      appConfig.theme.radius = option
+      (appConfig as any).theme.radius = option
       app.updateRadius(option)
     }
   })
 
   const modes = computed(() => [
-    { label: i18n.t('colorMode.light'), value: 'light', icon: appConfig.ui.icons.light },
-    { label: i18n.t('colorMode.dark'), value: 'dark', icon: appConfig.ui.icons.dark },
-    { label: i18n.t('colorMode.system'), value: 'system', icon: appConfig.ui.icons.system }
+    { label: '明亮模式', value: 'light', icon: (appConfig as any).ui.icons.light },
+    { label: '暗黑模式', value: 'dark', icon: (appConfig as any).ui.icons.dark },
+    { label: '跟随系统', value: 'system', icon: (appConfig as any).ui.icons.system }
   ])
   const mode = computed({
-    get() { return colorMode.preference },
-    set(option) { colorMode.preference = option }
+    get() {
+      return colorMode.value
+    },
+    set(option) {
+      colorMode.value = option
+    }
   })
 
   const locales = [zh_cn, en]
   const locale = computed<I18nLocale>({
-    get() { return app.appConfig.value.locale ?? 'zh-CN' },
+    get() {
+      return app.appConfig.value.locale ?? 'zh-CN'
+    },
     set(value: I18nLocale) {
       app.updateLocale(value)
-      i18n.setLocale(value)
     }
   })
 

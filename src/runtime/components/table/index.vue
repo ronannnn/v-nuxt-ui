@@ -1,6 +1,10 @@
 <script setup lang="ts" generic="T">
-import type { VTableProps } from '../../types/components'
-import { useProTableView } from '#v/composables/table/useProTableView'
+import type { VTableProps } from '#v/types'
+import { useProTableView } from '#v/composables/table/useTableView'
+import TableHeader from '#v/components/table/header/index.vue'
+import TableQueryWhere from '#v/components/table/query/where/index.vue'
+import TablePagination from '#v/components/table/Pagination.vue'
+import ScrollArea from '#v/components/ScrollArea.vue'
 
 const props = withDefaults(defineProps<VTableProps<T>>(), {
   singleRow: true,
@@ -44,18 +48,18 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
         <div class="font-semibold text-highlighted truncate">
           {{ cnName }}
         </div>
-        <ProTableHeader v-bind="tblHeaderProps" class="ml-auto" />
+        <TableHeader v-bind="tblHeaderProps" class="ml-auto" />
       </div>
       <UCollapsible :open="tblHeaderProps.whereQueryProps.whereQueryOpen">
         <template #content>
-          <ProTableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="mt-4 sm:mt-6" />
+          <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default" />
         </template>
       </UCollapsible>
     </div>
 
     <!-- table -->
     <UContextMenu :items="tblContextMenuItems">
-      <ProScrollArea class="flex-1">
+      <ScrollArea class="flex-1">
         <UTable
           v-bind="tblProps"
           :row-selection="rowSelection"
@@ -75,10 +79,10 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
             </div>
           </template>
         </UTable>
-      </ProScrollArea>
+      </ScrollArea>
     </UContextMenu>
 
     <!-- pagination -->
-    <ProTablePagination v-bind="tblPaginationProps" />
+    <TablePagination v-bind="tblPaginationProps" />
   </div>
 </template>

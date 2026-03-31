@@ -1,7 +1,10 @@
 <script setup lang="ts" generic="T">
-import type { OrderQuery, OrderQueryOpr, OrderQueryProps } from '../../../../types'
+import type { OrderQueryProps, OrderQuery, OrderQueryOpr } from '#v/types'
+import { compareObjArrays } from '#v/utils'
 import { computed, ref } from 'vue'
-import { compareObjArrays } from '#v/utils/diff'
+import Dnd from '#v/components/Dnd.client.vue'
+import TableQueryOrderItem from '#v/components/table/query/order/Item.vue'
+import TableQueryOrderNewer from '#v/components/table/query/order/Newer.vue'
 
 const props = defineProps<OrderQueryProps<T>>()
 
@@ -57,19 +60,19 @@ const open = ref(false)
         variant="outline"
         :size="size"
       >
-        {{ $t('button.sort') }}
+        排序
       </UButton>
     </UChip>
     <template #content>
       <div class="flex flex-col gap-2 p-2">
         <!-- items -->
-        <ProDnd
+        <Dnd
           v-if="dragOrderQuery.length > 0"
           v-model="dragOrderQuery"
           handle=".order-query-handle"
           class="flex flex-col gap-2"
         >
-          <ProTableQueryOrderItem
+          <TableQueryOrderItem
             v-for="item in dragOrderQuery"
             :key="item.field"
             :field="item.field as string"
@@ -80,9 +83,9 @@ const open = ref(false)
             @change="(newField, orderType) => onChangeField(item.field as string, newField, orderType)"
             @remove="onRemoveField(item.field as string)"
           />
-        </ProDnd>
+        </Dnd>
         <div class="flex flex-col">
-          <ProTableQueryOrderNewer
+          <TableQueryOrderNewer
             :options="orderOptions"
             :unselected-fields="unselectedOrderFields"
             :biz-columns="bizColumns"

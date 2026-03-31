@@ -1,8 +1,8 @@
 import { ref, watch, type Ref } from 'vue'
-import { useNuxtApp } from '#imports'
-import type { ApiGroup } from '../types'
+import type { ApiGroup } from '#v/types'
 import { defu } from 'defu'
-import { getObjWithModifiedFields } from '../utils/diff'
+import { getObjWithModifiedFields } from '#v/utils'
+import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
 
 export const useFormValues = <T>(
   raw: Ref<T>,
@@ -57,7 +57,12 @@ export const useFormSubmission = <T extends Model.BaseModel>(
       arrayTypeFieldKeys
     )
     if (!modified) {
-      useNuxtApp().$toastNothingChanged()
+      useToast().add({
+        title: 'Nothing changed',
+        description: 'Please modify content before submitting',
+        color: 'warning',
+        icon: 'i-lucide-triangle-alert'
+      })
       return
     }
     const { data } = await apiFns.update(apiFns.prune(objWithModifiedFields))

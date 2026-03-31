@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import { defineNuxtPlugin } from '#app'
+import { defineNuxtPlugin } from 'nuxt/app'
 
 export default defineNuxtPlugin((nuxtApp) => {
   dayjs.extend(utc)
@@ -9,7 +9,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.provide('dayjs', dayjs)
 })
 
-declare module '#app' {
+declare module 'nuxt/app' {
   interface NuxtApp {
     $dayjs: typeof dayjs
   }

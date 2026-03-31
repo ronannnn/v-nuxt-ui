@@ -2,7 +2,7 @@ import { createSharedComposable } from '@vueuse/core'
 import { defu } from 'defu'
 import { useApp } from './useApp'
 import { useTheme } from './useTheme'
-import { triggerFileDownloadFromUrl } from '../utils/download/tagA'
+import { triggerFileDownloadFromUrl } from '#v/utils'
 
 const _useEChart = () => {
   const app = useApp()
@@ -79,8 +79,12 @@ const _useEChart = () => {
     if (!chart || typeof chart.getDataURL !== 'function') return null
     const { type = 'png', backgroundColor = '', pixelRatio = Math.max(1, window.devicePixelRatio || 1) } = options
     const echartsType = type === 'jpg' ? 'jpeg' : type
-    try { return chart.getDataURL({ type: echartsType, backgroundColor, pixelRatio }) }
-    catch (e) { console.error('Failed to get EChart dataURL:', e); return null }
+    try {
+      return chart.getDataURL({ type: echartsType, backgroundColor, pixelRatio })
+    } catch (e) {
+      console.error('Failed to get EChart dataURL:', e)
+      return null
+    }
   }
 
   const exportChartAsImage = (chart: any, options: { type?: string, backgroundColor?: string, pixelRatio?: number, filename?: string } = {}) => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { Handle } from '@vue-flow/core'
-import { FLOW_HANDLES } from '#v/constants/flow'
+import { FLOW_HANDLES } from '#v/constants'
 
 const props = defineProps<{
   data: any

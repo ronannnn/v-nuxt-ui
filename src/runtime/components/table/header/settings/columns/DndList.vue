@@ -1,7 +1,10 @@
 <script setup lang="ts" generic="T">
 import type { TableColumn } from '@nuxt/ui'
 import type { FixType } from './index.vue'
-import type { DndProps } from '../../../../../types/components/dnd'
+import type { DndProps } from '#v/types'
+import ScrollArea from '#v/components/ScrollArea.vue'
+import Dnd from '#v/components/Dnd.client.vue'
+import TableHeaderSettingsColumnsItem from '#v/components/table/header/settings/columns/Item.vue'
 
 defineProps<{
   name: string
@@ -20,12 +23,12 @@ const list = defineModel<LocalStorage.Column[]>('list', { required: true })
       <span class="text-sm font-semibold text-dimmed">{{ name }}</span>
       <span class="text-sm text-dimmed">{{ list.length }}</span>
     </div>
-    <ProScrollArea
+    <ScrollArea
       class="min-w-48 border border-dashed border-default rounded-md p-2"
       enable-bottom-transparent
       enable-top-transparent
     >
-      <ProDnd
+      <Dnd
         v-model="list"
         :group="group"
         :handle="handle"
@@ -33,7 +36,7 @@ const list = defineModel<LocalStorage.Column[]>('list', { required: true })
         :class="list.length === 0 ? 'min-h-10.5': ''"
         @after-drag="onAfterDrag"
       >
-        <ProTableHeaderSettingsColumnsItem
+        <TableHeaderSettingsColumnsItem
           v-for="element in list"
           :key="element.accessorKey"
           v-model:checked="element.checked"
@@ -41,7 +44,7 @@ const list = defineModel<LocalStorage.Column[]>('list', { required: true })
           :columns="rawBizColumns"
           @fix-col="onFixCol"
         />
-      </ProDnd>
-    </ProScrollArea>
+      </Dnd>
+    </ScrollArea>
   </div>
 </template>

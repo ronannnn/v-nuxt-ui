@@ -1,11 +1,10 @@
-import { computed, type ComputedRef } from 'vue'
+import { computed } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
-import type { OrderQueryOption, WhereQueryOption, VColumn } from '../../types/components'
-import type { OrderQuery, WhereQuery, WhereQueryItem, WhereQueryItemGroup } from '../../types'
-import { noValueOprList } from '../../types'
+import type { OrderQueryOption, WhereQueryOption, VColumn, OrderQuery, WhereQuery, WhereQueryItem, WhereQueryItemGroup } from '#v/types'
+import { noValueOprList } from '#v/types'
 import { defu } from 'defu'
 import { useTableOpr } from './useTableOpr'
-import { cloneJson } from '../../utils/string'
+import { cloneJson } from '#v/utils'
 
 export function useTableQuery<T>(props: {
   name: string

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { ProTableQueryWhereSimpleItem } from '#components'
-import type { WhereSimpleQueryProps } from '../../../../../types'
+import type { WhereSimpleQueryProps } from '#v/types'
 import { ref } from 'vue'
+import TableQueryWhereSimpleItem from '#v/components/table/query/where/simple/item/index.vue'
 
 const props = defineProps<WhereSimpleQueryProps<any>>()
 
@@ -9,7 +9,7 @@ const onRemoveFilter = (field: string) => {
   props.onUpdateItems(props.items?.filter(query => query.field !== field) ?? [])
 }
 
-const itemRefMap = ref<Map<string, InstanceType<typeof ProTableQueryWhereSimpleItem>>>(new Map())
+const itemRefMap = ref<Map<string, InstanceType<typeof TableQueryWhereSimpleItem>>>(new Map())
 defineExpose({
   focusItem: (field: string): boolean => {
     const item = itemRefMap.value.get(field)
@@ -25,7 +25,7 @@ defineExpose({
 <template>
   <div class="flex flex-wrap gap-2.5">
     <!-- key如果是field，那么field修改后，不能聚焦后面的组件，所以这里的key用idx代替 -->
-    <ProTableQueryWhereSimpleItem
+    <TableQueryWhereSimpleItem
       v-for="(item, idx) in items"
       :ref="(el) => itemRefMap.set(item.field as string, el as any)"
       :key="idx"

@@ -1,6 +1,8 @@
 <script setup lang="ts" generic="T">
 import { computed, ref, useTemplateRef, h, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import type { VTableProps } from '#v/types'
+import type { VColumn, VTableProps } from '#v/types'
+import UButton from '@nuxt/ui/components/Button.vue'
+import UBadge from '@nuxt/ui/components/Badge.vue'
 
 const props = withDefaults(defineProps<
   Pick<

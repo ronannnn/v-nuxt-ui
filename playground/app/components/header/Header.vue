@@ -3,22 +3,6 @@ const route = useRoute()
 const { desktopLinks } = useHeader()
 
 const isDocsPage = computed(() => route.path.startsWith('/docs/'))
-
-onMounted(() => {
-  nextTick(updateHeaderHeight)
-})
-
-watch(isDocsPage, () => {
-  nextTick(updateHeaderHeight)
-})
-
-function updateHeaderHeight() {
-  const el = document.querySelector('header')
-  if (el) {
-    const height = el.getBoundingClientRect().height
-    document.documentElement.style.setProperty('--ui-header-height', `${height}px`)
-  }
-}
 </script>
 
 <template>
@@ -26,7 +10,7 @@ function updateHeaderHeight() {
     :ui="{
       root: isDocsPage ? 'h-auto' : '',
       left: 'min-w-0',
-      container: isDocsPage ? 'h-[3.5rem]' : '',
+      container: isDocsPage ? 'h-[3.5rem]' : ''
     }"
   >
     <template #left>

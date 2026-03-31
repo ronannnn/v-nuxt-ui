@@ -1,13 +1,13 @@
 <script setup lang="ts" generic="T">
-import type { WhereQueryItem, WhereQueryOpr } from '../../../../../../../types'
+import type { WhereQueryItem, WhereQueryOpr, DateShortcut } from '#v/types'
 import type { DateRange, DateValue } from 'reka-ui'
-import type { DateShortcut } from '../../../../../../../types/components/date'
 import { computed, useTemplateRef, nextTick, ref } from 'vue'
 import { now, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from '@internationalized/date'
 import dayjs from 'dayjs'
 import { useDate } from '#v/composables/useDate'
 import { useApp } from '#v/composables/useApp'
-import { dateFormat, TIME_ZONE } from '#v/constants/time'
+import { dateFormat, TIME_ZONE } from '#v/constants'
+import DatePickerInput from '#v/components/date-picker/Input.vue'
 
 defineProps<{
   disabled?: boolean
@@ -215,13 +215,13 @@ const displayValue = computed(() => {
     <template #content>
       <div class="p-3 flex flex-col gap-2">
         <UFieldGroup v-if="isRangeOpr" :orientation="app.isMobile.value ? 'vertical' : 'horizontal'">
-          <ProDatePickerInput
+          <DatePickerInput
             ref="startDateStrValueInput"
             v-model:value="startDateStrValue"
             placeholder="YYYY/MM/DD 开始日期"
             :disabled="disabled"
           />
-          <ProDatePickerInput
+          <DatePickerInput
             ref="endDateStrValueInput"
             v-model:value="endDateStrValue"
             placeholder="YYYY/MM/DD 结束日期"
@@ -229,7 +229,7 @@ const displayValue = computed(() => {
           />
         </UFieldGroup>
 
-        <ProDatePickerInput
+        <DatePickerInput
           v-else
           ref="singleDateStrValueInput"
           v-model:value="singleDateStrValue"

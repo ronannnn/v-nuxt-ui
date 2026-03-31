@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FixType } from './index.vue'
-import type { VColumn } from '../../../../../types'
+import type { VColumn } from '#v/types'
 
 defineProps<{
   columns: VColumn<any>[]

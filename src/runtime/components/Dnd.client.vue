@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
 import { isEmptyString } from '#v/utils'
 import { useApp } from '#v/composables/useApp'
-import type { DndProps } from '../types/components/dnd'
+import type { DndProps } from '#v/types'
 
 const { sort = true, forceFallback = true, chosenClass } = defineProps<DndProps<T>>()
 const model = defineModel<T[]>({

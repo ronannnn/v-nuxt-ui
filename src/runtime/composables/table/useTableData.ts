@@ -1,8 +1,8 @@
 import { ref, computed, watch, onMounted, type Ref, type ComputedRef } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
-import type { StatsItem, Pagination, WhereQuery, OrderQuery } from '../../types'
+import type { StatsItem, Pagination, WhereQuery, OrderQuery } from '#v/types'
 import { useFetching } from '../useBoolean'
-import { treeifyModels } from '../../utils/tree'
+import { treeifyModels } from '#v/utils'
 
 const defaultPageSize: number = 10
 

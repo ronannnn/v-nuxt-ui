@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import type { OrderQueryOpr, OrderQueryOption, VColumn } from '../../../../types'
+import type { OrderQueryOpr, OrderQueryOption, VColumn } from '#v/types'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed } from 'vue'
 
