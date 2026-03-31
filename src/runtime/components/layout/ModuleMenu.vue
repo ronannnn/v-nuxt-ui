@@ -41,17 +41,12 @@ const items = computed<DropdownMenuItem[][]>(() => {
     <UButton
       v-bind="{
         ...selectedModule,
-        label: collapsed ? undefined : selectedModule?.label,
-        trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down'
+        label: collapsed ? undefined : selectedModule?.label
       }"
       color="neutral"
       variant="ghost"
-      block
       :square="collapsed"
       class="data-[state=open]:bg-elevated"
-      :ui="{
-        trailingIcon: 'text-dimmed'
-      }"
     />
   </UDropdownMenu>
 </template>

@@ -49,6 +49,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Register plugins
     addPlugin(resolve('./runtime/plugins/01.nuxtUIEnhancement'))
     addPlugin(resolve('./runtime/plugins/02.dayjs'))
+    addPlugin(resolve('./runtime/plugins/03.theme'))
 
     // Add CSS
     nuxt.options.css.push(resolve('./runtime/assets/css/main.css'))

@@ -30,6 +30,7 @@ const _useApp = () => {
   }
   const updateNeutralColor = (color: string) => {
     appConfig.value = { ...appConfig.value, neutral: color }
+    console.log('Updated neutral color to', appConfig.value)
   }
   const updateRadius = (radius: number) => {
     appConfig.value = { ...appConfig.value, radius }

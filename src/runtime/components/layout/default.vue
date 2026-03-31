@@ -7,6 +7,7 @@ import UDashboardSidebar from '@nuxt/ui/components/DashboardSidebar.vue'
 import UNavigationMenu from '@nuxt/ui/components/NavigationMenu.vue'
 import ScrollArea from '#v/components/ScrollArea.vue'
 import LayoutModuleMenu from '#v/components/layout/ModuleMenu.vue'
+import LayoutThemePicker from '#v/components/layout/ThemePicker.vue'
 import LayoutUserMenu from '#v/components/layout/UserMenu.vue'
 import Watermark from '#v/components/Watermark.vue'
 
@@ -54,6 +55,7 @@ watch(
     >
       <template #header="{ collapsed }">
         <LayoutModuleMenu :collapsed="collapsed" />
+        <LayoutThemePicker v-if="!collapsed" class="ml-auto" />
       </template>
       <template #default="{ collapsed }">
         <ScrollArea>

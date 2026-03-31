@@ -12,12 +12,13 @@ const _useTheme = () => {
   const colorMode = useColorMode()
   const app = useApp()
 
-  const neutralColors = ['slate', 'gray', 'zinc', 'neutral', 'stone']
+  const neutralColors = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe', 'mauve', 'mist', 'olive']
   const neutral = computed({
     get() {
       return (appConfig as any).ui.colors.neutral
     },
     set(option) {
+      console.log(option, appConfig);
       (appConfig as any).ui.colors.neutral = option
       app.updateNeutralColor(option)
     }
@@ -60,10 +61,14 @@ const _useTheme = () => {
     }
   })
 
-  const modes = computed(() => [
+  const modes = computed<{
+    label: string
+    value: 'light' | 'dark' | 'auto'
+    icon?: string
+  }[]>(() => [
     { label: '明亮模式', value: 'light', icon: (appConfig as any).ui.icons.light },
     { label: '暗黑模式', value: 'dark', icon: (appConfig as any).ui.icons.dark },
-    { label: '跟随系统', value: 'system', icon: (appConfig as any).ui.icons.system }
+    { label: '跟随系统', value: 'auto', icon: (appConfig as any).ui.icons.system }
   ])
   const mode = computed({
     get() {
