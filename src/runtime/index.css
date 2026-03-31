@@ -10,3 +10,4 @@
  *   @import "v-nuxt-ui";
  */
 @source "./components";
+@source "./utils";
