@@ -22,7 +22,7 @@ const props = defineProps<{
   peerButtons?: ButtonProps[]
 }>()
 
-const modelValue = defineModel<DateValue | DateValue[] | DateRange | null | undefined>('modelValue', { required: true })
+const modelValue = defineModel<DateValue | DateValue[] | DateRange | null | undefined>('modelValue')
 
 const app = useApp()
 
