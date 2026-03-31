@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useToast } from '@nuxt/ui/composables'
 import { inject, computed } from 'vue'
 
 interface Props {
@@ -11,8 +12,6 @@ const props = withDefaults(defineProps<Props>(), {
   mode: 'disable',
   fallback: false
 })
-
-const emit = defineEmits<{ 'permission-denied': [permission: string | string[]] }>()
 
 // Use the consuming app's hasPermissions function via provide/inject.
 // The consuming app should provide('vui:hasPermissions', (perms) => boolean).
@@ -35,11 +34,16 @@ const shouldDisable = computed(() => {
   return props.mode === 'disable' && !hasPerm.value
 })
 
+const toast = useToast()
 const handleClick = (e: Event) => {
   if (shouldDisable.value) {
     e.stopPropagation()
     e.preventDefault()
-    emit('permission-denied', props.permission)
+    toast.add({
+      title: '没有权限',
+      description: '您没有执行此操作的权限',
+      color: 'warning'
+    })
   }
 }
 </script>
