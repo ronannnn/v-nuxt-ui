@@ -12,6 +12,8 @@ const props = withDefaults(defineProps<Props>(), {
   fallback: false
 })
 
+const emit = defineEmits<{ 'permission-denied': [permission: string | string[]] }>()
+
 // Use the consuming app's hasPermissions function via provide/inject.
 // The consuming app should provide('vui:hasPermissions', (perms) => boolean).
 // Falls back to always granting permission if not provided.
@@ -37,6 +39,7 @@ const handleClick = (e: Event) => {
   if (shouldDisable.value) {
     e.stopPropagation()
     e.preventDefault()
+    emit('permission-denied', props.permission)
   }
 }
 </script>
