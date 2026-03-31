@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, useTemplateRef, watch } from 'vue'
-import { useColorMode } from '#imports'
+import { ref, useTemplateRef, watch } from 'vue'
 import { useTheme } from '#v/composables/useTheme'
 import { useApp } from '#v/composables/useApp'
 import { useEChart } from '#v/composables/useEChart'
@@ -15,6 +14,7 @@ import {
   ToolboxComponent
 } from 'echarts/components'
 import VChart from 'vue-echarts'
+import { useColorMode } from '@vueuse/core'
 
 interface Props {
   option: any

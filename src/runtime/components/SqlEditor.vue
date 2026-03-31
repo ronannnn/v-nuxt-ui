@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, watch, onUnmounted } from 'vue'
-import { useColorMode } from '#imports'
 import { format } from 'sql-formatter'
+import { useColorMode } from '@vueuse/core'
 
 interface Props {
   tables?: string[] // 表名列表
