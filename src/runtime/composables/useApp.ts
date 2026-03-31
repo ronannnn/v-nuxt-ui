@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { breakpointsTailwind, createSharedComposable, useBreakpoints, useLocalStorage } from '@vueuse/core'
 import { StorageKey, type CustomAppConfig, type I18nLocale } from '../types'
-import { cloneJson } from '#v/utils/string'
+import { cloneJson } from '#v/utils'
 
 export const defaultAppSettings: CustomAppConfig = {
   headerHeight: 48,

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isEmptyString } from '#v/utils/string'
+import { isEmptyString } from '#v/utils'
 
 defineProps<{
   label: string

@@ -2,8 +2,7 @@
 import { ref, computed } from 'vue'
 import { useFetching } from '#v/composables/useBoolean'
 import type { QueryTemplate, VFormFieldAsyncTreeSelectProps } from '#v/types'
-import { isEmptyString } from '#v/utils/string'
-import { flattenTree, treeifyOptions } from '#v/utils/tree'
+import { flattenTree, treeifyOptions, isEmptyString } from '#v/utils'
 import type { TreeItem } from '@nuxt/ui'
 import defu from 'defu'
 

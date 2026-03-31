@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T">
 import { computed } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { isEmptyString } from '#v/utils/string'
+import { isEmptyString } from '#v/utils'
 import { useApp } from '#v/composables/useApp'
 import type { DndProps } from '../types/components/dnd'
 

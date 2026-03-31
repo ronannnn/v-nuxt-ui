@@ -1,11 +1,11 @@
 <script setup lang="ts" generic="T">
-import type { QueryTemplate, SelectOption, VFormFieldAsyncSelectProps, WhereQueryItem } from '../../../../../../../types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed, useTemplateRef } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import defu from 'defu'
 import { useFetching } from '#v/composables/useBoolean'
-import { isEmptyString } from '#v/utils/string'
+import { isEmptyString } from '#v/utils'
+import type { VFormFieldAsyncSelectProps, WhereQueryItem, SelectOption, QueryTemplate } from '#v/types'
 
 const props = withDefaults(defineProps<{
   label: string

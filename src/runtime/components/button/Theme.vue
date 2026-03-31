@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getEmojiFlag } from '#v/utils/emoji'
+import { getEmojiFlag } from '#v/utils'
 import { useColorMode } from '@vueuse/core'
 
 const props = defineProps<{

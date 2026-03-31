@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, useTemplateRef } from 'vue'
-import { isEmptyString } from '#v/utils/string'
+import { isEmptyString } from '#v/utils'
 import type { InputProps } from '@nuxt/ui'
 
 defineProps<{

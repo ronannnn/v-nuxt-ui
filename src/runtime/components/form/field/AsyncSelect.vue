@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue'
 import { useFetching } from '#v/composables/useBoolean'
 import type { QueryTemplate, VFormFieldAsyncSelectProps } from '#v/types'
-import { isEmptyString } from '#v/utils/string'
+import { isEmptyString } from '#v/utils'
 import type { SelectMenuItem } from '@nuxt/ui'
 import { useDebounceFn } from '@vueuse/core'
 import defu from 'defu'

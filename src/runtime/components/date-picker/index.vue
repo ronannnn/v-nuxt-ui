@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import { useApp } from '#v/composables/useApp'
 import { useDate } from '#v/composables/useDate'
 import { dateFormat, TIME_ZONE } from '#v/constants/time'
-import { stringsJoin } from '#v/utils/string'
+import { stringsJoin } from '#v/utils'
 import type { DateShortcut } from '#v/types/components/date'
 import DatePickerInput from './Input.vue'
 

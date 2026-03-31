@@ -1,7 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
 import type { FormTemplateProps } from '#v/types'
-import { isEmptyString } from '#v/utils/string'
-import { getColSpanClassFromResponsive } from '#v/utils/form'
+import { isEmptyString, getColSpanClassFromResponsive } from '#v/utils'
 import FormField from './field/index.vue'
 import * as z from 'zod'
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { VFormFieldTreeSelectTransferProps } from '#v/types'
-import { flattenTree } from '#v/utils/tree'
+import { flattenTree } from '#v/utils'
 import type { TreeItem } from '@nuxt/ui'
 import ScrollArea from '#v/components/ScrollArea.vue'
 

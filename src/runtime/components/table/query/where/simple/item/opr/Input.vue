@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T">
-import { noValueOprList, type WhereQueryItem } from '../../../../../../../types'
 import { computed, useTemplateRef } from 'vue'
-import { isEmptyString } from '#v/utils/string'
+import { isEmptyString } from '#v/utils'
+import type { WhereQueryItem } from '#v/types'
 
 defineProps<{
   label: string | keyof T
