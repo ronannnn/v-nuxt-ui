@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { useSubmitting } from '#v/composables/useBoolean'
+import type { RequestResult } from '#v/types'
 
 const props = defineProps<{
   ids: number[]
-  onDelete: (ids: number[]) => Promise<any>
+  onDelete: ((ids: number[]) => Promise<{ data: globalThis.Ref<RequestResult<any>> }>) | undefined | null
 }>()
-
 const emit = defineEmits<{
-  close: [ok: boolean]
+  close: [boolean]
 }>()
 
 const { submitting, startSubmitting, endSubmitting } = useSubmitting()
-
-async function handleDelete() {
+async function onSubmit(e: MouseEvent) {
+  if (!props.onDelete) return
+  e.preventDefault()
   try {
     startSubmitting()
-    const { data } = await props.onDelete(props.ids)
-    if (data?.value && !data.value.error) {
+    const { data } = await props.onDelete(props.ids)!
+    if (!data.value.error) {
       emit('close', true)
     }
   } finally {
@@ -26,34 +27,34 @@ async function handleDelete() {
 </script>
 
 <template>
-  <UModal :open="true" @update:open="emit('close', false)">
-    <template #header>
-      <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-triangle-alert" class="text-error size-5" />
-        <span>Confirm Delete</span>
-      </div>
-    </template>
-
-    <template #body>
-      <p>
-        Are you sure you want to delete {{ ids.length }} {{ ids.length === 1 ? 'item' : 'items' }}?
-        This action cannot be undone.
-      </p>
-    </template>
-
+  <UModal
+    title="请确认是否删除已选数据"
+    description="删除后数据将无法恢复，请谨慎操作"
+    :close="{ onClick: () => emit('close', false) }"
+    :dismissible="false"
+  >
+    <UButton
+      color="error"
+      variant="soft"
+      icon="i-lucide-trash-2"
+    >
+      删除
+    </UButton>
     <template #footer>
       <div class="flex justify-end gap-2">
         <UButton
+          label="取消"
           color="neutral"
-          variant="outline"
-          label="Cancel"
+          variant="subtle"
           @click="emit('close', false)"
         />
         <UButton
+          :label="`删除 ${props.ids.length} 条数据`"
           color="error"
-          label="Delete"
+          variant="solid"
+          icon="i-lucide-trash"
           :loading="submitting"
-          @click="handleDelete"
+          @click="onSubmit"
         />
       </div>
     </template>
