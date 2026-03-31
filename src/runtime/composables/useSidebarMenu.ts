@@ -55,7 +55,10 @@ export const _useSidebarMenus = () => {
     // including menus and menus from roles
     menusFromUser.value = [...newMenusFromUser, ...newRolesFromUser.map(role => role.menus ?? []).flat()]
     menusFromUser.value.forEach(menu => (menu.staticRouteKeys?.forEach(key => sidebarMenuPathSet.value.add(key))))
-    sidebarMenus.value = menuMode.value === 'static' ? bizMenus.value : hideNoPermissionMenus(bizMenus.value, sidebarMenuPathSet.value)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const menuItems = bizMenus.value as any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sidebarMenus.value = (menuMode.value === 'static' ? menuItems : hideNoPermissionMenus(menuItems as NavigationMenuItem[], sidebarMenuPathSet.value)) as NavigationMenuItem[]
   }
   watch([loginUserRoles, loginUserMenus, bizMenus], ([newRoles, newMenus]) => {
     setUserDynamicMenus(newRoles, newMenus)
@@ -71,7 +74,7 @@ export const _useSidebarMenus = () => {
         if (menu.to === path) {
           found = true
         } else if (menu.children) {
-          const childFound = expandRecursively(menu.children)
+          const childFound = expandRecursively(menu.children as NavigationMenuItem[])
           if (childFound) {
             found = true
             menu.open = true // 展开包含目标路径的父菜单
@@ -83,7 +86,7 @@ export const _useSidebarMenus = () => {
     }
 
     // 直接在原数组上操作，保持数组引用不变
-    expandRecursively(sidebarMenus.value)
+    expandRecursively(sidebarMenus.value as NavigationMenuItem[])
   }
 
   // hide menus except from specific keys
@@ -121,8 +124,10 @@ export const _useSidebarMenus = () => {
   // breadcrumb
   const sidebarMenusAndConstantMenus = computed<NavigationMenuItem[]>(() => {
     const result: NavigationMenuItem[] = []
-    result.push(...constantMenus.value)
-    result.push(...sidebarMenus.value)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    result.push(...(constantMenus.value as any[]))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    result.push(...(sidebarMenus.value as any[]))
     return result
   })
   const breadcrumbs = ref<BreadcrumbItem[]>([])

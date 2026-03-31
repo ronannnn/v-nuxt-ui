@@ -1,6 +1,8 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick, useTemplateRef } from 'vue'
-import type { VTableProps } from '#v/types'
-import { useTable } from './useTable'
+import type { Ref, ComputedRef } from 'vue'
+import type { VTableProps, TableHeaderProps, TablePaginationProps, WhereQueryProps, StatsItem } from '#v/types'
+import type { TableProps, ContextMenuItem } from '@nuxt/ui'
+import { useTable, type UseTableReturn } from './useTable'
 
 // 固定列阴影样式常量
 const PINNED_SHADOW_CLASSES = {
@@ -18,7 +20,27 @@ const PINNED_SHADOW_CLASSES = {
 
 const EXPANDED_STICKY_CLASS = '[&_tr[data-expanded=true]]:sticky [&_tr[data-expanded=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded=true]]:z-1 [&_tr[data-expanded=true]]:bg-default'
 
-export function useProTableView<T>(props: VTableProps<T>) {
+export interface UseProTableViewReturn<T> {
+  data: Ref<T[]>
+  createRow: (row: T) => void
+  updateRow: (row: T) => void
+  deleteRow: (row: T) => void
+  stats: Ref<StatsItem[][]>
+  fetchList: () => Promise<void>
+  rowSelection: Ref<Record<number, boolean> | undefined>
+  onUpdateRowSelection: (newRowSelection: Record<number, boolean> | undefined) => void
+  tblProps: ComputedRef<TableProps<T>>
+  tblWhereQueryProps: ComputedRef<WhereQueryProps<T>>
+  tblHeaderProps: ComputedRef<TableHeaderProps<T>>
+  tblPaginationProps: ComputedRef<TablePaginationProps<T>>
+  tblContextMenuItems: Ref<ContextMenuItem[]>
+  tableWidth: Ref<number>
+  updateTableWidth: () => void
+  tblClasses: ComputedRef<(string | boolean | (string | boolean)[])[]>
+  tblUi: ComputedRef<{ root: string; th: string; td: string }>
+}
+
+export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn<T> {
   const {
     data,
     createRow,
@@ -176,5 +198,5 @@ export function useProTableView<T>(props: VTableProps<T>) {
     updateTableWidth,
     tblClasses,
     tblUi
-  }
+  } as UseProTableViewReturn<T>
 }

@@ -59,9 +59,9 @@ const columns: VColumn<Model.User>[] = [
       UBadge,
       {
         variant: 'subtle',
-        color: row.original.gender === 'male' ? 'info' : 'warning'
+        color: row.original.gender === 1 ? 'info' : 'warning'
       },
-      () => row.original.gender === 'male' ? '男' : '女'
+      () => row.original.gender === 1 ? '男' : '女'
     )
   },
   {
@@ -177,11 +177,11 @@ const expandVNode = (row: Model.User) => {
     ]),
     h('div', {}, [
       h('div', { class: 'text-xs text-muted mb-1' }, '创建人'),
-      h('div', { class: 'text-sm' }, row.createdBy ?? '-')
+      h('div', { class: 'text-sm' }, row.userCreatedBy ?? '-')
     ]),
     h('div', {}, [
       h('div', { class: 'text-xs text-muted mb-1' }, '更新人'),
-      h('div', { class: 'text-sm' }, row.updatedBy ?? '-')
+      h('div', { class: 'text-sm' }, row.userUpdatedBy ?? '-')
     ]),
     h('div', {}, [
       h('div', { class: 'text-xs text-muted mb-1' }, '创建时间'),

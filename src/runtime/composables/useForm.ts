@@ -7,15 +7,18 @@ import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
 export const useFormValues = <T>(
   raw: Ref<T>,
   defaultValues?: Partial<T>
-) => {
-  const oldValues = ref<T>({} as T)
-  const newValues = ref<T>({} as T)
+): {
+  oldValues: Ref<T>
+  newValues: Ref<T>
+} => {
+  const oldValues = ref<T>({} as T) as Ref<T>
+  const newValues = ref<T>({} as T) as Ref<T>
   watch(
     raw,
     (newRaw) => {
       oldValues.value = { ...newRaw }
       if (defaultValues) {
-        oldValues.value = defu(oldValues.value, defaultValues)
+        oldValues.value = defu(oldValues.value as any, defaultValues as any) as T
       }
       newValues.value = JSON.parse(JSON.stringify(oldValues.value))
     },

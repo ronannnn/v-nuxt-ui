@@ -27,6 +27,7 @@ export type ApiGroup<T> = {
   countAndList: ListApi<T>
   prune: (model: T) => T
   copy?: (model: T) => T
+  copyAsParent?: (model: T) => T
 }
 
 export type RowActionProps<T> = {

@@ -1,5 +1,6 @@
 import { computed, ref, useTemplateRef, nextTick } from 'vue'
-import type { OrderQueryProps, TableHeaderProps, TablePaginationProps, VColumn, VTableProps, WhereQueryProps, OrderQuery } from '#v/types'
+import type { ComputedRef, Ref } from 'vue'
+import type { OrderQueryProps, TableHeaderProps, TablePaginationProps, VColumn, VTableProps, WhereQueryProps, OrderQuery, StatsItem } from '#v/types'
 import type { ContextMenuItem, TableProps, TableRow } from '@nuxt/ui'
 import { useTableQuery } from './useTableQuery'
 import { useTablePagination } from './useTablePagination'
@@ -9,7 +10,29 @@ import { useTableColumns } from './useTableColumns'
 import { useTableRowActions } from './useTableRowActions'
 import { useTableOpr } from './useTableOpr'
 
-export function useTable<T>(props: VTableProps<T>) {
+export interface UseTableReturn<T> {
+  data: Ref<T[]>
+  createRow: (row: T) => void
+  updateRow: (row: T) => void
+  deleteRow: (row: T) => void
+  stats: Ref<StatsItem[][]>
+  rowSelection: Ref<Record<number, boolean> | undefined>
+  onUpdateRowSelection: (newRowSelection: Record<number, boolean> | undefined) => void
+  selectedIds: Ref<number[]>
+  fetching: Ref<boolean>
+  fetchList: () => Promise<void>
+  debouncedFetchList: () => void
+  whereQueryOpen: boolean
+  onUpdateWhereQueryOpen: (open: boolean) => void
+  columns: ComputedRef<VColumn<T>[]>
+  tblProps: ComputedRef<TableProps<T>>
+  tblWhereQueryProps: ComputedRef<WhereQueryProps<T>>
+  tblHeaderProps: ComputedRef<TableHeaderProps<T>>
+  tblPaginationProps: ComputedRef<TablePaginationProps<T>>
+  tblContextMenuItems: Ref<ContextMenuItem[]>
+}
+
+export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
   const {
     // table-level props
     name,
@@ -387,5 +410,5 @@ export function useTable<T>(props: VTableProps<T>) {
     tblPaginationProps,
     // others
     tblContextMenuItems
-  }
+  } as UseTableReturn<T>
 }

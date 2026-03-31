@@ -1,7 +1,14 @@
+import type { Ref } from 'vue'
+import type { RequestResult } from '#v/types'
 import { useGetFetch, usePostFetch } from '#v/composables'
 import { createSharedComposable } from '@vueuse/core'
 
-export const useAuthApi = createSharedComposable(() => {
+type AuthApi = {
+  refreshToken: (cmd: Cmd.RefreshTokensPayload) => Promise<{ data: Ref<RequestResult<Cmd.LoginResult>> }>
+  getUserByAccessToken: () => Promise<{ data: Ref<RequestResult<Model.User>> }>
+}
+
+export const useAuthApi = createSharedComposable((): AuthApi => {
   const basePath = '/auth'
   return {
     refreshToken: (cmd: Cmd.RefreshTokensPayload) => {

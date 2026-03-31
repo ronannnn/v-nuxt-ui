@@ -8,11 +8,31 @@ export interface UseFlowOptions {
   onUpdateModel?: Ref<((model: Model.Flow) => void) | undefined>
 }
 
+export interface UseFlowReturn {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  nodes: Ref<any[]>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  edges: Ref<any[]>
+  GRID_SIZE: number
+  syncNodes: (nodeHandlers?: (nodeId: string) => any) => void
+  syncEdges: (styleOptions?: { strokeWidth?: number; markerStart?: boolean; markerEnd?: boolean }) => void
+  applyEdgeStyles: (styleOptions: { strokeWidth: number; markerStart: boolean; markerEnd: boolean }) => void
+  transformNode: (node: Model.FlowNode, handlers?: any) => Node
+  refreshFlow: () => Promise<void>
+  updateNode: (updatedNode: Model.FlowNode) => Promise<void>
+  updateNodePosition: (nodeId: string, x: number, y: number) => Promise<void>
+  updateNodeDimensions: (nodeId: string, dimensions: { width: number; height: number; positionX: number; positionY: number }) => Promise<void>
+  createNode: () => Promise<void>
+  deleteNode: (nodeId: string) => Promise<void>
+  deleteEdge: (edgeId: string) => Promise<void>
+  createEdge: (params: { source: string; target: string; sourceHandle?: string | null; targetHandle?: string | null }) => Promise<void>
+}
+
 /**
  * Flow 业务逻辑 Composable
  * 处理节点和边的 CRUD 操作、数据转换等
  */
-export function useFlow(options: UseFlowOptions) {
+export function useFlow(options: UseFlowOptions): UseFlowReturn {
   const { flow, onUpdateModel } = options
 
   // 常量定义
@@ -26,8 +46,10 @@ export function useFlow(options: UseFlowOptions) {
   const flowNodeLinkApi = useFlowNodeLinkApi()
 
   // 状态管理
-  const nodes = ref<Node[]>([])
-  const edges = ref<Edge[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nodes = ref<any[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const edges = ref<any[]>([])
 
   // 清理 handle 后缀
   const cleanHandleId = (handleId?: string | null) => handleId?.replace(/-(source|target)$/, '')
