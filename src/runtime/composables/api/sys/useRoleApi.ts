@@ -2,16 +2,16 @@ import { cloneJson } from '#v/utils'
 import { createSharedComposable } from '@vueuse/core'
 import { useApi } from '../useApi'
 import { useBizModel } from '../useModel'
-import type { ApiGroup } from '#v/types'
+import type { ApiGroup, Role } from '#v/types'
 
-export const useRoleApi = createSharedComposable((): ApiGroup<Model.Role> => ({
-  ...useApi<Model.Role>('/roles'),
-  prune: (model: Model.Role): Model.Role => {
+export const useRoleApi = createSharedComposable((): ApiGroup<Role> => ({
+  ...useApi<Role>('/roles'),
+  prune: (model: Role): Role => {
     const cloned = cloneJson(model)
     cloned.menus = useBizModel().extractIds(cloned.menus)
     return cloned
   },
-  copy: (model: Model.Role): Model.Role => ({
+  copy: (model: Role): Role => ({
     id: 0,
     name: model.name,
     permission: model.permission,

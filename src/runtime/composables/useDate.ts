@@ -1,6 +1,7 @@
 import { createSharedComposable } from '@vueuse/core'
 import { toZoned, parseAbsolute, type DateValue } from '@internationalized/date'
 import dayjs from 'dayjs'
+import type { TimeUnit } from '#v/constants'
 import { TIME_ZONE } from '#v/constants'
 import type { DateRange } from 'reka-ui'
 import type { DateShortcut } from '#v/types'
@@ -20,7 +21,7 @@ const _useDate = () => {
     return dayjs(toZoned(dateValue, TIME_ZONE).toAbsoluteString()).tz(TIME_ZONE)
   }
 
-  const formatTimeUnit = (dateValue: DateValue | null | undefined, unit: Const.Time.TimeUnit): string => {
+  const formatTimeUnit = (dateValue: DateValue | null | undefined, unit: TimeUnit): string => {
     const date = dateValueToDayjs(dateValue)
     if (!date || !date.isValid()) return ''
 

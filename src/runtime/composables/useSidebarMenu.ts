@@ -3,6 +3,7 @@ import { createSharedComposable } from '@vueuse/core'
 import { useAuth } from './useAuth'
 import type { ComputedRef, Ref } from 'vue'
 import { ref, computed, watch } from 'vue'
+import type { Menu, Role } from '#v/types'
 
 // Lightweight local types to avoid deep external type instantiation
 type ShallowNavigationMenuItem = {
@@ -48,11 +49,11 @@ export const _useSidebarMenus = (): {
   bizMenus: Ref<ShallowNavigationMenuItem[]>
   flattenBizMenus: ComputedRef<ShallowNavigationMenuItem[]>
   bizMenuPathSet: ComputedRef<Set<string>>
-  menusFromUser: Ref<Model.Menu[]>
+  menusFromUser: Ref<Menu[]>
   sidebarMenus: Ref<ShallowNavigationMenuItem[]>
   sidebarMenuPathSet: Ref<Set<string>>
   expandSidebarMenu: (path: string) => void
-  setUserDynamicMenus: (newRolesFromUser: Model.Role[], newMenusFromUser: Model.Menu[]) => void
+  setUserDynamicMenus: (newRolesFromUser: Role[], newMenusFromUser: Menu[]) => void
   disabledMenuPathSet: ComputedRef<Set<string>>
   breadcrumbs: Ref<ShallowBreadcrumbItem[]>
   getBreadcrumbs: (current: string, menus?: ShallowNavigationMenuItem[]) => ShallowBreadcrumbItem[]
@@ -79,12 +80,12 @@ export const _useSidebarMenus = (): {
   })
 
   // user menus
-  const menusFromUser = ref<Model.Menu[]>([]) // including menus from roles
+  const menusFromUser = ref<Menu[]>([]) // including menus from roles
   const sidebarMenus = ref<ShallowNavigationMenuItem[]>([])
   const sidebarMenuPathSet = ref<Set<string>>(new Set())
   const setUserDynamicMenus = (
-    newRolesFromUser: Model.Role[],
-    newMenusFromUser: Model.Menu[]
+    newRolesFromUser: Role[],
+    newMenusFromUser: Menu[]
   ) => {
     sidebarMenuPathSet.value.clear()
     // including menus and menus from roles

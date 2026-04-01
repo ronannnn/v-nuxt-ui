@@ -15,3 +15,5 @@ export const weekCnLabels = ['周一', '周二', '周三', '周四', '周五', '
 
 export const dateFormat = 'YYYY-MM-DD'
 export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss'
+
+export type TimeUnit = 'day' | 'week' | 'month' | 'quarter' | 'year'

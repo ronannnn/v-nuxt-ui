@@ -1,18 +1,18 @@
 import { cloneJson } from '#v/utils'
 import { createSharedComposable } from '@vueuse/core'
 import { useApi } from '../useApi'
-import type { ApiGroup } from '#v/types'
+import type { ApiGroup, Department } from '#v/types'
 
-export const useDepartmentApi = createSharedComposable((): ApiGroup<Model.Department> => ({
-  ...useApi<Model.Department>('/departments'),
-  prune: (model: Model.Department): Model.Department => {
+export const useDepartmentApi = createSharedComposable((): ApiGroup<Department> => ({
+  ...useApi<Department>('/departments'),
+  prune: (model: Department): Department => {
     const cloned = cloneJson(model)
     delete cloned.company
     delete cloned.leader
     delete cloned.parent
     return cloned
   },
-  copy: (model: Model.Department): Model.Department => ({
+  copy: (model: Department): Department => ({
     id: 0,
     companyId: model.companyId,
     company: model.company,
@@ -22,7 +22,7 @@ export const useDepartmentApi = createSharedComposable((): ApiGroup<Model.Depart
     parent: model.parent
   }),
   // 复制的时候，将此作为父部门
-  copyAsParent: (model: Model.Department): Model.Department => ({
+  copyAsParent: (model: Department): Department => ({
     id: 0,
     companyId: model.companyId,
     company: model.company,

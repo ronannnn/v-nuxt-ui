@@ -1,9 +1,9 @@
 import { useUserApi } from '#v/composables'
-import type { OrderQueryOpr, VColumn } from '#v/types'
+import type { BaseModel, OrderQueryOpr, VColumn } from '#v/types'
 import dayjs from 'dayjs'
 import { dateTimeFormat } from './time'
 
-export const getCreateAtColumn = <T extends Model.BaseModel>(createdAtSortOpr: OrderQueryOpr = 'desc'): VColumn<T> => ({
+export const getCreateAtColumn = <T extends BaseModel>(createdAtSortOpr: OrderQueryOpr = 'desc'): VColumn<T> => ({
   accessorKey: 'createdAt',
   header: '创建时间',
   cell: ({ row }) => dayjs(row.original.createdAt).format(dateTimeFormat),
@@ -15,7 +15,7 @@ export const getCreateAtColumn = <T extends Model.BaseModel>(createdAtSortOpr: O
   }
 })
 
-export const getOprColumns = <T extends Model.BaseModel>(createdAtSortOpr: OrderQueryOpr = 'desc'): VColumn<T>[] => [
+export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryOpr = 'desc'): VColumn<T>[] => [
   {
     accessorKey: 'createdBy',
     header: '创建人',

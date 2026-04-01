@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { VFormFieldProps } from '#v/types'
+import type { User, VFormFieldProps } from '#v/types'
 
 const props = defineProps<{
-  model: Model.User
+  model: User
 }>()
 
 const emit = defineEmits<{
@@ -22,7 +22,7 @@ const statusOptions = [
 const isEdit = computed(() => props.model.id > 0)
 const title = computed(() => isEdit.value ? '编辑用户' : '新建用户')
 
-const fields: VFormFieldProps<Model.User>[] = [
+const fields: VFormFieldProps<User>[] = [
   { name: 'nickname', label: '姓名', type: 'input', required: true, placeholder: '请输入姓名', colSpan: '12' },
   { name: 'username', label: '用户名', type: 'input', required: true, placeholder: '请输入用户名', colSpan: '12' },
   { name: 'email', label: '邮箱', type: 'input', placeholder: '请输入邮箱', colSpan: '12' },
@@ -51,6 +51,6 @@ const fields: VFormFieldProps<Model.User>[] = [
     :model-value="model"
     :api-group="useUserApi"
     @close="(ok: boolean) => emit('close', ok)"
-    @save="(_user: Model.User) => emit('close', true)"
+    @save="(_user: User) => emit('close', true)"
   />
 </template>

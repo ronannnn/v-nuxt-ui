@@ -1,3 +1,4 @@
+import type { Menu, Role, User, UsernamePasswordLoginPayload } from '#v/types'
 import { StorageKey } from '#v/types'
 import { isEmptyString } from '#v/utils'
 import { useLocalStorage, createSharedComposable } from '@vueuse/core'
@@ -13,9 +14,9 @@ const _useAuth = () => {
 
   const acT = useLocalStorage(StorageKey.ACCESS_TOKEN, '')
   const rfT = useLocalStorage(StorageKey.REFRESH_TOKEN, '')
-  const loginUser = ref<Model.User>()
-  const loginUserRoles = ref<Model.Role[]>([])
-  const loginUserMenus = ref<Model.Menu[]>([])
+  const loginUser = ref<User>()
+  const loginUserRoles = ref<Role[]>([])
+  const loginUserMenus = ref<Menu[]>([])
 
   // 判断是否登录状态
   const isLoggedIn = computed(() => !isEmptyString(acT.value) || !isEmptyString(rfT.value))
@@ -36,13 +37,13 @@ const _useAuth = () => {
     await toLogin(route)
   }
 
-  const setUserInfo = (user: Model.User | undefined) => {
+  const setUserInfo = (user: User | undefined) => {
     loginUser.value = user
     loginUserRoles.value = user?.roles ?? []
     loginUserMenus.value = user?.menus ?? []
   }
 
-  const loginByUsernameAndPassword = async (route: RouteLocationNormalizedLoadedGeneric, payload: Cmd.UsernamePasswordLoginPayload, redirect = true) => {
+  const loginByUsernameAndPassword = async (route: RouteLocationNormalizedLoadedGeneric, payload: UsernamePasswordLoginPayload, redirect = true) => {
     startLoginLoading()
     try {
       const { data } = await useLoginApi().loginByUsernameAndPassword(payload)

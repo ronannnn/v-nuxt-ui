@@ -1,7 +1,7 @@
-<script setup lang="ts" generic="T extends Model.BaseModel">
+<script setup lang="ts" generic="T extends BaseModel">
 import { computed, useTemplateRef } from 'vue'
 import { useSubmitting } from '#v/composables/useBoolean'
-import type { CreateModalFormTemplateProps } from '#v/types'
+import type { BaseModel, CreateModalFormTemplateProps } from '#v/types'
 import Form from '../index.vue'
 
 const props = withDefaults(defineProps<CreateModalFormTemplateProps<T>>(), {

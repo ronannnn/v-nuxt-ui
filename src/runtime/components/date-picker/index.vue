@@ -6,6 +6,7 @@ import { now } from '@internationalized/date'
 import dayjs from 'dayjs'
 import { useApp } from '#v/composables/useApp'
 import { useDate } from '#v/composables/useDate'
+import type { TimeUnit } from '#v/constants'
 import { dateFormat, TIME_ZONE } from '#v/constants'
 import { stringsJoin } from '#v/utils'
 import type { DateShortcut } from '#v/types'
@@ -16,7 +17,7 @@ const props = defineProps<{
   loading?: ButtonProps['loading']
   range?: boolean
   placeholder?: string
-  timeUnit?: Const.Time.TimeUnit
+  timeUnit?: TimeUnit
   leadingIcon?: ButtonProps['leadingIcon']
   shortcuts?: DateShortcut[]
   peerButtons?: ButtonProps[]

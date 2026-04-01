@@ -1,16 +1,17 @@
 import { createSharedComposable } from '@vueuse/core'
 import { useAuth } from './useAuth'
 import { ref, watch } from 'vue'
+import type { Role, Menu } from '#v/types'
 
 export const _usePermission = () => {
   const { loginUserRoles, loginUserMenus } = useAuth()
   const permissions = ref<Set<string>>(new Set())
 
   const setUserDynamicPermissions = (
-    userRoles: Model.Role[] = [],
-    userMenus: Model.Menu[] = []
+    userRoles: Role[] = [],
+    userMenus: Menu[] = []
   ) => {
-    const allMenus: Model.Menu[] = []
+    const allMenus: Menu[] = []
 
     // 收集角色菜单
     userRoles.forEach((role) => {

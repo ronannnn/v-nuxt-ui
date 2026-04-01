@@ -3,17 +3,17 @@ import { createSharedComposable } from '@vueuse/core'
 import type { UseFetchOptions } from 'nuxt/app'
 import { useApi, usePutFetch } from '../useApi'
 import { useBizModel } from '../useModel'
-import type { ApiGroup, RequestResult } from '#v/types'
+import type { ApiGroup, ChangePwdPayload, RequestResult, User } from '#v/types'
 import type { Ref } from 'vue'
 
-type UserApiGroup = ApiGroup<Model.User> & {
-  changePwd: (payload: Cmd.User.ChangePwdPayload, customOptions?: UseFetchOptions<unknown>) => Promise<{ data: Ref<RequestResult<unknown>> }>
+type UserApiGroup = ApiGroup<User> & {
+  changePwd: (payload: ChangePwdPayload, customOptions?: UseFetchOptions<unknown>) => Promise<{ data: Ref<RequestResult<unknown>> }>
   resetPwd: (userId: number, customOptions?: UseFetchOptions<unknown>) => Promise<{ data: Ref<RequestResult<unknown>> }>
 }
 
 export const useUserApi = createSharedComposable((): UserApiGroup => ({
-  ...useApi<Model.User>('/users'),
-  prune: (model: Model.User): Model.User => {
+  ...useApi<User>('/users'),
+  prune: (model: User): User => {
     const cloned = cloneJson(model)
     delete cloned.jobTitle
     delete cloned.jobGrade
@@ -25,7 +25,7 @@ export const useUserApi = createSharedComposable((): UserApiGroup => ({
     cloned.menus = bizModel.extractIds(cloned.menus)
     return cloned
   },
-  copy: (model: Model.User): Model.User => ({
+  copy: (model: User): User => ({
     id: 0,
 
     jobTitleId: model.jobTitleId,
@@ -42,7 +42,7 @@ export const useUserApi = createSharedComposable((): UserApiGroup => ({
 
     loginType: model.loginType
   }),
-  changePwd: (payload: Cmd.User.ChangePwdPayload, customOptions: UseFetchOptions<unknown> = {}) => {
+  changePwd: (payload: ChangePwdPayload, customOptions: UseFetchOptions<unknown> = {}) => {
     return usePutFetch(`/users/pwd/change`, payload, customOptions)
   },
   resetPwd: (userId: number, customOptions: UseFetchOptions<unknown> = {}) => {

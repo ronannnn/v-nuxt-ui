@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { UserCreateModal, UBadge } from '#components'
-import type { RowActionProps, VColumn } from '#v/types'
+import type { RowActionProps, User, VColumn } from '#v/types'
 import dayjs from 'dayjs'
 import { useUserApi } from '#v/composables'
 
@@ -22,7 +22,7 @@ const booleanOptions = [
   { label: '否', value: false }
 ]
 
-const columns: VColumn<Model.User>[] = [
+const columns: VColumn<User>[] = [
   {
     accessorKey: 'nickname',
     header: '姓名',
@@ -135,7 +135,7 @@ const columns: VColumn<Model.User>[] = [
 
 const toast = useToast()
 
-const extraRowActions: RowActionProps<Model.User>[] = [
+const extraRowActions: RowActionProps<User>[] = [
   {
     label: '重置密码',
     icon: 'i-lucide-key-round',
@@ -165,7 +165,7 @@ const extraRowActions: RowActionProps<Model.User>[] = [
   }
 ]
 
-const expandVNode = (row: Model.User) => {
+const expandVNode = (row: User) => {
   return h('div', { class: 'grid grid-cols-2 md:grid-cols-4 gap-4 p-4' }, [
     h('div', {}, [
       h('div', { class: 'text-xs text-muted mb-1' }, 'ID'),
@@ -206,7 +206,7 @@ const expandVNode = (row: Model.User) => {
       cn-name="用户信息"
       :use-api-group="useUserApi"
       :biz-columns="columns"
-      :on-edit-row-from-modal="async (row: Model.User) => await createModal.open({ model: row }).result"
+      :on-edit-row-from-modal="async (row: User) => await createModal.open({ model: row }).result"
       :extra-row-actions="extraRowActions"
       expandable
       :expand-v-node="expandVNode"

@@ -1,5 +1,5 @@
 import { ref, watch, type Ref } from 'vue'
-import type { ApiGroup } from '#v/types'
+import type { ApiGroup, BaseModel } from '#v/types'
 import { defu } from 'defu'
 import { getObjWithModifiedFields } from '#v/utils'
 import { useToast } from '@nuxt/ui/composables'
@@ -27,7 +27,7 @@ export const useFormValues = <T>(
   return { oldValues, newValues }
 }
 
-export const useFormSubmission = <T extends Model.BaseModel>(
+export const useFormSubmission = <T extends BaseModel>(
   oldValues: Ref<T>,
   newValues: Ref<T>,
   close: (ok: boolean) => void,
