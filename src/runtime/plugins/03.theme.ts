@@ -17,14 +17,14 @@ export default defineNuxtPlugin({
 
     function updateBlackAsPrimary() {
       const blackAsPrimary = customAppConfig.value.blackAsPrimary
-      if (blackAsPrimary) {
+      if (blackAsPrimary && (appConfig as any).theme) {
         (appConfig as any).theme.blackAsPrimary = blackAsPrimary === true
       }
     }
 
     function updateRadius() {
       const radius = customAppConfig.value.radius
-      if (radius !== undefined) {
+      if (radius !== undefined && (appConfig as any).theme) {
         (appConfig as any).theme.radius = radius
       }
     }
