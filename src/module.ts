@@ -56,7 +56,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.vite ??= {}
     nuxt.options.vite.optimizeDeps ??= {}
     nuxt.options.vite.optimizeDeps.include ??= []
-    nuxt.options.vite.optimizeDeps.include.push('dayjs')
+    nuxt.options.vite.optimizeDeps.include.push('dayjs', 'dayjs/plugin/utc', 'dayjs/plugin/timezone')
 
     // Add CSS
     nuxt.options.css.push(resolve('./runtime/assets/css/main.css'))
