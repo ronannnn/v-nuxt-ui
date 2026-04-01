@@ -4,7 +4,7 @@ import { useLocalStorage, createSharedComposable } from '@vueuse/core'
 import type { UseFetchOptions } from 'nuxt/app'
 import { useAuthApi, useLoading, useLoginApi, useRouterPush } from '.'
 import type { RouteLocationNormalizedLoadedGeneric } from 'vue-router'
-import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
+import { useToast } from '@nuxt/ui/composables'
 import { computed, ref } from 'vue'
 
 const _useAuth = () => {

@@ -2,7 +2,7 @@ import { ref, watch, type Ref } from 'vue'
 import type { ApiGroup } from '#v/types'
 import { defu } from 'defu'
 import { getObjWithModifiedFields } from '#v/utils'
-import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
+import { useToast } from '@nuxt/ui/composables'
 
 export const useFormValues = <T>(
   raw: Ref<T>,
