@@ -5,7 +5,7 @@ import type { QueryTemplate, VFormFieldAsyncSelectProps } from '#v/types'
 import { isEmptyString } from '#v/utils'
 import type { SelectMenuItem } from '@nuxt/ui'
 import { useDebounceFn } from '@vueuse/core'
-import defu from 'defu'
+import { defu } from 'defu'
 import { useApp } from '#v/composables/useApp'
 
 const props = withDefaults(defineProps<VFormFieldAsyncSelectProps<T> & { icon?: string, disabled?: boolean }>(), {

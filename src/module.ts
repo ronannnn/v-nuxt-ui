@@ -60,7 +60,11 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.vite.optimizeDeps.include.push(
       'dayjs',
       'dayjs/plugin/utc',
-      'dayjs/plugin/timezone'
+      'dayjs/plugin/timezone',
+      'defu',
+      '@vue-flow/core',
+      'maska/vue',
+      'sql-formatter'
     )
 
     // Add CSS

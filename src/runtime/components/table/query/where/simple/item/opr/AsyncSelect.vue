@@ -2,7 +2,7 @@
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed, useTemplateRef } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
-import defu from 'defu'
+import { defu } from 'defu'
 import { useFetching } from '#v/composables/useBoolean'
 import { isEmptyString } from '#v/utils'
 import type { VFormFieldAsyncSelectProps, WhereQueryItem, SelectOption, QueryTemplate } from '#v/types'

@@ -4,7 +4,7 @@ import { useFetching } from '#v/composables/useBoolean'
 import type { QueryTemplate, VFormFieldAsyncTreeSelectProps } from '#v/types'
 import { flattenTree, treeifyOptions, isEmptyString } from '#v/utils'
 import type { TreeItem } from '@nuxt/ui'
-import defu from 'defu'
+import { defu } from 'defu'
 
 const props = withDefaults(defineProps<VFormFieldAsyncTreeSelectProps<T> & { icon?: string, disabled?: boolean }>(), {
   labelField: 'name' as any,

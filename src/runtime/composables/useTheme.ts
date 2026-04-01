@@ -1,21 +1,26 @@
 import { computed } from 'vue'
 import { createSharedComposable, useColorMode } from '@vueuse/core'
-import colors from 'tailwindcss/colors'
-import { omit } from '@nuxt/ui/utils'
 import type { I18nLocale } from '#v/types'
 import { en, zh_cn } from '@nuxt/ui/locale'
 import { useApp } from './useApp'
 import { useAppConfig } from 'nuxt/app'
+
+// All tailwindcss v4 primary color names (excluding neutrals & special values)
+const twPrimaryColorNames = [
+  'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald',
+  'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple',
+  'fuchsia', 'pink', 'rose'
+]
+const twNeutralColorNames = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe', 'mauve', 'mist', 'olive']
 
 const _useTheme = () => {
   const appConfig = useAppConfig()
   const colorMode = useColorMode()
   const app = useApp()
 
-  const neutralColors = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe', 'mauve', 'mist', 'olive']
   const neutral = computed({
     get() {
-      return (appConfig as any).ui.colors.neutral
+      return (appConfig as any).ui?.colors?.neutral
     },
     set(option) {
       console.log(option, appConfig);
@@ -26,7 +31,7 @@ const _useTheme = () => {
 
   const blackAsPrimary = computed({
     get() {
-      return (appConfig as any).theme.blackAsPrimary
+      return (appConfig as any).theme?.blackAsPrimary
     },
     set(option) {
       (appConfig as any).theme.blackAsPrimary = option
@@ -34,8 +39,6 @@ const _useTheme = () => {
     }
   })
 
-  const colorsToOmit = ['inherit', 'current', 'transparent', 'black', 'white', ...neutralColors]
-  const primaryColors = Object.keys(omit(colors, colorsToOmit as any))
   const primary = computed({
     get() {
       return (appConfig as any).ui.colors.primary
@@ -48,7 +51,7 @@ const _useTheme = () => {
   })
 
   const chartColorVars = computed(() => ['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5'].map(c => `var(--${c})`))
-  const primaryColorVars = computed(() => primaryColors.map(c => `var(--color-${c}-${colorMode.value === 'light' ? '400' : '500'})`))
+  const primaryColorVars = computed(() => twPrimaryColorNames.map(c => `var(--color-${c}-${colorMode.value === 'light' ? '400' : '500'})`))
 
   const radiuses = [0, 0.125, 0.25, 0.375, 0.5]
   const radius = computed({
@@ -91,9 +94,9 @@ const _useTheme = () => {
 
   return {
     blackAsPrimary,
-    neutralColors,
+    neutralColors: twNeutralColorNames,
     neutral,
-    primaryColors,
+    primaryColors: twPrimaryColorNames,
     primary,
     chartColorVars,
     primaryColorVars,
