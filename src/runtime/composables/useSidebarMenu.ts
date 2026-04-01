@@ -1,20 +1,39 @@
 import { flattenTree } from '#v/utils'
-import type { BreadcrumbItem, NavigationMenuItem } from '@nuxt/ui'
 import { createSharedComposable } from '@vueuse/core'
 import { useAuth } from './useAuth'
 import type { ComputedRef, Ref } from 'vue'
 import { ref, computed, watch } from 'vue'
 
+// Lightweight local types to avoid deep external type instantiation
+type ShallowNavigationMenuItem = {
+  to?: string
+  triggerTo?: string
+  children?: ShallowNavigationMenuItem[]
+  label?: string
+  icon?: string
+  disabled?: boolean
+  open?: boolean
+  defaultOpen?: boolean
+  staticRouteKeys?: string[]
+}
+
+type ShallowBreadcrumbItem = {
+  label?: string
+  icon?: string
+  to?: string
+  children?: ShallowBreadcrumbItem[]
+}
+
 // Global defaults for sidebar menus. Library consumers can call
 // `setGlobalSidebarMenus` once (e.g. in layout or plugin) to initialize
 // these values, then call `useSidebarMenus()` without args everywhere.
-const constantMenus = ref<NavigationMenuItem[]>([])
-const bizMenus = ref<NavigationMenuItem[]>([])
+const constantMenus = ref<ShallowNavigationMenuItem[]>([])
+const bizMenus = ref<ShallowNavigationMenuItem[]>([])
 const menuMode = ref<'static' | 'dynamic'>('static')
 
 export function setGlobalSidebarMenus(opts: {
-  constantMenus?: NavigationMenuItem[]
-  bizMenus?: NavigationMenuItem[]
+  constantMenus?: ShallowNavigationMenuItem[]
+  bizMenus?: ShallowNavigationMenuItem[]
   menuMode?: 'static' | 'dynamic'
 }) {
   console.log('Setting global sidebar menus with options:', opts)
@@ -24,19 +43,19 @@ export function setGlobalSidebarMenus(opts: {
 }
 
 export const _useSidebarMenus = (): {
-  constantMenus: Ref<NavigationMenuItem[]>
+  constantMenus: Ref<ShallowNavigationMenuItem[]>
   constantMenuPathSet: ComputedRef<Set<string>>
-  bizMenus: Ref<NavigationMenuItem[]>
-  flattenBizMenus: ComputedRef<NavigationMenuItem[]>
+  bizMenus: Ref<ShallowNavigationMenuItem[]>
+  flattenBizMenus: ComputedRef<ShallowNavigationMenuItem[]>
   bizMenuPathSet: ComputedRef<Set<string>>
   menusFromUser: Ref<Model.Menu[]>
-  sidebarMenus: Ref<NavigationMenuItem[]>
+  sidebarMenus: Ref<ShallowNavigationMenuItem[]>
   sidebarMenuPathSet: Ref<Set<string>>
   expandSidebarMenu: (path: string) => void
   setUserDynamicMenus: (newRolesFromUser: Model.Role[], newMenusFromUser: Model.Menu[]) => void
   disabledMenuPathSet: ComputedRef<Set<string>>
-  breadcrumbs: Ref<BreadcrumbItem[]>
-  getBreadcrumbs: (current: string, menus?: NavigationMenuItem[]) => BreadcrumbItem[]
+  breadcrumbs: Ref<ShallowBreadcrumbItem[]>
+  getBreadcrumbs: (current: string, menus?: ShallowNavigationMenuItem[]) => ShallowBreadcrumbItem[]
 } => {
   const { loginUserRoles, loginUserMenus } = useAuth()
   // constant menu
@@ -50,7 +69,7 @@ export const _useSidebarMenus = (): {
   })
 
   // biz menus
-  const flattenBizMenus = computed<NavigationMenuItem[]>(() => flattenTree(bizMenus.value) as NavigationMenuItem[])
+  const flattenBizMenus = computed<ShallowNavigationMenuItem[]>(() => flattenTree(bizMenus.value) as ShallowNavigationMenuItem[])
   const bizMenuPathSet = computed<Set<string>>(() => {
     const set = new Set<string>()
     flattenBizMenus.value.forEach((menu) => {
@@ -61,7 +80,7 @@ export const _useSidebarMenus = (): {
 
   // user menus
   const menusFromUser = ref<Model.Menu[]>([]) // including menus from roles
-  const sidebarMenus = ref<NavigationMenuItem[]>([])
+  const sidebarMenus = ref<ShallowNavigationMenuItem[]>([])
   const sidebarMenuPathSet = ref<Set<string>>(new Set())
   const setUserDynamicMenus = (
     newRolesFromUser: Model.Role[],
@@ -74,7 +93,7 @@ export const _useSidebarMenus = (): {
 
     const menuItems = bizMenus.value as any[]
 
-    sidebarMenus.value = (menuMode.value === 'static' ? menuItems : hideNoPermissionMenus(menuItems as NavigationMenuItem[], sidebarMenuPathSet.value)) as NavigationMenuItem[]
+    sidebarMenus.value = (menuMode.value === 'static' ? menuItems : hideNoPermissionMenus(menuItems as ShallowNavigationMenuItem[], sidebarMenuPathSet.value)) as ShallowNavigationMenuItem[]
   }
   watch([loginUserRoles, loginUserMenus, bizMenus], ([newRoles, newMenus]) => {
     setUserDynamicMenus(newRoles, newMenus)
@@ -84,13 +103,13 @@ export const _useSidebarMenus = (): {
   // 把某个菜单展开，并展开它所有父菜单
   // 并把其他菜单折叠
   const expandSidebarMenu = (path: string) => {
-    const expandRecursively = (menus: NavigationMenuItem[]): boolean => {
+    const expandRecursively = (menus: ShallowNavigationMenuItem[]): boolean => {
       let found = false
       for (const menu of menus) {
         if (menu.to === path) {
           found = true
         } else if (menu.children) {
-          const childFound = expandRecursively(menu.children as NavigationMenuItem[])
+          const childFound = expandRecursively(menu.children as ShallowNavigationMenuItem[])
           if (childFound) {
             found = true
             menu.open = true // 展开包含目标路径的父菜单
@@ -102,11 +121,11 @@ export const _useSidebarMenus = (): {
     }
 
     // 直接在原数组上操作，保持数组引用不变
-    expandRecursively(sidebarMenus.value as NavigationMenuItem[])
+    expandRecursively(sidebarMenus.value as ShallowNavigationMenuItem[])
   }
 
   // hide menus except from specific keys
-  const hideNoPermissionMenus = (menuItems: NavigationMenuItem[], paths: Set<string>): NavigationMenuItem[] => {
+  const hideNoPermissionMenus = (menuItems: ShallowNavigationMenuItem[], paths: Set<string>): ShallowNavigationMenuItem[] => {
     return menuItems
       .filter(menuItem => paths.has(menuItem.to as string) || paths.has(menuItem.triggerTo as string))
       .map((menuItem) => {
@@ -114,7 +133,7 @@ export const _useSidebarMenus = (): {
           // Create a shallow copy to avoid mutating the original object and prevent deep type recursion
           return {
             ...menuItem,
-            children: hideNoPermissionMenus(menuItem.children, paths)
+            children: hideNoPermissionMenus(menuItem.children as ShallowNavigationMenuItem[], paths)
           }
         }
         return { ...menuItem }
@@ -138,19 +157,19 @@ export const _useSidebarMenus = (): {
   })
 
   // breadcrumb
-  const sidebarMenusAndConstantMenus = computed<NavigationMenuItem[]>(() => {
-    const result: NavigationMenuItem[] = []
+  const sidebarMenusAndConstantMenus = computed<ShallowNavigationMenuItem[]>(() => {
+    const result: ShallowNavigationMenuItem[] = []
 
     result.push(...(constantMenus.value as any[]))
 
     result.push(...(sidebarMenus.value as any[]))
     return result
   })
-  const breadcrumbs = ref<BreadcrumbItem[]>([])
+  const breadcrumbs = ref<ShallowBreadcrumbItem[]>([])
   function getBreadcrumbs(
     current: string,
-    menus: NavigationMenuItem[] = sidebarMenusAndConstantMenus.value
-  ): BreadcrumbItem[] {
+    menus: ShallowNavigationMenuItem[] = sidebarMenusAndConstantMenus.value
+  ): ShallowBreadcrumbItem[] {
     for (const menu of menus) {
       if (menu.to === current) {
         return [transformMenuToBreadcrumb(menu)]
@@ -166,9 +185,9 @@ export const _useSidebarMenus = (): {
     return []
   }
 
-  function transformMenuToBreadcrumb(menu: NavigationMenuItem): BreadcrumbItem {
+  function transformMenuToBreadcrumb(menu: ShallowNavigationMenuItem): ShallowBreadcrumbItem {
     const { children, label, icon, to } = menu
-    const breadcrumb: BreadcrumbItem = { label, icon, to }
+    const breadcrumb: ShallowBreadcrumbItem = { label, icon, to }
     if (children?.length) {
       breadcrumb.children = children.map(transformMenuToBreadcrumb)
     }
