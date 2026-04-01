@@ -52,6 +52,12 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolve('./runtime/plugins/03.theme'))
     addPlugin(resolve('./runtime/plugins/04.head'))
 
+    // Ensure CJS deps are pre-bundled for Vite ESM compat
+    nuxt.options.vite ??= {}
+    nuxt.options.vite.optimizeDeps ??= {}
+    nuxt.options.vite.optimizeDeps.include ??= []
+    nuxt.options.vite.optimizeDeps.include.push('dayjs')
+
     // Add CSS
     nuxt.options.css.push(resolve('./runtime/assets/css/main.css'))
     nuxt.options.css.push(resolve('./runtime/assets/css/transition.css'))
