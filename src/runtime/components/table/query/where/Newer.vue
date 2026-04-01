@@ -1,13 +1,13 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { WhereQueryOption, VColumn, Size } from '#v/types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed } from 'vue'
 import ButtonDropdown from '#v/components/button/Dropdown.vue'
 
 const props = defineProps<{
-  options: WhereQueryOption<any>[]
+  options: WhereQueryOption<T>[]
   unselectedFields: string[]
-  bizColumns: VColumn<any>[]
+  bizColumns: VColumn<T>[]
   size?: Size
 }>()
 const emit = defineEmits<{

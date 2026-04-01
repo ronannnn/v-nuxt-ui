@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { OrderQueryOption, VColumn } from '#v/types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed } from 'vue'

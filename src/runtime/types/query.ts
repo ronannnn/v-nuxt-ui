@@ -21,7 +21,7 @@ export interface QueryTemplate<T> {
 // select query
 export type SelectQuery<T> = SelectQueryItem<T>[]
 export interface SelectQueryItem<T> {
-  field: keyof T | string
+  field: string & keyof T | string
   distinct: boolean
 }
 
@@ -51,7 +51,7 @@ export interface WhereQueryItemGroup<T> {
 }
 export interface WhereQueryItem<T> {
   andOr?: 'and' | 'or'
-  field: keyof T | string
+  field: string & keyof T | string
   opr: WhereQueryOpr
   value?: any
   custom?: boolean
@@ -62,6 +62,6 @@ export interface WhereQueryItem<T> {
 export type OrderQueryOpr = 'asc' | 'desc' | 'str_len_asc' | 'str_len_desc' | null
 export type OrderQuery<T> = OrderQueryItem<T>[]
 export interface OrderQueryItem<T> {
-  field: keyof T | string
+  field: string & keyof T | string
   order: OrderQueryOpr
 }

@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { SelectOption, WhereQueryItem } from '#v/types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { computed, useTemplateRef } from 'vue'

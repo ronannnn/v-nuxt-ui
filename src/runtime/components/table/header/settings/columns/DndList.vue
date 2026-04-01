@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { TableColumn } from '@nuxt/ui'
 import type { FixType } from './index.vue'
 import type { Column, DndProps } from '#v/types'

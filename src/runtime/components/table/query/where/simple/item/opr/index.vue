@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { WhereQueryOption, WhereQueryItem } from '#v/types'
 import { computed, watch, useTemplateRef } from 'vue'
 import TableQueryWhereSimpleItemOprInput from '#v/components/table/query/where/simple/item/opr/Input.vue'
@@ -8,11 +8,11 @@ import TableQueryWhereSimpleItemOprDatePicker from '#v/components/table/query/wh
 import TableQueryWhereSimpleItemOprAsyncSelect from '#v/components/table/query/where/simple/item/opr/AsyncSelect.vue'
 
 const props = defineProps<{
-  options: WhereQueryOption<any>[]
+  options: WhereQueryOption<T>[]
   fetching?: boolean
   triggerFetching?: () => Promise<void>
 }>()
-const whereQueryItem = defineModel<WhereQueryItem<any>>('whereQueryItem', { required: true })
+const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
 const option = computed(() => props.options.find(option => option.field === whereQueryItem.value.field))
 

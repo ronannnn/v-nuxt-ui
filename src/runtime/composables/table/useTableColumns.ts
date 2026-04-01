@@ -1,6 +1,6 @@
-import { computed, ref, h, type Ref, type ComputedRef } from 'vue'
+import { computed, shallowRef, h, type Ref, type ShallowRef, type ComputedRef } from 'vue'
 import type { ColumnPinningState } from '@tanstack/table-core'
-import type { VColumn, OrderQuery, OrderQueryOpr, TableSettings, Column } from '#v/types'
+import type { VColumn, OrderQuery, OrderQueryOpr, TableSettings, Column, SelectOption, WhereQueryColumnOption } from '#v/types'
 import TableColumnActionHeader from '#v/components/table/column/ActionHeader.vue'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import UCheckbox from '@nuxt/ui/components/Checkbox.vue'
@@ -11,8 +11,8 @@ import { cloneJson } from '#v/utils'
 interface UseTableColumnsReturn<T> {
   selectionColumn: VColumn<T>
   expandColumn: VColumn<T>
-  clonedBizColumns: Ref<VColumn<T>[]>
-  columnsWithCommonProps: Ref<VColumn<T>[]>
+  clonedBizColumns: ShallowRef<VColumn<T>[]>
+  columnsWithCommonProps: ShallowRef<VColumn<T>[]>
   sortedColumns: ComputedRef<VColumn<T>[]>
   columnsWithFilterOptions: ComputedRef<VColumn<T>[]>
   columnsWithSortableHeader: ComputedRef<VColumn<T>[]>
@@ -96,19 +96,27 @@ export function useTableColumns<T>(props: {
     size: 48
   }
 
-  const clonedBizColumns = ref<VColumn<T>[]>(bizColumns)
+  const clonedBizColumns = shallowRef<VColumn<T>[]>(bizColumns)
 
-  const columnsWithCommonProps = ref<VColumn<T>[]>(
-    clonedBizColumns.value.map(col => defu(col, cloneJson(commonColumnProps)) as VColumn<T>)
+  // defu<VColumn<T>, ...> 会触发 "Type instantiation is excessively deep"，
+  // 因为 VColumn<T> 包含 TanStack 的深层嵌套泛型类型。
+  // 使用显式返回类型标注来避免 TypeScript 的深层类型推断。
+  const mergeColumnWithDefaults = (col: VColumn<T>, defaults: Record<string, unknown>): VColumn<T> => {
+    return defu(col, defaults) as VColumn<T>
+  }
+
+  const columnsWithCommonProps = shallowRef<VColumn<T>[]>(
+    clonedBizColumns.value.map(col => mergeColumnWithDefaults(col, cloneJson(commonColumnProps)))
   )
 
   const sortedColumns = computed<VColumn<T>[]>(() => {
     const sortedKeys = (localStgSettings.value.columns ?? initStorageColumns.value)
       .filter(c => c.checked)
       .map(c => c.accessorKey)
+    const cols = columnsWithCommonProps.value
     return sortedKeys
-      .map(key => columnsWithCommonProps.value.find(col => (col as any)['accessorKey'] === key))
-      .filter(Boolean) as VColumn<T>[]
+      .map(key => cols.find(col => ('accessorKey' in col) && col.accessorKey === key))
+      .filter((col): col is VColumn<T> => col !== undefined)
   })
 
   const columnsWithFilterOptions = computed<VColumn<T>[]>(() => {
@@ -117,21 +125,23 @@ export function useTableColumns<T>(props: {
         return col
       }
       switch (col.filterOption.type) {
-        case 'select':
+        case 'select': {
           if (col.cell) return col
+          const selectOption = col.filterOption as Extract<WhereQueryColumnOption<T>, { type: 'select' }>
           return {
             ...col,
             cell: ({ cell }) => {
-              const item = (col.filterOption as any)?.['items'].find((item: any) => item.value === cell.getValue())
+              const item = selectOption.items.find((item: SelectOption) => item.value === cell.getValue())
               return item
                 ? h(UBadge, {
                     color: item?.color ?? 'neutral',
-                    variant: (col.filterOption as any)?.['variant'] ?? 'outline',
+                    variant: selectOption.variant ?? 'outline',
                     icon: item?.icon
                   }, () => item?.label ?? '未知值')
-                : ''
+                : h(UBadge, { ...selectOption.empty })
             }
           }
+        }
         default:
           return col
       }
@@ -142,7 +152,7 @@ export function useTableColumns<T>(props: {
     return columnsWithFilterOptions.value.map(col => ({
       ...col,
       header: ({ column }) => {
-        const field = (col as any)['accessorKey'] as keyof T
+        const field = 'accessorKey' in col ? (col.accessorKey as string) : ''
         const orderQueryIndex = orderQuery.value.findIndex(item => item.field === field)
         const orderQueryItem = orderQueryIndex >= 0 ? orderQuery.value[orderQueryIndex] : undefined
         // 多列排序时才显示序号（1-based）
@@ -164,7 +174,7 @@ export function useTableColumns<T>(props: {
             onUpdateOrderQuery(newOrderQuery)
           }
         }
-        const accessorKey = (col as any)['accessorKey'] as string
+        const accessorKey = 'accessorKey' in col ? (col.accessorKey as string) : ''
         const onUpdatePinned = (position: 'left' | 'right' | 'unfixed') => {
           const columns = [...(localStgSettings.value.columns ?? initStorageColumns.value)]
           const idx = columns.findIndex(c => c.accessorKey === accessorKey)
@@ -266,8 +276,8 @@ export function useTableColumns<T>(props: {
   return {
     selectionColumn,
     expandColumn,
-    clonedBizColumns: clonedBizColumns as Ref<VColumn<T>[]>,
-    columnsWithCommonProps: columnsWithCommonProps as Ref<VColumn<T>[]>,
+    clonedBizColumns,
+    columnsWithCommonProps,
     sortedColumns,
     columnsWithFilterOptions,
     columnsWithSortableHeader,

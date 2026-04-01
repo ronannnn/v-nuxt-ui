@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { OrderQueryOpr, OrderQueryOption, VColumn } from '#v/types'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed } from 'vue'
@@ -7,7 +7,7 @@ const props = defineProps<{
   field: string
   bizColumns: VColumn<T>[]
   opr: OrderQueryOpr
-  orderOptions: OrderQueryOption<any>[]
+  orderOptions: OrderQueryOption<T>[]
   unselectedFields: string[]
 }>()
 const emit = defineEmits<{

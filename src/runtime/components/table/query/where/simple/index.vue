@@ -1,15 +1,23 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
+import type { ComponentPublicInstance } from 'vue'
 import type { WhereSimpleQueryProps } from '#v/types'
 import { ref } from 'vue'
 import TableQueryWhereSimpleItem from '#v/components/table/query/where/simple/item/index.vue'
 
-const props = defineProps<WhereSimpleQueryProps<any>>()
+const props = defineProps<WhereSimpleQueryProps<T>>()
 
 const onRemoveFilter = (field: string) => {
   props.onUpdateItems(props.items?.filter(query => query.field !== field) ?? [])
 }
 
-const itemRefMap = ref<Map<string, InstanceType<typeof TableQueryWhereSimpleItem>>>(new Map())
+const itemRefMap = ref<Map<string, { focus: () => void }>>(new Map())
+
+function setItemRef(field: string, el: Element | ComponentPublicInstance | null) {
+  if (el && 'focus' in el && typeof el.focus === 'function') {
+    itemRefMap.value.set(field, el as { focus: () => void })
+  }
+}
+
 defineExpose({
   focusItem: (field: string): boolean => {
     const item = itemRefMap.value.get(field)
@@ -27,7 +35,7 @@ defineExpose({
     <!-- key如果是field，那么field修改后，不能聚焦后面的组件，所以这里的key用idx代替 -->
     <TableQueryWhereSimpleItem
       v-for="(item, idx) in items"
-      :ref="(el) => itemRefMap.set(item.field as string, el as any)"
+      :ref="(el) => setItemRef(item.field as string, el)"
       :key="idx"
       :where-query-item="item"
       :options="whereOptions"

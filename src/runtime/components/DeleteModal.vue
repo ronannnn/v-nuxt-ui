@@ -1,11 +1,11 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { useSubmitting } from '#v/composables/useBoolean'
 import type { RequestResult } from '#v/types'
 import type { Ref } from 'vue'
 
 const props = defineProps<{
   ids: number[]
-  onDelete: ((ids: number[]) => Promise<{ data: Ref<RequestResult<any>> }> | undefined) | undefined | null
+  onDelete: ((ids: number[]) => Promise<{ data: Ref<RequestResult<T>> }> | undefined) | undefined | null
 }>()
 const emit = defineEmits<{
   close: [boolean]

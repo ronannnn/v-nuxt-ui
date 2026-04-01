@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { WhereQueryOption, WhereQueryItem } from '#v/types'
 import { computed, watch, useTemplateRef } from 'vue'
 import TableQueryWhereSimpleItemColumnPicker from '#v/components/table/query/where/simple/item/ColumnPicker.vue'
@@ -6,12 +6,12 @@ import TableQueryWhereSimpleItemOprPicker from '#v/components/table/query/where/
 import TableQueryWhereSimpleItemOpr from '#v/components/table/query/where/simple/item/opr/index.vue'
 
 const props = defineProps<{
-  options: WhereQueryOption<any>[]
+  options: WhereQueryOption<T>[]
   fetching?: boolean
   triggerFetching?: () => Promise<void>
   onRemove: (field: string) => void
 }>()
-const whereQueryItem = defineModel<WhereQueryItem<any>>('whereQueryItem', { required: true })
+const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
 const option = computed(() => props.options.find(option => option.field === whereQueryItem.value.field))
 

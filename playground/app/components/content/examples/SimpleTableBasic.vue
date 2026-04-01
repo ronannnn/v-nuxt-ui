@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VColumn } from '#build/types/v-nuxt-ui'
+import type { User, VColumn } from '#build/types/v-nuxt-ui'
 
 const data = ref([
   { id: 1, name: 'Alice', status: 'active', role: 'Admin' },
@@ -9,7 +9,7 @@ const data = ref([
   { id: 5, name: 'Eve', status: 'inactive', role: 'Viewer' }
 ])
 
-const columns: VColumn<any>[] = [
+const columns: VColumn<User>[] = [
   { accessorKey: 'id', header: 'ID' },
   { accessorKey: 'name', header: 'Name' },
   {

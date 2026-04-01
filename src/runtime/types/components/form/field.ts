@@ -1,19 +1,23 @@
 import type { VNode } from 'vue'
 import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, SelectProps, TreeItem } from '@nuxt/ui'
 import type { ZodType } from 'zod'
-import type { ListApi } from '../table'
+import type { PageResult, RequestResult } from '../../request'
 import type { QueryTemplate, WhereQueryItem } from '../../query'
+import type { Ref } from 'vue'
 
 export type VFormFieldAsyncSelectProps<T> = {
-  listApi: ListApi<T>
+  // 使用方法签名以保持 T 的双变
+  listApi(payload: Omit<QueryTemplate<T>, 'selectQuery'>): Promise<{ data: Ref<RequestResult<PageResult<T>>> }>
   extraQuery?: QueryTemplate<T>
   initModelValues?: any | any[]
   onUpdateInitModelValues?: (newInitModels: any | any[]) => void
   searchFields: (string)[]
-  extraSearchFieldFn?: (keyword: string) => WhereQueryItem<T>
+  // 使用方法签名以保持 T 的双变
+  extraSearchFieldFn?(keyword: string): WhereQueryItem<T>
   labelField?: string
   valueField?: string
-  labelRenderFn?: (model: T) => string | undefined
+  // 使用方法签名以保持 T 的双变
+  labelRenderFn?(model: T): string | undefined
   enableEmptyOption?: boolean
   disableOprSelector?: boolean
   multiple?: boolean

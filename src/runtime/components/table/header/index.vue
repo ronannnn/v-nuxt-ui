@@ -1,8 +1,8 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import { computed, h } from 'vue'
 import { defu } from 'defu'
 import { useOverlay } from '@nuxt/ui/composables'
-import type { TableHeaderProps } from '#v/types'
+import type { TableHeaderProps, VColumn } from '#v/types'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UChip from '@nuxt/ui/components/Chip.vue'
 import UKbd from '@nuxt/ui/components/Kbd.vue'
@@ -11,11 +11,18 @@ import TableQueryOrder from '#v/components/table/query/order/index.vue'
 import DeleteModal from '#v/components/DeleteModal.vue'
 import TableHeaderSettings from '#v/components/table/header/settings/index.vue'
 import TableExcelExportModal from '#v/components/table/ExcelExportModal.vue'
+import { widenColumns } from '#v/utils'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyRecord = Record<string, any>
 
 const props = withDefaults(defineProps<TableHeaderProps<T>>(), {
   size: 'md',
   oprOrder: () => ['create', 'refresh', 'whereQuery', 'orderQuery', 'settings', 'exportExcel', 'batchDelete']
 })
+
+/** 默认新建行模板，T extends Record<string, any> 保证 { id: 0 } 是合法赋值 */
+const defaultNewRow = { id: 0 } as Record<string, any> as T
 
 const overlay = useOverlay()
 const deleteModal = overlay.create(DeleteModal)
@@ -33,7 +40,7 @@ const oprButtons = computed(() => {
             icon: 'i-lucide-plus',
             size: props.size,
             onClick: async () => {
-              const result = await props.onEditRowFromModal?.(props.onNew?.() ?? { id: 0 } as T)
+              const result = await props.onEditRowFromModal?.(props.onNew?.() ?? defaultNewRow)
               if (result) {
                 props.fetchList()
               }
@@ -90,10 +97,13 @@ const oprButtons = computed(() => {
             color: 'neutral',
             variant: 'outline',
             onClick: async () => {
+              if (!props.onUpdateBizColumns) return
+              const updateFn = props.onUpdateBizColumns
               await settingsModal.open({
                 tblName: props.name,
-                rawBizColumns: props.rawBizColumns as any,
-                onUpdateBizColumns: props.onUpdateBizColumns as any
+                rawBizColumns: widenColumns(props.rawBizColumns),
+                // 列数据由父组件创建（VColumn<T>），模态框仅重排顺序后返回，运行时类型不变
+                onUpdateBizColumns: (cols: VColumn<AnyRecord>[]) => updateFn(cols as unknown as VColumn<T>[])
               })
             }
           },
@@ -110,7 +120,7 @@ const oprButtons = computed(() => {
             variant: 'outline',
             onClick: async () => {
               await excelExportModal.open({
-                columns: props.rawBizColumns,
+                columns: widenColumns(props.rawBizColumns),
                 filename: props.exportExcel!.filename,
                 filenameWithDateTime: props.exportExcel!.filenameWithDateTime,
                 listFn: props.apiGroup?.().countAndList,

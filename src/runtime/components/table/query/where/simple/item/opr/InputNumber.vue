@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import { noValueOprList, type WhereQueryItem } from '#v/types'
 import { computed, useTemplateRef } from 'vue'
 

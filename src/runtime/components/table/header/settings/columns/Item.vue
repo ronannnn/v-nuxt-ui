@@ -1,9 +1,9 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { FixType } from './index.vue'
 import type { Column, VColumn } from '#v/types'
 
 defineProps<{
-  columns: VColumn<any>[]
+  columns: VColumn<T>[]
   stgCol: Column
   onFixCol: (col: Column, fixType: FixType) => void
 }>()

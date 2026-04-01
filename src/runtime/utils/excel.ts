@@ -1,7 +1,7 @@
 import type { VColumn } from '#v/types'
 import { triggerFileDownload } from './download/tagA'
 
-export async function genTableExcel(columns: VColumn<any>[], data: any[], filenamePrefix: string) {
+export async function genTableExcel<T>(columns: VColumn<T>[], data: T[], filenamePrefix: string) {
   // Dynamic import to avoid SSR crash
   const ExcelJs = (await import('exceljs')).default
   // create sheet
@@ -23,7 +23,7 @@ export async function genTableExcel(columns: VColumn<any>[], data: any[], filena
         try {
           const ctx: any = {
             row: { original: item },
-            getValue: () => ((col as any)['accessorKey'] ? item[(col as any)['accessorKey']] : undefined),
+            getValue: () => ((col as any)['accessorKey'] ? item[(col as any)['accessorKey'] as keyof T] : undefined),
             column: col
             // 其他字段按需补充
           }
@@ -36,7 +36,7 @@ export async function genTableExcel(columns: VColumn<any>[], data: any[], filena
           console.warn('col.cell 调用失败，回退到 accessorKey', e)
         }
       } else {
-        row.push(item[(col as any)['accessorKey']])
+        row.push(item[(col as any)['accessorKey'] as keyof T])
       }
     })
     rows.push(row)

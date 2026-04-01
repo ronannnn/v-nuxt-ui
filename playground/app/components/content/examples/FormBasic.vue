@@ -10,7 +10,7 @@ const formData = ref({
   isAdmin: false
 })
 
-const fields = computed<VFormFieldProps<any>[]>(() => [
+const fields = computed<VFormFieldProps<typeof formData.value>[]>(() => [
   {
     name: 'name',
     label: '姓名',
@@ -81,7 +81,7 @@ const fields = computed<VFormFieldProps<any>[]>(() => [
     type: 'dynamic-input' as const,
     colSpan: '24'
   }
-] satisfies VFormFieldProps<any>[])
+] satisfies VFormFieldProps<typeof formData.value>[])
 </script>
 
 <template>

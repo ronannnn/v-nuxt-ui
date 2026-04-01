@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import { computed, ref, useTemplateRef, h, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import type { VColumn, VTableProps } from '#v/types'
 import UButton from '@nuxt/ui/components/Button.vue'

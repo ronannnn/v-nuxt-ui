@@ -158,7 +158,7 @@ const componentMeta: Record<string, ComponentMetaEntry> = {
   ProDeleteModal: {
     props: [
       { name: 'ids', type: 'number[]', required: true, description: 'IDs of items to delete' },
-      { name: 'onDelete', type: '(ids: number[]) => Promise<any>', required: true, description: 'Delete handler function' }
+      { name: 'onDelete', type: '(ids: number[]) => Promise<T>', required: true, description: 'Delete handler function' }
     ],
     slots: [],
     events: [

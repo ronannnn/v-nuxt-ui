@@ -5,7 +5,7 @@ import type { Pagination, TableSettings } from '#v/types'
 const defaultPageSize: number = 10
 const pageSizeOptions: number[] = [5, 10, 20, 50, 100]
 
-export function useTablePagination(localStgSettings: Ref<TableSettings<any>>) {
+export function useTablePagination<T>(localStgSettings: Ref<TableSettings<T>>) {
   const pageSize = computed<number>({
     get: () => localStgSettings.value.pageSize ?? defaultPageSize,
     set: pageSize => localStgSettings.value = { ...localStgSettings.value, pageSize }

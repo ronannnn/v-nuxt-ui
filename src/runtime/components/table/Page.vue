@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T">
+<script setup lang="ts" generic="T extends Record<string, any>">
 import type { VTableProps } from '#v/types'
 import { useProTableView } from '#v/composables/table/useTableView'
 import TableHeader from '#v/components/table/header/index.vue'

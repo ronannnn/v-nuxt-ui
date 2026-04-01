@@ -1,5 +1,6 @@
-<script setup lang="ts" generic="T">
-import type { ListApi, VColumn, WhereQuery, WhereQueryOption } from '#v/types'
+<script setup lang="ts">
+import type { VColumn, WhereQuery, WhereQueryOption, QueryTemplate, PageResult, RequestResult } from '#v/types'
+import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { now } from '@internationalized/date'
 import { defu } from 'defu'
@@ -9,16 +10,25 @@ import { dateFormat, TIME_ZONE } from '#v/constants'
 import { genTableExcel } from '#v/utils'
 import TableQueryWhere from '#v/components/table/query/where/index.vue'
 
-const props = defineProps<{
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyRecord = Record<string, any>
+
+/**
+ * 使用 interface + 方法签名定义 props，使函数参数中的 T 保持双变（bivariant）。
+ * 这样 ListApi<SpecificType> 可以安全赋值给 listFn(...)。
+ */
+interface ExcelExportModalProps {
   filename?: string
   filenameWithDateTime?: boolean
-  columns: VColumn<any>[]
-  whereQueryOptions: WhereQueryOption<any>[]
-  extraWhereQueryInitValues?: WhereQuery<any>
-  listFn?: ListApi<any>
-}>()
+  columns: VColumn<AnyRecord>[]
+  whereQueryOptions: WhereQueryOption<AnyRecord>[]
+  extraWhereQueryInitValues?: WhereQuery<AnyRecord>
+  listFn?(payload: Omit<QueryTemplate<AnyRecord>, 'selectQuery'>, ...args: unknown[]): Promise<{ data: Ref<RequestResult<PageResult<AnyRecord>>> }>
+}
 
-const whereQuery = ref<WhereQuery<any>>()
+const props = defineProps<ExcelExportModalProps>()
+
+const whereQuery = ref<WhereQuery<AnyRecord>>()
 
 const emit = defineEmits<{
   close: [boolean]

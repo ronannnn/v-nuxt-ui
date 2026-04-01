@@ -1,8 +1,32 @@
-import type { OrderQueryOpr, WhereQueryOpr } from '../../query'
-import type { TableColumn, BadgeProps } from '@nuxt/ui'
-import type { SelectOption, VFormFieldAsyncSelectProps } from '../../index'
+import type { OrderQueryOpr, WhereQueryOpr, QueryTemplate, WhereQueryItem } from '../../query'
+import type { PageResult, RequestResult } from '../../request'
+import type { TableColumn, BadgeProps, SelectProps } from '@nuxt/ui'
+import type { SelectOption } from '../../index'
+import type { Ref } from 'vue'
 
 export type WhereQueryType = 'input' | 'input-number' | 'date-picker' | 'select' | 'async-select' | 'unknown'
+
+/**
+ * 专用于 WhereQueryColumnOption async-select 分支的属性类型。
+ * 与 VFormFieldAsyncSelectProps<T> 结构一致，但 listApi 使用方法签名。
+ * 函数属性使用方法签名以保持 T 的双变性（bivariant），
+ * 使 VColumn<SubType> 可以安全赋值给 VColumn<Record<string, any>>。
+ */
+export type WhereQueryColumnAsyncSelectProps<T> = {
+  // 使用方法签名以保持 T 的双变
+  listApi(payload: Omit<QueryTemplate<T>, 'selectQuery'>): Promise<{ data: Ref<RequestResult<PageResult<T>>> }>
+  extraQuery?: QueryTemplate<T>
+  searchFields: string[]
+  extraSearchFieldFn?(keyword: string): WhereQueryItem<T>
+  labelField?: string
+  valueField?: string
+  labelRenderFn?(model: T): string | undefined
+  enableEmptyOption?: boolean
+  disableOprSelector?: boolean
+  multiple?: boolean
+  placeholder?: string
+  size?: SelectProps['size']
+}
 
 export type WhereQueryColumnOption<T> = {
   defaultOpr?: WhereQueryOpr
@@ -18,10 +42,11 @@ export type WhereQueryColumnOption<T> = {
     type: 'select'
     variant?: BadgeProps['variant']
     items: SelectOption[]
+    empty?: BadgeProps
   }
   | {
     type: 'async-select'
-  } & VFormFieldAsyncSelectProps<T>
+  } & WhereQueryColumnAsyncSelectProps<T>
   | { type: 'unknown' }
 )
 
@@ -30,9 +55,10 @@ export type OrderQueryColumnOption = {
 }
 
 export type VColumn<T> = {
-  filterOption?: WhereQueryColumnOption<any>
+  filterOption?: WhereQueryColumnOption<T>
   sortOption?: OrderQueryColumnOption | true
   initHide?: boolean
   checked?: boolean
-  exportCell?: (row: T) => string | string[]
+  // 使用方法签名以保持 T 的双变，允许 VColumn<Sub> 赋值给 VColumn<Record<string, any>>
+  exportCell?(row: T): string | string[]
 } & TableColumn<T>
