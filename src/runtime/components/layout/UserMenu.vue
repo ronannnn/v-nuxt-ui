@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAuth, useApp } from '#v/composables'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useRoute } from 'vue-router'
+import { useRoute } from 'nuxt/app'
 import { getEmojiFlag } from '#v/utils'
 import { computed } from 'vue'
 
