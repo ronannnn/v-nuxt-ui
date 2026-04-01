@@ -1,6 +1,6 @@
 {
   "name": "v-nuxt-ui",
-  "version": "0.1.11",
+  "version": "0.1.14",
   "description": "Veken UI Component Library - Reusable Nuxt UI components, composables, and utilities for enterprise applications",
   "type": "module",
   "style": "./dist/runtime/index.css",
@@ -96,6 +96,7 @@
     "sortablejs": "^1.15.7",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
+    "unbuild": "^3.6.1",
     "vue": "^3.5.0",
     "vue-draggable-plus": "^0.6.1",
     "vue-echarts": "^8.0.1",
