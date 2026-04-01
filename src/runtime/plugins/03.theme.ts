@@ -10,7 +10,7 @@ export default defineNuxtPlugin({
     const customAppConfig = useLocalStorage(StorageKey.APP, defaultAppSettings)
     function updateColor(type: 'primary' | 'neutral') {
       const color = customAppConfig.value[type]
-      if (color) {
+      if (color && (appConfig as any).ui?.colors) {
         (appConfig as any).ui.colors[type] = color
       }
     }
