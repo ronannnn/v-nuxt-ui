@@ -79,6 +79,22 @@ export const _useSidebarMenus = (): {
     return set
   })
 
+  // hide menus except from specific keys
+  const hideNoPermissionMenus = (menuItems: ShallowNavigationMenuItem[], paths: Set<string>): ShallowNavigationMenuItem[] => {
+    return menuItems
+      .filter(menuItem => paths.has(menuItem.to as string) || paths.has(menuItem.triggerTo as string))
+      .map((menuItem) => {
+        if (menuItem.children) {
+          // Create a shallow copy to avoid mutating the original object and prevent deep type recursion
+          return {
+            ...menuItem,
+            children: hideNoPermissionMenus(menuItem.children as ShallowNavigationMenuItem[], paths)
+          }
+        }
+        return { ...menuItem }
+      })
+  }
+
   // user menus
   const menusFromUser = ref<Menu[]>([]) // including menus from roles
   const sidebarMenus = ref<ShallowNavigationMenuItem[]>([])
@@ -123,22 +139,6 @@ export const _useSidebarMenus = (): {
 
     // 直接在原数组上操作，保持数组引用不变
     expandRecursively(sidebarMenus.value as ShallowNavigationMenuItem[])
-  }
-
-  // hide menus except from specific keys
-  const hideNoPermissionMenus = (menuItems: ShallowNavigationMenuItem[], paths: Set<string>): ShallowNavigationMenuItem[] => {
-    return menuItems
-      .filter(menuItem => paths.has(menuItem.to as string) || paths.has(menuItem.triggerTo as string))
-      .map((menuItem) => {
-        if (menuItem.children) {
-          // Create a shallow copy to avoid mutating the original object and prevent deep type recursion
-          return {
-            ...menuItem,
-            children: hideNoPermissionMenus(menuItem.children as ShallowNavigationMenuItem[], paths)
-          }
-        }
-        return { ...menuItem }
-      })
   }
 
   const disabledMenuPathSet = computed<Set<string>>(() => {
