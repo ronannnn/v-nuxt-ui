@@ -2,6 +2,7 @@ import { flattenTree } from '#v/utils'
 import type { BreadcrumbItem, NavigationMenuItem } from '@nuxt/ui'
 import { createSharedComposable } from '@vueuse/core'
 import { useAuth } from './useAuth'
+import type { ComputedRef, Ref } from 'vue'
 import { ref, computed, watch } from 'vue'
 
 // Global defaults for sidebar menus. Library consumers can call
@@ -22,7 +23,21 @@ export function setGlobalSidebarMenus(opts: {
   if (opts.menuMode) menuMode.value = opts.menuMode
 }
 
-export const _useSidebarMenus = () => {
+export const _useSidebarMenus = (): {
+  constantMenus: Ref<NavigationMenuItem[]>
+  constantMenuPathSet: ComputedRef<Set<string>>
+  bizMenus: Ref<NavigationMenuItem[]>
+  flattenBizMenus: ComputedRef<NavigationMenuItem[]>
+  bizMenuPathSet: ComputedRef<Set<string>>
+  menusFromUser: Ref<Model.Menu[]>
+  sidebarMenus: Ref<NavigationMenuItem[]>
+  sidebarMenuPathSet: Ref<Set<string>>
+  expandSidebarMenu: (path: string) => void
+  setUserDynamicMenus: (newRolesFromUser: Model.Role[], newMenusFromUser: Model.Menu[]) => void
+  disabledMenuPathSet: ComputedRef<Set<string>>
+  breadcrumbs: Ref<BreadcrumbItem[]>
+  getBreadcrumbs: (current: string, menus?: NavigationMenuItem[]) => BreadcrumbItem[]
+} => {
   const { loginUserRoles, loginUserMenus } = useAuth()
   // constant menu
   // 这些菜单无需添加到数据库以及用户权限中
