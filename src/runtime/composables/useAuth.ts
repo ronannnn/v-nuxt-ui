@@ -5,6 +5,7 @@ import type { UseFetchOptions } from 'nuxt/app'
 import { useAuthApi, useLoading, useLoginApi, useRouterPush } from '.'
 import type { RouteLocationNormalizedLoadedGeneric } from 'vue-router'
 import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
+import { computed, ref } from 'vue'
 
 const _useAuth = () => {
   const { loading: loginLoading, startLoading: startLoginLoading, endLoading: endLoginLoading } = useLoading()

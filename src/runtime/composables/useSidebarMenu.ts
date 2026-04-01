@@ -2,6 +2,7 @@ import { flattenTree } from '#v/utils'
 import type { BreadcrumbItem, NavigationMenuItem } from '@nuxt/ui'
 import { createSharedComposable } from '@vueuse/core'
 import { useAuth } from './useAuth'
+import { ref, computed, watch } from 'vue'
 
 // Global defaults for sidebar menus. Library consumers can call
 // `setGlobalSidebarMenus` once (e.g. in layout or plugin) to initialize
@@ -55,9 +56,9 @@ export const _useSidebarMenus = () => {
     // including menus and menus from roles
     menusFromUser.value = [...newMenusFromUser, ...newRolesFromUser.map(role => role.menus ?? []).flat()]
     menusFromUser.value.forEach(menu => (menu.staticRouteKeys?.forEach(key => sidebarMenuPathSet.value.add(key))))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const menuItems = bizMenus.value as any[]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     sidebarMenus.value = (menuMode.value === 'static' ? menuItems : hideNoPermissionMenus(menuItems as NavigationMenuItem[], sidebarMenuPathSet.value)) as NavigationMenuItem[]
   }
   watch([loginUserRoles, loginUserMenus, bizMenus], ([newRoles, newMenus]) => {
@@ -124,9 +125,9 @@ export const _useSidebarMenus = () => {
   // breadcrumb
   const sidebarMenusAndConstantMenus = computed<NavigationMenuItem[]>(() => {
     const result: NavigationMenuItem[] = []
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     result.push(...(constantMenus.value as any[]))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     result.push(...(sidebarMenus.value as any[]))
     return result
   })

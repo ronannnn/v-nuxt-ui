@@ -10,6 +10,7 @@ import LayoutModuleMenu from '#v/components/layout/ModuleMenu.vue'
 import LayoutThemePicker from '#v/components/layout/ThemePicker.vue'
 import LayoutUserMenu from '#v/components/layout/UserMenu.vue'
 import Watermark from '#v/components/Watermark.vue'
+import { ref, watch } from 'vue'
 
 const open = ref(false)
 const app = useApp()

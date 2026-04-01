@@ -3,6 +3,7 @@ import { useAuth, useApp } from '#v/composables'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { useRoute } from 'vue-router'
 import { getEmojiFlag } from '#v/utils'
+import { computed } from 'vue'
 
 defineProps<{
   collapsed?: boolean

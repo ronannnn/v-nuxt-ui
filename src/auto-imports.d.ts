@@ -4,26 +4,6 @@
  * need explicit declarations for IDE auto-complete and ctrl+click navigation.
  */
 
-// --- Vue Reactivity & Lifecycle ---
-declare global {
-  const computed: (typeof import('vue'))['computed']
-  const ref: (typeof import('vue'))['ref']
-  const watch: (typeof import('vue'))['watch']
-  const onMounted: (typeof import('vue'))['onMounted']
-  const onBeforeUnmount: (typeof import('vue'))['onBeforeUnmount']
-  const nextTick: (typeof import('vue'))['nextTick']
-  const reactive: (typeof import('vue'))['reactive']
-  const toRef: (typeof import('vue'))['toRef']
-  const toRefs: (typeof import('vue'))['toRefs']
-  const unref: (typeof import('vue'))['unref']
-  const shallowRef: (typeof import('vue'))['shallowRef']
-  const watchEffect: (typeof import('vue'))['watchEffect']
-  const useTemplateRef: (typeof import('vue'))['useTemplateRef']
-
-  type Ref<T = any> = import('vue').Ref<T>
-  type ComputedRef<T = any> = import('vue').ComputedRef<T>
-}
-
 // --- Nuxt UI Components ---
 declare module 'vue' {
   export interface GlobalComponents {

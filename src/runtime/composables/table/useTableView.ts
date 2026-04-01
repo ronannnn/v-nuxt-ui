@@ -2,7 +2,7 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick, useTemplateRef 
 import type { Ref, ComputedRef } from 'vue'
 import type { VTableProps, TableHeaderProps, TablePaginationProps, WhereQueryProps, StatsItem } from '#v/types'
 import type { TableProps, ContextMenuItem } from '@nuxt/ui'
-import { useTable, type UseTableReturn } from './useTable'
+import { useTable } from './useTable'
 
 // 固定列阴影样式常量
 const PINNED_SHADOW_CLASSES = {
@@ -37,7 +37,7 @@ export interface UseProTableViewReturn<T> {
   tableWidth: Ref<number>
   updateTableWidth: () => void
   tblClasses: ComputedRef<(string | boolean | (string | boolean)[])[]>
-  tblUi: ComputedRef<{ root: string; th: string; td: string }>
+  tblUi: ComputedRef<{ root: string, th: string, td: string }>
 }
 
 export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn<T> {
