@@ -32,18 +32,22 @@
     "@nuxt/kit": "^4.3.1",
     "dayjs": "^1.11.19",
     "defu": "^6.1.4",
-    "maska": "^3.2.0",
-    "vue-router": "^5.0.4"
+    "maska": "^3.2.0"
   },
   "peerDependencies": {
     "@nuxt/ui": "^4.5.0",
     "@nuxtjs/i18n": "^10.2.3",
     "@vueuse/nuxt": "^14.2.1",
     "nuxt": "^4.3.1",
+    "tailwindcss": "^4.0.0",
+    "vue-router": "^4.5.0 || ^5.0.0",
     "zod": "^4.3.6"
   },
   "peerDependenciesMeta": {
     "zod": {
+      "optional": true
+    },
+    "tailwindcss": {
       "optional": true
     }
   },
