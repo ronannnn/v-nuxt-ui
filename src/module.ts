@@ -61,7 +61,7 @@ export default defineNuxtModule<ModuleOptions>({
       references.push({ path: resolve('./runtime/types/index.ts') })
     })
 
-    // Expose types as importable module: import type { VColumn } from '#build/types/v-nuxt-ui'
+    // Expose types as importable module: import type { VColumn } from 'v-nuxt-ui/types'
     addTypeTemplate({
       filename: 'types/v-nuxt-ui.d.ts',
       getContents: () => `export * from '${resolve('./runtime/types/index.ts')}'`
