@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
-import type { OrderQueryOption, WhereQueryOption, VColumn, OrderQuery, WhereQuery, WhereQueryItem, WhereQueryItemGroup } from '#v/types'
+import type { OrderQueryOption, WhereQueryOption, VColumn, OrderQuery, WhereQuery, WhereQueryItem, WhereQueryItemGroup, Column, TableSettings } from '#v/types'
 import { noValueOprList } from '#v/types'
 import { defu } from 'defu'
 import { useTableOpr } from './useTableOpr'
@@ -66,7 +66,7 @@ export function useTableQuery<T>(props: {
   })
 
   // local storage
-  const initStorageColumns = computed<LocalStorage.Column[]>(() =>
+  const initStorageColumns = computed<Column[]>(() =>
     bizColumns.map(col => ({
       accessorKey: (col as any)['accessorKey'],
       fixed: 'unfixed',
@@ -74,7 +74,7 @@ export function useTableQuery<T>(props: {
     }))
   )
 
-  const localStgSettings = useLocalStorage<LocalStorage.TableSettings<T>>(`${name}-table-settings`, {
+  const localStgSettings = useLocalStorage<TableSettings<T>>(`${name}-table-settings`, {
     columns: initStorageColumns.value,
     pageSize: 10,
     whereQuery: whereQueryInitValues.value,

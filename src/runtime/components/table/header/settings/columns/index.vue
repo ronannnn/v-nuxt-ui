@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T">
 import { ref, computed, onMounted } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
-import type { VColumn } from '#v/types'
+import type { Column, TableSettings, VColumn } from '#v/types'
 import TableHeaderSettingsColumnsDndList from '#v/components/table/header/settings/columns/DndList.vue'
 
 export type FixType = 'left' | 'right' | 'unfixed'
@@ -12,17 +12,17 @@ const props = defineProps<{
   onUpdateBizColumns: (cols: VColumn<T>[]) => void
 }>()
 
-const localTblSettings = useLocalStorage<LocalStorage.TableSettings<T>>(`${props.tblName}-table-settings`, {})
+const localTblSettings = useLocalStorage<TableSettings<T>>(`${props.tblName}-table-settings`, {})
 
 // 1. 生成所有列的完整信息（顺序、固定、显示状态）
 function getFullColumns(
-  stgCols: LocalStorage.Column[] | undefined
-): LocalStorage.Column[] {
+  stgCols: Column[] | undefined
+): Column[] {
   const bizKeys = props.rawBizColumns.map(col => (col as any)['accessorKey'])
   const stgColsFiltered = (stgCols ?? []).filter(s => bizKeys.includes(s.accessorKey))
   const stgKeys = stgColsFiltered.map(s => s.accessorKey)
   // 先按 stgCols 顺序
-  const result: LocalStorage.Column[] = stgColsFiltered.map((col) => {
+  const result: Column[] = stgColsFiltered.map((col) => {
     return {
       accessorKey: col.accessorKey,
       fixed: col.fixed ?? 'unfixed',
@@ -44,7 +44,7 @@ function getFullColumns(
 }
 
 // 2. 三个 list 的响应式数据
-const allColumns = ref<LocalStorage.Column[]>(getFullColumns(localTblSettings.value.columns))
+const allColumns = ref<Column[]>(getFullColumns(localTblSettings.value.columns))
 const leftFixedList = computed({
   get: () => allColumns.value.filter(c => c.fixed === 'left'),
   set: list => updateAllColumns(list, 'left')
@@ -59,7 +59,7 @@ const unfixedList = computed({
 })
 
 // 3. 更新 allColumns 顺序和 fixed
-function updateAllColumns(list: LocalStorage.Column[], type: FixType) {
+function updateAllColumns(list: Column[], type: FixType) {
   // 1. 先把所有 columns 里在 list 里的 key 都去掉（全局去重）
   const newKeys = new Set(list.map(c => c.accessorKey))
   // 2. 其他 fixed 类型的列
@@ -77,7 +77,7 @@ function updateAllColumns(list: LocalStorage.Column[], type: FixType) {
 }
 
 // 4. 切换固定状态
-function fixCol(stgCol: LocalStorage.Column, toType: FixType) {
+function fixCol(stgCol: Column, toType: FixType) {
   const idx = allColumns.value.findIndex(c => c.accessorKey === stgCol.accessorKey)
   if (idx !== -1) {
     allColumns.value[idx]!.fixed = toType
@@ -87,7 +87,7 @@ function fixCol(stgCol: LocalStorage.Column, toType: FixType) {
 }
 
 // 5. 切换显示/隐藏
-function toggleChecked(stgCol: LocalStorage.Column) {
+function toggleChecked(stgCol: Column) {
   const idx = allColumns.value.findIndex(c => c.accessorKey === stgCol.accessorKey)
   if (idx !== -1) {
     allColumns.value[idx]!.checked = !allColumns.value[idx]!.checked

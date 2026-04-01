@@ -1,11 +1,11 @@
 import { computed, ref, type Ref } from 'vue'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import type { Pagination } from '#v/types'
+import type { Pagination, TableSettings } from '#v/types'
 
 const defaultPageSize: number = 10
 const pageSizeOptions: number[] = [5, 10, 20, 50, 100]
 
-export function useTablePagination(localStgSettings: Ref<LocalStorage.TableSettings<any>>) {
+export function useTablePagination(localStgSettings: Ref<TableSettings<any>>) {
   const pageSize = computed<number>({
     get: () => localStgSettings.value.pageSize ?? defaultPageSize,
     set: pageSize => localStgSettings.value = { ...localStgSettings.value, pageSize }

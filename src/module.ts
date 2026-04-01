@@ -37,6 +37,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Register composables
     addImportsDir(resolve('./runtime/composables'))
     addImportsDir(resolve('./runtime/composables/api'))
+    addImportsDir(resolve('./runtime/composables/api/sys'))
     addImportsDir(resolve('./runtime/composables/flow'))
     addImportsDir(resolve('./runtime/composables/table'))
 
@@ -52,7 +53,6 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolve('./runtime/plugins/02.dayjs'))
     addPlugin(resolve('./runtime/plugins/03.theme'))
     addPlugin(resolve('./runtime/plugins/04.head'))
-    addPlugin(resolve('./runtime/plugins/05.api'))
 
     // Ensure CJS deps are pre-bundled for Vite ESM compat
     nuxt.options.vite ??= {}

@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T">
 import type { TableColumn } from '@nuxt/ui'
 import type { FixType } from './index.vue'
-import type { DndProps } from '#v/types'
+import type { Column, DndProps } from '#v/types'
 import ScrollArea from '#v/components/ScrollArea.vue'
 import Dnd from '#v/components/Dnd.client.vue'
 import TableHeaderSettingsColumnsItem from '#v/components/table/header/settings/columns/Item.vue'
@@ -11,10 +11,10 @@ defineProps<{
   rawBizColumns: TableColumn<T>[]
   group: DndProps<T>['group']
   handle: DndProps<T>['handle']
-  onFixCol: (col: LocalStorage.Column, fixType: FixType) => void
+  onFixCol: (col: Column, fixType: FixType) => void
   onAfterDrag?: () => void
 }>()
-const list = defineModel<LocalStorage.Column[]>('list', { required: true })
+const list = defineModel<Column[]>('list', { required: true })
 </script>
 
 <template>

@@ -9,7 +9,7 @@ import type { UseFetchOptions } from 'nuxt/app'
 
 export * from './header'
 export * from './pagination'
-export * from './query'
+export * from './query/index'
 export * from './column'
 
 export type CountApi<T> = (payload: Omit<QueryTemplate<T>, 'selectQuery'>, customOptions?: UseFetchOptions<number>) => Promise<{ data: Ref<RequestResult<number>> }>

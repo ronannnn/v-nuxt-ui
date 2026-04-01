@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { FixType } from './index.vue'
-import type { VColumn } from '#v/types'
+import type { Column, VColumn } from '#v/types'
 
 defineProps<{
   columns: VColumn<any>[]
-  stgCol: LocalStorage.Column
-  onFixCol: (col: LocalStorage.Column, fixType: FixType) => void
+  stgCol: Column
+  onFixCol: (col: Column, fixType: FixType) => void
 }>()
 const checked = defineModel<boolean | undefined>('checked', { required: true })
 </script>

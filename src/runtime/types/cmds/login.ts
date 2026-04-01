@@ -1,4 +1,4 @@
-import type { User } from '../models'
+import type { User } from '../models/index'
 
 export type UsernamePasswordLoginPayload = {
   username?: string

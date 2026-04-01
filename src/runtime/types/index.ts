@@ -1,11 +1,11 @@
 import type { BadgeProps } from '@nuxt/ui'
 
-export * from './cmds'
-export * from './models'
+export * from './cmds/index'
+export * from './models/index'
+export * from './components/index'
 export * from './app'
 export * from './locale'
 export * from './request'
-export * from './components'
 export * from './query'
 export * from './storage'
 

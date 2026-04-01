@@ -1,6 +1,6 @@
 import { computed, ref, h, type Ref, type ComputedRef } from 'vue'
 import type { ColumnPinningState } from '@tanstack/table-core'
-import type { VColumn, OrderQuery, OrderQueryOpr } from '#v/types'
+import type { VColumn, OrderQuery, OrderQueryOpr, TableSettings, Column } from '#v/types'
 import TableColumnActionHeader from '#v/components/table/column/ActionHeader.vue'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import UCheckbox from '@nuxt/ui/components/Checkbox.vue'
@@ -23,8 +23,8 @@ interface UseTableColumnsReturn<T> {
 export function useTableColumns<T>(props: {
   bizColumns: VColumn<T>[]
   commonColumnProps?: any
-  localStgSettings: Ref<LocalStorage.TableSettings<T>>
-  initStorageColumns: ComputedRef<LocalStorage.Column[]>
+  localStgSettings: Ref<TableSettings<T>>
+  initStorageColumns: ComputedRef<Column[]>
   orderQuery: ComputedRef<OrderQuery<T>>
   orderQueryInitValues: ComputedRef<OrderQuery<T>>
   onUpdateOrderQuery: (query: OrderQuery<T>) => void
