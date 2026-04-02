@@ -21,7 +21,6 @@ const props = withDefaults(defineProps<{
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
 const { fetching, startFetching, endFetching } = useFetching()
-const searchTerm = ref<string>('')
 const searchedData = ref<T[]>([])
 
 const currentSelectedData = computed<T[]>(() => [...whereQueryItem.value.extraData ?? []].flat() as T[])
@@ -93,16 +92,16 @@ const commandPaletteGroups = computed(() => {
   return options
 })
 
-const onFetchItems = async () => {
+const onFetchItems = async (searchTerm: string) => {
   try {
     startFetching()
     const query: QueryTemplate<T> = {
       pagination: { pageNum: 1, pageSize: 10 },
       whereQuery: { items: [] }
     }
-    if (!isEmptyString(searchTerm.value)) {
+    if (!isEmptyString(searchTerm)) {
       props.searchFields.forEach((field) => {
-        query.whereQuery?.items?.push({ field, opr: 'like', value: searchTerm.value, andOr: 'or' })
+        query.whereQuery?.items?.push({ field, opr: 'like', value: searchTerm, andOr: 'or' })
       })
     }
     const result = await props.listApi(defu(query, props.extraQuery))
@@ -130,7 +129,7 @@ defineExpose({
     :groups="commandPaletteGroups"
     multiple
     enable-footer-toolbar
-    @open="onFetchItems"
+    @open="() => onFetchItems('')"
     @search="onDebounceFetchItems"
   >
     <UButton
