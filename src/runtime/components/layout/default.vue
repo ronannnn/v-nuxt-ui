@@ -55,7 +55,7 @@ watch(
       }"
     >
       <template #header="{ collapsed }">
-        <LayoutModuleMenu :collapsed="collapsed" />
+        <LayoutModuleMenu :collapsed="collapsed" class="w-full" />
         <LayoutThemePicker v-if="!collapsed" class="ml-auto" />
       </template>
       <template #default="{ collapsed }">
