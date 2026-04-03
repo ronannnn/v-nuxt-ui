@@ -58,7 +58,7 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
       <div ref="table" class="flex flex-col h-full">
         <UCollapsible :open="tblHeaderProps.whereQueryProps.whereQueryOpen">
           <template #content>
-            <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default" />
+            <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default bg-muted" />
           </template>
         </UCollapsible>
 
