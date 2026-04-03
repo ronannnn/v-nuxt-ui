@@ -15,6 +15,10 @@ setGlobalSidebarMenus({
     label: '用户列表',
     icon: 'i-lucide-users',
     to: '/examples/users'
+  }, {
+    label: '登录界面',
+    icon: 'i-lucide-compass',
+    to: '/login/pwd'
   }]
 })
 const { rootNavigation } = useNavigation(navigation)

@@ -9,8 +9,12 @@ export function useHeader() {
     label: 'Examples',
     to: '/examples/users',
     active: route.path.startsWith('/examples/')
+  }, {
+    label: 'Login',
+    to: '/login/pwd',
+    active: route.path.startsWith('/login')
   }])
-  
+
   const mobileLinks = computed(() => [{
     label: 'Get Started',
     icon: 'i-lucide-square-play',
