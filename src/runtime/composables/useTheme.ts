@@ -104,7 +104,7 @@ const _useTheme = () => {
 
   const sidebarVariant = computed<SidebarProps['variant']>({
     get() {
-      return app.appConfig.value.variant ?? 'sidebar'
+      return app.appConfig.value.variant ?? 'separated'
     },
     set(value: SidebarProps['variant']) {
       app.updateSidebarVariant(value)
@@ -121,7 +121,7 @@ const _useTheme = () => {
 
   const sidebarCollapsible = computed({
     get() {
-      return app.appConfig.value.collapsible ?? 'responsive'
+      return app.appConfig.value.collapsible ?? 'icon'
     },
     set(value: SidebarProps['collapsible']) {
       app.updateSidebarCollapsible(value)

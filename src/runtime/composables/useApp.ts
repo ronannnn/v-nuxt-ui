@@ -8,7 +8,7 @@ export const defaultAppSettings: CustomAppConfig = {
   headerHeight: 48,
   tabHeight: 40,
   side: 'left',
-  variant: 'inset',
+  variant: 'separated',
   collapsible: 'icon',
   siderMaxWidth: 20,
   siderMinWidth: 10,
@@ -59,7 +59,7 @@ const _useApp = () => {
       return appConfig.value.siderCollapsed ?? false
     },
     set(value: boolean) {
-      appConfig.value = { ...appConfig.value, siderCollapsed: value }
+      appConfig.value = { ...appConfig.value, siderCollapsed: value ?? true }
     }
   })
 
