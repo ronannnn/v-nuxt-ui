@@ -3,6 +3,7 @@ import { useTheme } from '#v/composables'
 import ButtonTheme from '#v/components/button/Theme.vue'
 
 const theme = useTheme()
+const neutralColorOptions = theme.neutralColors.map(c => ({ color: c, chip: c === 'neutral' ? 'old-neutral' : c }))
 </script>
 
 <template>
@@ -54,12 +55,12 @@ const theme = useTheme()
 
         <div class="grid grid-cols-3 gap-2 -mx-2">
           <ButtonTheme
-            v-for="color in theme.neutralColors"
-            :key="color"
-            :label="color"
-            :chip="color === 'neutral' ? 'old-neutral' : color"
-            :selected="theme.neutral.value === color"
-            @click="theme.neutral.value = color"
+            v-for="item in neutralColorOptions"
+            :key="item.color"
+            :label="item.color"
+            :chip="item.chip"
+            :selected="theme.neutral.value === item.color"
+            @click="theme.neutral.value = item.color"
           />
         </div>
       </fieldset>

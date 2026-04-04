@@ -16,6 +16,7 @@ const slots = defineSlots<{
 }>()
 
 const colorMode = useColorMode()
+const emojiFlag = computed(() => props.locale ? getEmojiFlag(props.locale) : '')
 const chipColor = computed(() => {
   if (!props.chip) return undefined
   if (props.chip === 'black') return 'black'
@@ -42,7 +43,7 @@ const chipColor = computed(() => {
         />
       </slot>
       <slot v-else-if="locale" name="leading">
-        {{ getEmojiFlag(locale) }}
+        {{ emojiFlag }}
       </slot>
       <slot v-else name="leading" />
     </template>
