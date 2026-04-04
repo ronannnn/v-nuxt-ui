@@ -50,19 +50,18 @@ const items = computed<DropdownMenuItem[][]>(() => (
   <UDropdownMenu
     :items="items"
     :content="{ align: 'center', collisionPadding: 12 }"
-    :ui="{ content: (collapsed || headerMode) ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
+    :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width) min-w-48' }"
   >
     <UButton
-      :label="(collapsed || (headerMode && app.isMobile.value))? undefined : auth.loginUser.value?.nickname ?? 'Hello'"
+      :label="auth.loginUser.value?.nickname ?? 'Hello'"
       leading-icon="i-lucide-user-circle"
       :trailing-icon="(collapsed || headerMode) ? undefined : 'i-lucide-chevrons-up-down'"
       color="neutral"
       variant="ghost"
-      block
-      :square="collapsed || headerMode"
-      class="data-[state=open]:bg-elevated"
+      square
+      class="data-[state=open]:bg-elevated w-full overflow-hidden"
       :ui="{
-        trailingIcon: 'text-dimmed'
+        trailingIcon: 'text-dimmed ms-auto'
       }"
     />
 

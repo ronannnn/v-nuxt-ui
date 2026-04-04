@@ -33,6 +33,7 @@ declare module 'vue' {
     URadioGroup: typeof import('@nuxt/ui/components/RadioGroup.vue')['default']
     USelectMenu: typeof import('@nuxt/ui/components/SelectMenu.vue')['default']
     USeparator: typeof import('@nuxt/ui/components/Separator.vue')['default']
+    USidebar: typeof import('@nuxt/ui/components/Sidebar.vue')['default']
     USlideover: typeof import('@nuxt/ui/components/Slideover.vue')['default']
     USwitch: typeof import('@nuxt/ui/components/Switch.vue')['default']
     UTable: typeof import('@nuxt/ui/components/Table.vue')['default']

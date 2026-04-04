@@ -1,3 +1,4 @@
+import type { SidebarProps } from '@nuxt/ui'
 import type { I18nLocale } from './locale'
 
 /** Header config */
@@ -16,6 +17,9 @@ export interface TabConfig {
 
 /** Sider config */
 interface SiderConfig {
+  side?: SidebarProps['side']
+  variant?: SidebarProps['variant']
+  collapsible?: SidebarProps['collapsible']
   hideSider?: boolean
   siderClass?: string
   siderMobileClass?: string

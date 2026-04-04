@@ -96,6 +96,22 @@ const theme = useTheme()
           />
         </div>
       </fieldset>
+
+      <fieldset>
+        <legend class="text-[11px] leading-none font-semibold mb-2">
+          侧边栏样式
+        </legend>
+
+        <div class="grid grid-cols-3 gap-2 -mx-2">
+          <ButtonTheme
+            v-for="m in theme.sidebarVariantOptions.value"
+            :key="m.label"
+            v-bind="m"
+            :selected="theme.sidebarVariant.value === m.value"
+            @click="theme.sidebarVariant.value = m.value"
+          />
+        </div>
+      </fieldset>
     </template>
   </UPopover>
 </template>

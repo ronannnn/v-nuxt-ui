@@ -4,6 +4,7 @@ import type { I18nLocale } from '#v/types'
 import { en, zh_cn } from '@nuxt/ui/locale'
 import { useApp } from './useApp'
 import { useAppConfig } from 'nuxt/app'
+import type { SidebarProps } from '@nuxt/ui'
 
 // All tailwindcss v4 primary color names (excluding neutrals & special values)
 const twPrimaryColorNames = [
@@ -92,6 +93,41 @@ const _useTheme = () => {
     }
   })
 
+  const sidebarSide = computed({
+    get() {
+      return app.appConfig.value.side ?? 'left'
+    },
+    set(value: SidebarProps['side']) {
+      app.updateSidebarSide(value)
+    }
+  })
+
+  const sidebarVariant = computed<SidebarProps['variant']>({
+    get() {
+      return app.appConfig.value.variant ?? 'sidebar'
+    },
+    set(value: SidebarProps['variant']) {
+      app.updateSidebarVariant(value)
+    }
+  })
+  const sidebarVariantOptions = computed<{
+    label: string
+    value: SidebarProps['variant']
+  }[]>(() => [
+    { label: '嵌入式', value: 'inset' },
+    { label: '悬浮式', value: 'floating' },
+    { label: '分离式', value: 'separated' }
+  ])
+
+  const sidebarCollapsible = computed({
+    get() {
+      return app.appConfig.value.collapsible ?? 'responsive'
+    },
+    set(value: SidebarProps['collapsible']) {
+      app.updateSidebarCollapsible(value)
+    }
+  })
+
   return {
     blackAsPrimary,
     neutralColors: twNeutralColorNames,
@@ -105,7 +141,11 @@ const _useTheme = () => {
     modes,
     mode,
     locale,
-    locales
+    locales,
+    sidebarSide,
+    sidebarVariant,
+    sidebarVariantOptions,
+    sidebarCollapsible
   }
 }
 

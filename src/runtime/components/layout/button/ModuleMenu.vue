@@ -46,7 +46,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
       }"
       color="neutral"
       variant="ghost"
-      :square="collapsed"
+      square
       class="data-[state=open]:bg-elevated"
     />
   </UDropdownMenu>

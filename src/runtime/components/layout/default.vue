@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { useApp, useSidebarMenus, useAuth } from '#v/composables'
+import { useSidebarMenus, useAuth, useTheme, useApp } from '#v/composables'
 import { useRoute } from 'nuxt/app'
 import { stringsJoin } from '#v/utils'
-import UDashboardGroup from '@nuxt/ui/components/DashboardGroup.vue'
-import UDashboardSidebar from '@nuxt/ui/components/DashboardSidebar.vue'
 import UNavigationMenu from '@nuxt/ui/components/NavigationMenu.vue'
 import ScrollArea from '#v/components/ScrollArea.vue'
 import LayoutModuleMenu from '#v/components/layout/button/ModuleMenu.vue'
 import LayoutThemePicker from '#v/components/layout/button/ThemePicker.vue'
 import LayoutUserMenu from '#v/components/layout/button/UserMenu.vue'
 import Watermark from '#v/components/Watermark.vue'
-import { ref, watch } from 'vue'
+import { watch } from 'vue'
 
-const open = ref(false)
 const app = useApp()
+const theme = useTheme()
 
 const loginUser = useAuth().loginUser
 
@@ -39,52 +37,62 @@ watch(
 </script>
 
 <template>
-  <UDashboardGroup unit="rem">
-    <UDashboardSidebar
-      id="sidebar"
-      v-model:open="open"
-      collapsible
-      resizable
-      :min-size="app.appConfig.value.siderMinWidth"
-      :max-size="app.appConfig.value.siderMaxWidth"
+  <div
+    class="flex flex-1 h-full"
+    :class="[
+      theme.sidebarVariant.value === 'inset' && 'bg-neutral-50 dark:bg-neutral-950',
+      theme.sidebarSide.value === 'right' && 'flex-row-reverse'
+    ]"
+  >
+    <!-- sidebar -->
+    <USidebar
+      v-model:open="app.sidebarCollapsed.value"
+      :variant="theme.sidebarVariant.value"
+      :collapsible="theme.sidebarCollapsible.value"
+      :side="theme.sidebarSide.value"
       :ui="{
-        root: 'bg-muted min-w-[65px]', // 64 + 1: 1 is border-r
-        footer: 'lg:border-t lg:border-default sm:px-4',
         body: 'px-0 sm:px-0',
-        header: 'border-b border-default sm:px-4'
+        footer: 'h-(--ui-footer-height)'
       }"
     >
-      <template #header="{ collapsed }">
-        <LayoutModuleMenu :collapsed="collapsed" class="w-full" />
-        <LayoutThemePicker v-if="!collapsed" class="ml-auto" />
+      <template #header="{ state }">
+        <LayoutModuleMenu :collapsed="state === 'collapsed'" class="flex-1" />
+        <LayoutThemePicker v-if="state !== 'collapsed'" class="ml-auto" />
       </template>
-      <template #default="{ collapsed }">
+
+      <template #default="{ state }">
         <ScrollArea>
           <div class="px-4 flex flex-col gap-2">
             <UNavigationMenu
               :items="sidebarMenus"
-              :collapsed="collapsed"
+              :collapsed="state === 'collapsed'"
               trailing-icon="i-lucide-chevron-down"
               orientation="vertical"
               tooltip
               popover
+              :ui="{ link: 'px-1.5 overflow-hidden' }"
             />
           </div>
         </ScrollArea>
       </template>
 
-      <template #footer="{ collapsed }">
-        <LayoutUserMenu :collapsed="collapsed" />
+      <template #footer="{ state }">
+        <LayoutUserMenu :collapsed="state === 'collapsed'" />
       </template>
-    </UDashboardSidebar>
+    </USidebar>
 
-    <Watermark
-      :text="stringsJoin([
-        loginUser?.nickname ?? loginUser?.username,
-        loginUser?.department?.company?.nickname ?? loginUser?.department?.name
-      ], '@')"
+    <!-- main content -->
+    <div
+      class="flex-1 flex flex-col w-full overflow-hidden lg:peer-data-[variant=floating]:my-4 peer-data-[variant=inset]:m-4 lg:peer-data-[variant=inset]:not-peer-data-[collapsible=offcanvas]:ms-0 peer-data-[variant=inset]:rounded-xl peer-data-[variant=inset]:shadow-sm peer-data-[variant=inset]:ring peer-data-[variant=inset]:ring-default bg-default"
     >
-      <slot />
-    </Watermark>
-  </UDashboardGroup>
+      <Watermark
+        :text="stringsJoin([
+          loginUser?.nickname ?? loginUser?.username,
+          loginUser?.department?.company?.nickname ?? loginUser?.department?.name
+        ], '@')"
+      >
+        <slot />
+      </Watermark>
+    </div>
+  </div>
 </template>

@@ -8,7 +8,7 @@ const isMobile = useApp().isMobile
 </script>
 
 <template>
-  <div class="flex items-center justify-between gap-3 h-(--ui-footer-height) border-t border-default p-3">
+  <div class="flex items-center justify-between gap-3 h-(--ui-footer-height) p-3">
     <div v-if="!isMobile" class="text-sm text-muted truncate">
       {{ selectedIds?.length ?? 0 }} of
       {{ data.length }} 行已选择

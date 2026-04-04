@@ -2,10 +2,14 @@ import { ref, computed } from 'vue'
 import { breakpointsTailwind, createSharedComposable, useBreakpoints, useLocalStorage } from '@vueuse/core'
 import { StorageKey, type CustomAppConfig, type I18nLocale } from '#v/types'
 import { cloneJson } from '#v/utils'
+import type { SidebarProps } from '@nuxt/ui'
 
 export const defaultAppSettings: CustomAppConfig = {
   headerHeight: 48,
   tabHeight: 40,
+  side: 'left',
+  variant: 'inset',
+  collapsible: 'icon',
   siderMaxWidth: 20,
   siderMinWidth: 10,
   siderCollapsed: false,
@@ -30,7 +34,6 @@ const _useApp = () => {
   }
   const updateNeutralColor = (color: string) => {
     appConfig.value = { ...appConfig.value, neutral: color }
-    console.log('Updated neutral color to', appConfig.value)
   }
   const updateRadius = (radius: number) => {
     appConfig.value = { ...appConfig.value, radius }
@@ -38,6 +41,27 @@ const _useApp = () => {
   const updateLocale = (locale: I18nLocale) => {
     appConfig.value = { ...appConfig.value, locale }
   }
+  const updateSidebarSide = (side: SidebarProps['side']) => {
+    appConfig.value = { ...appConfig.value, side }
+  }
+  const updateSidebarVariant = (variant: SidebarProps['variant']) => {
+    appConfig.value = { ...appConfig.value, variant }
+  }
+  // 这个是USidebar的一个模式：offcanvas, icon, none
+  const updateSidebarCollapsible = (collapsible: SidebarProps['collapsible']) => {
+    appConfig.value = { ...appConfig.value, collapsible }
+  }
+  const updateSidebarCollapsed = (collapsed: boolean) => {
+    appConfig.value = { ...appConfig.value, siderCollapsed: collapsed }
+  }
+  const sidebarCollapsed = computed<boolean>({
+    get() {
+      return appConfig.value.siderCollapsed ?? false
+    },
+    set(value: boolean) {
+      appConfig.value = { ...appConfig.value, siderCollapsed: value }
+    }
+  })
 
   const keepalive = computed<boolean>({
     get() {
@@ -77,6 +101,11 @@ const _useApp = () => {
     updateNeutralColor,
     updateRadius,
     updateLocale,
+    updateSidebarSide,
+    updateSidebarVariant,
+    updateSidebarCollapsible,
+    updateSidebarCollapsed,
+    sidebarCollapsed,
     keepalive,
     setKeepalive,
     isMobile,

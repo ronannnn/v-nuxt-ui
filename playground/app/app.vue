@@ -44,7 +44,7 @@ useHead({
       :height="2"
     />
 
-    <div class="flex">
+    <div class="flex h-screen">
       <div class="flex-1 min-w-0">
         <template v-if="!route.path.startsWith('/examples')">
           <Header />
