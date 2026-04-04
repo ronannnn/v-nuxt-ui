@@ -12,3 +12,9 @@
 @source "./components";
 @source "./composables";
 @source "./utils";
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+}
