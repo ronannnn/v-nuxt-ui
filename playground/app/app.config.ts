@@ -39,7 +39,7 @@ export default defineAppConfig({
         tr: 'group transition-all',
         th: 'py-0 px-0 border-default [&:has([role=expand])]:pe-0',
         // tr group中只要有不为empty的td，就应用border-b
-        td: 'py-2.5 border-default empty:p-0 [&:has([role=expand-col])]:pe-0 transition-all'
+        td: 'py-2.5 border-default empty:p-0 [&:has([role=expand-col])]:pe-0 transition-all group-hover:bg-muted'
       },
       variants: {
         pinned: {
