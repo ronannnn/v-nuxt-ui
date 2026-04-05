@@ -257,7 +257,7 @@ const componentMeta: Record<string, ComponentMetaEntry> = {
 
   ProForm: {
     props: [
-      { name: 'fields', type: 'VFormFieldProps<T>[]', required: true, description: 'Form field configurations' },
+      { name: 'fields', type: 'VFormFieldProps[]', required: true, description: 'Form field configurations' },
       { name: 'model', type: 'T', required: true, description: 'Form data model' },
       { name: 'rules', type: 'Record<string, any>', required: false, description: 'Validation rules' },
       { name: 'disabled', type: 'boolean', required: false, description: 'Disable all fields' },

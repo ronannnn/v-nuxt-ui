@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { OrderQueryProps, OrderQuery, OrderQueryOpr } from '#v/types'
 import { compareObjArrays } from '#v/utils'
 import { computed, ref } from 'vue'

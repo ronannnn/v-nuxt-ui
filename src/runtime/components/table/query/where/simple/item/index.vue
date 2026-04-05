@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { WhereQueryOption, WhereQueryItem } from '#v/types'
 import { computed, watch, useTemplateRef } from 'vue'
 import TableQueryWhereSimpleItemColumnPicker from '#v/components/table/query/where/simple/item/ColumnPicker.vue'

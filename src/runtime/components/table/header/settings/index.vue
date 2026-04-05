@@ -1,14 +1,11 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import type { VColumn } from '#v/types'
 import TableHeaderSettingsColumns from '#v/components/table/header/settings/columns/index.vue'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyRecord = Record<string, any>
-
 defineProps<{
   tblName: string
-  rawBizColumns: VColumn<AnyRecord>[]
-  onUpdateBizColumns: (cols: VColumn<AnyRecord>[]) => void
+  rawBizColumns: VColumn<T>[]
+  onUpdateBizColumns: (cols: VColumn<T>[]) => void
 }>()
 
 const emit = defineEmits<{

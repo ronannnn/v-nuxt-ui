@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { FormTemplateProps } from '#v/types'
 import { isEmptyString, getColSpanClassFromResponsive } from '#v/utils'
 import { useTemplateRef, computed } from 'vue'

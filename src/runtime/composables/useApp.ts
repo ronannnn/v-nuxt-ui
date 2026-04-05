@@ -8,7 +8,7 @@ export const defaultAppSettings: CustomAppConfig = {
   headerHeight: 48,
   tabHeight: 40,
   side: 'left',
-  variant: 'separated',
+  variant: 'sidebar',
   collapsible: 'icon',
   siderMaxWidth: 20,
   siderMinWidth: 10,

@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { ComponentPublicInstance } from 'vue'
 import type { WhereSimpleQueryProps } from '#v/types'
 import { ref } from 'vue'

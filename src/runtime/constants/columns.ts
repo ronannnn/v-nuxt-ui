@@ -22,9 +22,10 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     cell: ({ row }) => row.original.creator?.nickname || '/',
     filterOption: {
       type: 'async-select',
-      listApi: useUserApi().list as any,
+      listApi: useUserApi().list,
       searchFields: ['nickname'],
       labelField: 'nickname',
+      valueField: 'id',
       multiple: true,
       defaultOpr: 'in'
     }
@@ -36,9 +37,10 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     cell: ({ row }) => row.original.updater?.nickname || '/',
     filterOption: {
       type: 'async-select',
-      listApi: useUserApi().list as any,
+      listApi: useUserApi().list,
       searchFields: ['nickname'],
       labelField: 'nickname',
+      valueField: 'id',
       multiple: true,
       defaultOpr: 'in'
     }

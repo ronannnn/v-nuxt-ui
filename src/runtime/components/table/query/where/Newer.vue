@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { WhereQueryOption, VColumn, Size } from '#v/types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed } from 'vue'

@@ -42,7 +42,7 @@ const roleSourceTreeItems = computed<TreeItem[]>(() => treeifyOptions(
   () => {},
   'name',
   'id',
-  'parentId'
+  'parentId' as keyof Role
 ))
 const roleTargetTreeItems = computed<TreeItem[]>({
   get() {
@@ -51,7 +51,7 @@ const roleTargetTreeItems = computed<TreeItem[]>({
       () => {},
       'name',
       'id',
-      'parentId'
+      'parentId' as keyof Role
     )
   },
   set(newVal) {
@@ -134,6 +134,7 @@ onMounted(async () => {
         colSpan: '12',
         type: 'async-tree-select',
         labelField: 'name',
+        valueField: 'id',
         searchFields: ['name'],
         listApi: useDepartmentApi().list,
         fetchAll: true,
@@ -147,6 +148,7 @@ onMounted(async () => {
         colSpan: '12',
         type: 'async-select',
         labelField: 'nickname',
+        valueField: 'id',
         searchFields: ['nickname'],
         listApi: useUserApi().list,
         initModelValues: newValues.supervisor,

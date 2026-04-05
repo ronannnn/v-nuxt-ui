@@ -3,7 +3,7 @@ import type { VColumn, WhereQuery, WhereQueryColumnOption, WhereQueryItem, Where
 export type WhereQueryOption<T> = {
   field: string & keyof T | string
   label: string
-} & Partial<WhereQueryColumnOption<T>>
+} & WhereQueryColumnOption<T>
 
 export type WhereQueryProps<T> = {
   whereOptions: WhereQueryOption<T>[]

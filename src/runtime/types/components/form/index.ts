@@ -5,7 +5,7 @@ import type { VFormFieldProps } from './field'
 export * from './field'
 
 export type FormTemplateProps<T> = {
-  fields: VFormFieldProps<T>[]
+  fields: VFormFieldProps[]
   modelValue: Partial<T>
   onUpdateModelValue?: (newVal: Partial<T>) => void
   onTriggerSubmit?: (e: Event) => void
@@ -16,7 +16,7 @@ export type CreateModalFormTemplateProps<T> = {
   description?: string
   onClose: (ok: boolean) => void
   onSubmit: () => Promise<void>
-  fields: VFormFieldProps<T>[]
+  fields: VFormFieldProps[]
   modelValue: Partial<T>
   onUpdateModelValue?: (newVal: Partial<T>) => void
   rowKey?: keyof T

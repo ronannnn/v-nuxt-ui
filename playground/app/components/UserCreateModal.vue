@@ -22,7 +22,7 @@ const statusOptions = [
 const isEdit = computed(() => props.model.id > 0)
 const title = computed(() => isEdit.value ? '编辑用户' : '新建用户')
 
-const fields: VFormFieldProps<User>[] = [
+const fields: VFormFieldProps[] = [
   { name: 'nickname', label: '姓名', type: 'input', required: true, placeholder: '请输入姓名', colSpan: '12' },
   { name: 'username', label: '用户名', type: 'input', required: true, placeholder: '请输入用户名', colSpan: '12' },
   { name: 'email', label: '邮箱', type: 'input', placeholder: '请输入邮箱', colSpan: '12' },
@@ -33,9 +33,10 @@ const fields: VFormFieldProps<User>[] = [
     name: 'departmentId',
     label: '部门',
     type: 'async-select',
-    listApi: useDepartmentApi().list as any,
+    listApi: useDepartmentApi().list,
     searchFields: ['name'],
     labelField: 'name',
+    valueField: 'id',
     colSpan: '12'
   },
   { name: 'isAdmin', label: '系统管理员', type: 'switch', colSpan: '12' },

@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { FixType } from './index.vue'
 import type { Column, VColumn } from '#v/types'
 

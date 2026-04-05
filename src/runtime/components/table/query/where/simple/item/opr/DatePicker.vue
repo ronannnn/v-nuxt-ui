@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { WhereQueryItem, WhereQueryOpr, DateShortcut } from '#v/types'
 import type { DateRange, DateValue } from 'reka-ui'
 import { computed, useTemplateRef, nextTick, ref } from 'vue'

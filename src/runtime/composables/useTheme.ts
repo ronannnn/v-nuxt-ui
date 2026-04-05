@@ -104,7 +104,7 @@ const _useTheme = () => {
 
   const sidebarVariant = computed<SidebarProps['variant']>({
     get() {
-      return app.appConfig.value.variant ?? 'separated'
+      return app.appConfig.value.variant ?? 'sidebar'
     },
     set(value: SidebarProps['variant']) {
       app.updateSidebarVariant(value)
@@ -116,7 +116,7 @@ const _useTheme = () => {
   }[]>(() => [
     { label: '嵌入式', value: 'inset' },
     { label: '悬浮式', value: 'floating' },
-    { label: '分离式', value: 'separated' }
+    { label: '分离式', value: 'sidebar' }
   ])
 
   const sidebarCollapsible = computed({

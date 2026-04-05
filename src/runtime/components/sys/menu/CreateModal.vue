@@ -40,6 +40,7 @@ const { onSubmit } = useFormSubmission(
         colSpan: '12',
         type: 'async-tree-select',
         labelField: 'name',
+        valueField: 'id',
         searchFields: ['name'],
         listApi: useMenuApi().list,
         fetchAll: true,

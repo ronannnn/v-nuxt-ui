@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import { computed, useTemplateRef } from 'vue'
 import { isEmptyString } from '#v/utils'
 import type { WhereQueryItem } from '#v/types'

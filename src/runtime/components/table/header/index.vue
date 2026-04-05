@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import { computed, h } from 'vue'
 import { defu } from 'defu'
 import { useOverlay } from '@nuxt/ui/composables'
@@ -11,17 +11,13 @@ import TableQueryOrder from '#v/components/table/query/order/index.vue'
 import DeleteModal from '#v/components/DeleteModal.vue'
 import TableHeaderSettings from '#v/components/table/header/settings/index.vue'
 import TableExcelExportModal from '#v/components/table/ExcelExportModal.vue'
-import { widenColumns } from '#v/utils'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyRecord = Record<string, any>
 
 const props = withDefaults(defineProps<TableHeaderProps<T>>(), {
   size: 'md',
   oprOrder: () => ['create', 'refresh', 'whereQuery', 'orderQuery', 'settings', 'exportExcel', 'batchDelete']
 })
 
-/** 默认新建行模板，T extends Record<string, any> 保证 { id: 0 } 是合法赋值 */
+/** 默认新建行模板，T 保证 { id: 0 } 是合法赋值 */
 const defaultNewRow = { id: 0 } as Record<string, any> as T
 
 const overlay = useOverlay()
@@ -101,9 +97,9 @@ const oprButtons = computed(() => {
               const updateFn = props.onUpdateBizColumns
               await settingsModal.open({
                 tblName: props.name,
-                rawBizColumns: widenColumns(props.rawBizColumns),
+                rawBizColumns: props.rawBizColumns as any,
                 // 列数据由父组件创建（VColumn<T>），模态框仅重排顺序后返回，运行时类型不变
-                onUpdateBizColumns: (cols: VColumn<AnyRecord>[]) => updateFn(cols as unknown as VColumn<T>[])
+                onUpdateBizColumns: ((cols: VColumn<T>[]) => updateFn(cols)) as any
               })
             }
           },
@@ -120,11 +116,11 @@ const oprButtons = computed(() => {
             variant: 'outline',
             onClick: async () => {
               await excelExportModal.open({
-                columns: widenColumns(props.rawBizColumns),
+                columns: props.rawBizColumns as any,
                 filename: props.exportExcel!.filename,
                 filenameWithDateTime: props.exportExcel!.filenameWithDateTime,
                 listFn: props.apiGroup?.().countAndList,
-                whereQueryOptions: props.whereQueryProps?.whereOptions,
+                whereQueryOptions: props.whereQueryProps.whereOptions as any,
                 extraWhereQueryInitValues: defu(props.extraWhereQueryInitValues, props.exportExcel!.extraWhereQueryInitValues)
               })
             }

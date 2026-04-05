@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { TablePaginationProps } from '#v/types'
 import { useApp } from '#v/composables/useApp'
 

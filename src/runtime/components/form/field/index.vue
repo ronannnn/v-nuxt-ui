@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import { computed } from 'vue'
 import type { VFormFieldProps } from '#v/types'
 import FormFieldInput from './Input.vue'
@@ -16,7 +16,7 @@ import FormFieldTreeSelectTransfer from './TreeSelectTransfer.vue'
 import FormFieldSqlEditor from './SqlEditor.vue'
 
 const props = defineProps<{
-  field: VFormFieldProps<T>
+  field: VFormFieldProps
   onTriggerSubmit?: (e: Event) => void
 }>()
 

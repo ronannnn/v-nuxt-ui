@@ -25,12 +25,12 @@ export function flattenTree<T extends { children?: T[] }>(tree: T[]): T[] {
 }
 
 // created by github copilot
-export function treeifyOptions<T extends Record<string, any>>(
+export function treeifyOptions<T>(
   data: T[],
   onSelect: (newVal: number) => void,
-  labelField: string,
-  valueField: string,
-  parentValueField: string,
+  labelField: keyof T,
+  valueField: keyof T,
+  parentValueField: keyof T,
   excludedValue = 0,
   disabledIds = [] as number[],
   defaultExpanded = true,

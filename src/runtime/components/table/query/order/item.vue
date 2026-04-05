@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { OrderQueryOpr, OrderQueryOption, VColumn } from '#v/types'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed } from 'vue'

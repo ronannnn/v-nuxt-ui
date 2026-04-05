@@ -392,7 +392,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     stats,
     // row selection
     rowSelection,
-    onUpdateRowSelection: (newRowSelection: Record<number, boolean> | undefined) => rowSelection.value = newRowSelection,
+    onUpdateRowSelection: (newRowSelection: Record<number, boolean>) => rowSelection.value = newRowSelection,
     selectedIds,
     // crud
     fetching,

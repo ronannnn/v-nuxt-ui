@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { WhereQueryProps } from '#v/types'
 import { computed, useTemplateRef, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'

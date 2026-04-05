@@ -50,6 +50,7 @@ const columns: VColumn<User>[] = [
       listApi: useDepartmentApi().list,
       searchFields: ['name'],
       labelField: 'name',
+      valueField: 'id',
       multiple: true,
       defaultOpr: 'in'
     }

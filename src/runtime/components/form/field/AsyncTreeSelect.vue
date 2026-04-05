@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import { ref, computed } from 'vue'
 import { useFetching } from '#v/composables/useBoolean'
 import type { QueryTemplate, VFormFieldAsyncTreeSelectProps } from '#v/types'

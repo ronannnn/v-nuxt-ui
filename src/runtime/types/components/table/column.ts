@@ -18,8 +18,8 @@ export type WhereQueryColumnAsyncSelectProps<T> = {
   extraQuery?: QueryTemplate<T>
   searchFields: string[]
   extraSearchFieldFn?(keyword: string): WhereQueryItem<T>
-  labelField?: string
-  valueField?: string
+  labelField?: keyof T
+  valueField: keyof T
   labelRenderFn?(model: T): string | undefined
   enableEmptyOption?: boolean
   disableOprSelector?: boolean
@@ -55,7 +55,7 @@ export type OrderQueryColumnOption = {
 }
 
 export type VColumn<T> = {
-  filterOption?: WhereQueryColumnOption<T>
+  filterOption?: WhereQueryColumnOption<any> // 这里不能是T，因为 filterOption 的配置可能与 T 无关，例如一个T是user，这里是查询部门
   sortOption?: OrderQueryColumnOption | true
   initHide?: boolean
   checked?: boolean

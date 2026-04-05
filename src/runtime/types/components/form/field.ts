@@ -13,8 +13,8 @@ export type VFormFieldAsyncSelectProps<T> = {
   searchFields: (string)[]
   // 使用方法签名以保持 T 的双变
   extraSearchFieldFn?(keyword: string): WhereQueryItem<T>
-  labelField?: string
-  valueField?: string
+  labelField?: keyof T
+  valueField: keyof T
   // 使用方法签名以保持 T 的双变
   labelRenderFn?(model: T): string | undefined
   enableEmptyOption?: boolean
@@ -49,7 +49,7 @@ export type VFormFieldDynamicObjectInputProps = {
   }>
 }
 
-export type VFormFieldProps<T> = FormFieldProps & {
+export type VFormFieldProps = FormFieldProps & {
   zodType?: ZodType
   colSpan?: string
   icon?: string
@@ -84,9 +84,9 @@ export type VFormFieldProps<T> = FormFieldProps & {
     items: SelectMenuItem[]
     searchable?: boolean
   }
-  | { type: 'async-select' } & VFormFieldAsyncSelectProps<T>
-  | { type: 'async-object-select' } & VFormFieldAsyncSelectProps<T>
-  | { type: 'async-tree-select' } & VFormFieldAsyncTreeSelectProps<T>
+  | { type: 'async-select' } & VFormFieldAsyncSelectProps<any>
+  | { type: 'async-object-select' } & VFormFieldAsyncSelectProps<any>
+  | { type: 'async-tree-select' } & VFormFieldAsyncTreeSelectProps<any>
   | { type: 'radio-select' } & RadioGroupProps
   | { type: 'tree-select-transfer' } & VFormFieldTreeSelectTransferProps
   | { type: 'sql-editor' }

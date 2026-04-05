@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="T extends Record<string, any>">
+<script setup lang="ts" generic="T">
 import type { WhereQueryOption, WhereQueryItem } from '#v/types'
 import { computed, watch, useTemplateRef } from 'vue'
 import TableQueryWhereSimpleItemOprInput from '#v/components/table/query/where/simple/item/opr/Input.vue'
@@ -14,7 +14,9 @@ const props = defineProps<{
 }>()
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
-const option = computed(() => props.options.find(option => option.field === whereQueryItem.value.field))
+const option = computed<WhereQueryOption<T>>(() =>
+  props.options.find(option => option.field === whereQueryItem.value.field)
+  ?? { type: 'unknown', field: 'unknown', label: '未知字段' })
 
 watch(
   () => whereQueryItem.value.custom,
@@ -35,15 +37,15 @@ defineExpose({
     v-if="option!.type === 'input'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
-    :label="option?.label || whereQueryItem.field"
+    :label="option.label || whereQueryItem.field"
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
   />
   <TableQueryWhereSimpleItemOprInputNumber
-    v-if="option!.type === 'input-number'"
+    v-if="option.type === 'input-number'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
-    :label="option?.label || whereQueryItem.field"
+    :label="option.label || whereQueryItem.field"
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
   />
@@ -52,7 +54,7 @@ defineExpose({
     ref="item"
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
-    :items="option?.items || []"
+    :items="option.items || []"
   />
   <TableQueryWhereSimpleItemOprDatePicker
     v-else-if="option!.type === 'date-picker'"
@@ -66,12 +68,12 @@ defineExpose({
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
-    :label="option?.label!"
-    :list-api="option?.listApi!"
-    :search-fields="option?.searchFields ?? []"
-    :label-render-fn="option?.labelRenderFn"
-    :label-field="option?.labelField"
-    :value-field="option?.valueField"
-    :multiple="option?.multiple"
+    :label="option.label!"
+    :list-api="option.listApi!"
+    :search-fields="option.searchFields ?? []"
+    :label-render-fn="option.labelRenderFn"
+    :label-field="option.labelField"
+    :value-field="option.valueField"
+    :multiple="option.multiple"
   />
 </template>

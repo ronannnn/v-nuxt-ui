@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T">
 import { ref, computed, onMounted } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
 import type { Column, TableSettings, VColumn } from '#v/types'
@@ -6,16 +6,13 @@ import TableHeaderSettingsColumnsDndList from '#v/components/table/header/settin
 
 export type FixType = 'left' | 'right' | 'unfixed'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyRecord = Record<string, any>
-
 const props = defineProps<{
   tblName: string
-  rawBizColumns: VColumn<AnyRecord>[]
-  onUpdateBizColumns: (cols: VColumn<AnyRecord>[]) => void
+  rawBizColumns: VColumn<T>[]
+  onUpdateBizColumns: (cols: VColumn<T>[]) => void
 }>()
 
-const localTblSettings = useLocalStorage<TableSettings<AnyRecord>>(`${props.tblName}-table-settings`, {})
+const localTblSettings = useLocalStorage<TableSettings<T>>(`${props.tblName}-table-settings`, {})
 
 // 1. 生成所有列的完整信息（顺序、固定、显示状态）
 function getFullColumns(
@@ -121,7 +118,7 @@ function syncToParentAndStorage() {
   const checkedKeys = ordered.filter(c => c.checked).map(c => c.accessorKey)
   const sortedBizColumns = checkedKeys
     .map(key => props.rawBizColumns.find(col => (col as any)['accessorKey'] === key))
-    .filter(Boolean) as VColumn<AnyRecord>[]
+    .filter(Boolean) as VColumn<T>[]
   props.onUpdateBizColumns(sortedBizColumns)
 }
 
