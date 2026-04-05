@@ -1,9 +1,8 @@
-import type { VNode } from 'vue'
+import type { VNode, Ref } from 'vue'
 import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, SelectProps, TreeItem } from '@nuxt/ui'
 import type { ZodType } from 'zod'
 import type { PageResult, RequestResult } from '../../request'
 import type { QueryTemplate, WhereQueryItem } from '../../query'
-import type { Ref } from 'vue'
 
 export type VFormFieldAsyncSelectProps<T> = {
   // 使用方法签名以保持 T 的双变
