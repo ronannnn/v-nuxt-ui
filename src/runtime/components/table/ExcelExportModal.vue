@@ -10,20 +10,14 @@ import { dateFormat, TIME_ZONE } from '#v/constants'
 import { genTableExcel } from '#v/utils'
 import TableQueryWhere from '#v/components/table/query/where/index.vue'
 
-/**
- * 使用 interface + 方法签名定义 props，使函数参数中的 T 保持双变（bivariant）。
- * 这样 ListApi<SpecificType> 可以安全赋值给 listFn(...)。
- */
-interface ExcelExportModalProps {
+const props = defineProps<{
   filename?: string
   filenameWithDateTime?: boolean
   columns: VColumn<T>[]
   whereQueryOptions: WhereQueryOption<T>[]
   extraWhereQueryInitValues?: WhereQuery<T>
   listFn?(payload: Omit<QueryTemplate<T>, 'selectQuery'>, ...args: unknown[]): Promise<{ data: Ref<RequestResult<PageResult<T>>> }>
-}
-
-const props = defineProps<ExcelExportModalProps>()
+}>()
 
 const whereQuery = ref<WhereQuery<T>>()
 
