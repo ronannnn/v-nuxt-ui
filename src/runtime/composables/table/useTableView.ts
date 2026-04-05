@@ -18,7 +18,7 @@ const PINNED_SHADOW_CLASSES = {
   }
 } as const
 
-const EXPANDED_STICKY_CLASS = '[&_tr[data-expanded=true]]:sticky [&_tr[data-expanded=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded=true]]:z-1 [&_tr[data-expanded=true]]:bg-default'
+const EXPANDED_STICKY_CLASS = '[&_tr[data-expanded=true]]:sticky [&_tr[data-expanded=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded=true]]:z-10 [&_tr[data-expanded=true]]:bg-default'
 
 export interface UseProTableViewReturn<T> {
   data: Ref<T[]>
