@@ -1,7 +1,7 @@
 import { ref, watch, type Ref } from 'vue'
 
 export function useTableRowSelection<T>(data: Ref<T[]>, rowKey: keyof T) {
-  const rowSelection = ref<Record<number, boolean>>()
+  const rowSelection = ref<Record<number, boolean>>({})
   const selectedIds = ref<number[]>([])
 
   watch(
