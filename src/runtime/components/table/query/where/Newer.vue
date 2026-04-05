@@ -42,9 +42,10 @@ const unselectedOptions = computed(() => {
   <!-- NOTE: 自己实现DropdownMenu, 原生DropdownMenu的Focus有问题，会让查询字段打开的Popover关闭 -->
   <ButtonDropdown :groups="unselectedOptions">
     <UButton
+      label="新增"
       :size="size"
       color="neutral"
-      variant="soft"
+      variant="subtle"
       icon="i-lucide-list-filter-plus"
     />
   </ButtonDropdown>

@@ -59,7 +59,7 @@ defineExpose({ focusField })
 <template>
   <div class="flex items-start gap-2 pl-4 pr-2.5 py-2.5">
     <!-- conditions -->
-    <div class="flex flex-wrap gap-2.5">
+    <div class="flex flex-wrap items-center gap-2.5">
       <TableQueryWhereSimple
         v-if="!isWhereQueryEmpty"
         v-bind="props"
@@ -77,10 +77,12 @@ defineExpose({ focusField })
         size="sm"
         @new="onNewField"
       />
+      <USeparator orientation="vertical" class="h-4" />
       <UButton
         v-if="!hideQueryButton"
+        label="查询"
         color="neutral"
-        variant="soft"
+        variant="subtle"
         size="sm"
         :loading="fetching"
         icon="i-lucide-search"
@@ -88,15 +90,11 @@ defineExpose({ focusField })
           await triggerFetching(true)
         }"
       />
-    </div>
-
-    <!-- buttons -->
-    <div class="flex gap-2.5 items-center ml-auto shrink-0">
-      <USeparator orientation="vertical" class="h-6" />
       <UButton
         color="neutral"
-        variant="outline"
+        variant="subtle"
         size="sm"
+        icon="i-lucide-timer-reset"
         :disabled="fetching"
         @click="() => onUpdateWhereQuery(defaultWhereQuery)"
       >
