@@ -5,6 +5,7 @@ import { useRoleApi } from '#v/composables'
 import SysRolesCreateModal from './CreateModal.vue'
 import { getOprColumns } from '#v/constants'
 import UBadge from '@nuxt/ui/components/Badge.vue'
+import TablePage from '#v/components/table/Page.vue'
 import { h } from 'vue'
 
 const overlay = useOverlay()
