@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Company } from 'v-nuxt-ui/types'
 import * as z from 'zod'
 import FormCreateModalTemplateWithApi from '#v/components/form/create-modal-template/WithApi.vue'
 import { useCompanyApi } from '#v/composables'
+import type { Company } from '#v/types'
 
 defineProps<{
   model: Company

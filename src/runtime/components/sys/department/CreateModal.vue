@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Department } from 'v-nuxt-ui/types'
 import * as z from 'zod'
 import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
 import { useCompanyApi, useDepartmentApi, useFormSubmission, useFormValues, useUserApi } from '#v/composables'
 import { toRef, watch } from 'vue'
+import type { Department } from '#v/types'
 
 const props = defineProps<{
   model: Department

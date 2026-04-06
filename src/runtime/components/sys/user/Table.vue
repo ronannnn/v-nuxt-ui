@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
-import type { VColumn, User } from 'v-nuxt-ui/types'
+import type { VColumn, User } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { isEmptyString } from '#v/utils'
 import { useDepartmentApi, useUserApi } from '#v/composables'

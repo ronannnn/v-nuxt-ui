@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TreeItem } from '@nuxt/ui'
-import type { Menu, Role } from 'v-nuxt-ui/types'
+import type { Menu, Role } from '#v/types'
 import * as z from 'zod'
 import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
 import { useFormSubmission, useFormValues, useMenuApi, useRoleApi } from '#v/composables'

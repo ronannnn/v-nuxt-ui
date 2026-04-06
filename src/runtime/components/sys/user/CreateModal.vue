@@ -2,7 +2,7 @@
 import { useFormValues, useFormSubmission, useUserApi, useRoleApi, useMenuApi, useDepartmentApi } from '#v/composables'
 import { treeifyOptions } from '#v/utils'
 import type { TreeItem } from '@nuxt/ui'
-import type { Menu, Role, User } from 'v-nuxt-ui/types'
+import type { Menu, Role, User } from '#v/types'
 import { toRef, ref, computed, onMounted } from 'vue'
 import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
 import { loginTypeOptions, genderOptions, Gender } from '#v/constants'

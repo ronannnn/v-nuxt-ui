@@ -6,10 +6,9 @@ import { now } from '@internationalized/date'
 import dayjs from 'dayjs'
 import { useApp } from '#v/composables/useApp'
 import { useDate } from '#v/composables/useDate'
-import type { TimeUnit } from '#v/constants'
 import { dateFormat, TIME_ZONE } from '#v/constants'
 import { stringsJoin } from '#v/utils'
-import type { DateShortcut } from '#v/types'
+import type { DateShortcut, TimeUnit } from '#v/types'
 import DatePickerInput from './Input.vue'
 
 const props = defineProps<{

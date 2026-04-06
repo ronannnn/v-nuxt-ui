@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VColumn, Role } from 'v-nuxt-ui/types'
+import type { VColumn, Role } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { useRoleApi } from '#v/composables'
 import SysRolesCreateModal from './CreateModal.vue'

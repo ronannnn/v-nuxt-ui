@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { VColumn, Company } from 'v-nuxt-ui/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { useCompanyApi } from '#v/composables'
 import SysCompaniesCreateModal from './CreateModal.vue'
 import { getOprColumns } from '#v/constants'
 import TablePage from '#v/components/table/Page.vue'
+import type { VColumn, Company } from '#v/types'
 
 const overlay = useOverlay()
 const createModal = overlay.create(SysCompaniesCreateModal)

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useDate, useFetching, useSubmitting } from '#v/composables'
 import { useCalendarApi } from '#v/composables/api/sys/useCalendarApi'
-import { TIME_ZONE, CalendarEventType, dateFormat, calendarEventTypeOptions } from '#v/constants'
-import type { Calendar } from '#v/types'
+import { TIME_ZONE, dateFormat, calendarEventTypeOptions } from '#v/constants'
+import { CalendarEventType, type Calendar } from '#v/types'
 import type { CalendarDate, ZonedDateTime } from '@internationalized/date'
 import { endOfMonth, now, startOfMonth } from '@internationalized/date'
 import { useToast } from '@nuxt/ui/runtime/composables/useToast.js'
@@ -202,8 +202,8 @@ watch(
                     class="inline-block size-2 rounded-full"
                     :class="`bg-(--color-light) dark:bg-(--color-dark)`"
                     :style="{
-                      '--color-light': `var(--ui-${item.color})`,
-                      '--color-dark': `var(--ui-${item.color})`
+                      '--color-light': `var(--ui-${String(item.color)})`,
+                      '--color-dark': `var(--ui-${String(item.color)})`
                     }"
                   />
                 </div>

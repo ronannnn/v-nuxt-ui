@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { JobTitle } from 'v-nuxt-ui/types'
 import * as z from 'zod'
 import FormCreateModalTemplateWithApi from '#v/components/form/create-modal-template/WithApi.vue'
 import { useJobTitleApi } from '#v/composables'
+import type { JobTitle } from '#v/types'
 
 defineProps<{
   model: JobTitle

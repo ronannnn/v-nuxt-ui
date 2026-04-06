@@ -1,6 +1,11 @@
 import { CalendarEventType } from '#v/types'
+import type { ChipProps } from '@nuxt/ui'
 
-export const calendarEventTypeOptions = [
+export const calendarEventTypeOptions: {
+  label: string
+  value: CalendarEventType
+  color: ChipProps['color']
+}[] = [
   { label: '国家法定假', value: CalendarEventType.HOLIDAY, color: 'primary' },
   { label: '公司调整假', value: CalendarEventType.ADJUSTRED, color: 'warning' },
   { label: '周末休息日', value: CalendarEventType.WEEKEND, color: 'success' },

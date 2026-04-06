@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { getOprColumns } from '#v/constants'
-import type { IssueRecord } from '#v/types'
+import type { IssueRecord, VColumn } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
-import type { VColumn } from 'v-nuxt-ui/types'
 import { useIssueRecordApi } from '#v/composables'
 import SysIssueRecordsCreateModal from './CreateModal.vue'
 import TablePage from '#v/components/table/Page.vue'

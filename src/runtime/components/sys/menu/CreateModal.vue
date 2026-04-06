@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { Menu } from 'v-nuxt-ui/types'
 import * as z from 'zod'
 import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
 import { useMenuApi, useFormSubmission, useFormValues } from '#v/composables'
 import { toRef } from 'vue'
 import { menuTypeOptions } from '#v/constants'
+import type { Menu } from '#v/types'
 
 const props = defineProps<{
   model: Menu

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { JobTitle, VColumn } from 'v-nuxt-ui/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { useJobTitleApi } from '#v/composables'
 import SysJobTitlesCreateModal from './CreateModal.vue'
@@ -7,6 +6,7 @@ import { getOprColumns, booleanOptions } from '#v/constants'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import { h } from 'vue'
 import TablePage from '#v/components/table/Page.vue'
+import type { VColumn, JobTitle } from '#v/types'
 
 const overlay = useOverlay()
 const createModal = overlay.create(SysJobTitlesCreateModal)

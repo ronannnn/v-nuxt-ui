@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useOverlay } from '@nuxt/ui/composables'
 import { useMenuApi } from '#v/composables'
-import type { VColumn, Menu } from 'v-nuxt-ui/types'
+import type { VColumn, Menu } from '#v/types'
 import SysMenusCreateModal from './CreateModal.vue'
 import { getOprColumns } from '#v/constants'
 import UBadge from '@nuxt/ui/components/Badge.vue'

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { VColumn, Department } from 'v-nuxt-ui/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { useDepartmentApi } from '#v/composables'
 import SysDepartmentsCreateModal from './CreateModal.vue'
 import { getOprColumns } from '#v/constants'
 import TablePage from '#v/components/table/Page.vue'
+import type { Department, VColumn } from '#v/types'
 
 const overlay = useOverlay()
 const createModal = overlay.create(SysDepartmentsCreateModal)
