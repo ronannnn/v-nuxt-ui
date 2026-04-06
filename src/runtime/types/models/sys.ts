@@ -106,3 +106,7 @@ export type Calendar = {
   date?: string // 日期
   type?: number
 } & BaseModel
+
+export type IssueRecord = {
+  description?: string
+} & BaseModel

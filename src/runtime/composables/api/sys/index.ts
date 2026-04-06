@@ -1,3 +1,4 @@
+export * from './useIssueRecordApi'
 export * from './useAuthApi'
 export * from './useCompanyApi'
 export * from './useDepartmentApi'
