@@ -8,6 +8,7 @@ export * from './locale'
 export * from './request'
 export * from './query'
 export * from './storage'
+export * from './time'
 
 export type Size = import('@nuxt/ui').ButtonProps['size']
 
