@@ -56,7 +56,7 @@ const columns: VColumn<Menu>[] = [
     }
   },
   { accessorKey: 'name', header: '菜单名称', filterOption: { type: 'input' }, sortOption: true },
-  { accessorKey: 'staticRouteKeys', header: '静态路由键值', filterOption: { type: 'input' }, sortOption: true },
+  { accessorKey: 'staticRouteKeys', header: '静态路由键值', filterOption: { type: 'input', defaultOpr: 'text_arr_str_like' }, sortOption: true },
   {
     accessorKey: 'disabled',
     header: '是否禁用',
