@@ -3,11 +3,11 @@ import type { SelectOption } from '#v/types'
 export const TIME_ZONE = 'Asia/Shanghai'
 
 export const timeUnitOptions: SelectOption[] = [
-  { label: 'Year', value: 'year' },
-  { label: 'Quarter', value: 'quarter' },
-  { label: 'Month', value: 'month' },
-  { label: 'Week', value: 'week' },
-  { label: 'Day', value: 'day' }
+  { label: '年', value: 'year' },
+  { label: '季', value: 'quarter' },
+  { label: '月', value: 'month' },
+  { label: '周', value: 'week' },
+  { label: '日', value: 'day' }
 ]
 
 export const weekEnLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
