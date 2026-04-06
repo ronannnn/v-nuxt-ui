@@ -3,7 +3,7 @@ import type { VColumn, Role } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { useRoleApi } from '#v/composables'
 import SysRolesCreateModal from './CreateModal.vue'
-import { getOprColumns } from '#v/constants'
+import { booleanOptions, getOprColumns } from '#v/constants'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import TablePage from '#v/components/table/Page.vue'
 import { h } from 'vue'
@@ -26,8 +26,8 @@ const columns: VColumn<Role>[] = [
     header: '是否是系统角色',
     sortOption: true,
     filterOption: {
-      type: 'input',
-      initHide: false
+      type: 'select',
+      items: booleanOptions
     },
     cell: ({ row }) => h(
       UBadge,
