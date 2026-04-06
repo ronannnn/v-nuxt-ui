@@ -1,9 +1,4 @@
-export enum CalendarEventType {
-  NONE = 0,
-  HOLIDAY = 1,
-  ADJUSTRED = 2,
-  WEEKEND = 3
-}
+import { CalendarEventType } from '#v/types'
 
 export const calendarEventTypeOptions = [
   { label: '国家法定假', value: CalendarEventType.HOLIDAY, color: 'primary' },
