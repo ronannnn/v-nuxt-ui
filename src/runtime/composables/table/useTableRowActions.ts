@@ -1,5 +1,5 @@
 import { ref, h } from 'vue'
-import type { VColumn } from '#v/types'
+import type { RowActionProps, VColumn } from '#v/types'
 import type { DropdownMenuItem, TableRow } from '@nuxt/ui'
 import { useOverlay } from '@nuxt/ui/composables'
 import DeleteModal from '#v/components/DeleteModal.vue'
@@ -66,35 +66,55 @@ export function useTableRowActions<T>(props: {
       })
     }
 
-    extraRowActions?.forEach((action) => {
-      actionItems.push({
+    // 支持递归的 extraRowActions -> DropdownMenuItem 转换
+    const buildActionItem = (action: RowActionProps<T>): DropdownMenuItem => {
+      const item: DropdownMenuItem = {
         label: action.label,
         icon: action.icon,
         type: action.type,
-        color: action.color,
-        onClick: async () => {
-          if (action.fn) {
+        color: action.color
+      }
+
+      if (action.children && action.children.length > 0) {
+        item.children = action.children.map(buildActionItem)
+        return item
+      }
+
+      item.onClick = async () => {
+        if (action.fn) {
+          try {
             action.fn(row.original)
-            if (action.refetchAfterFn) {
-              await fetchList()
-            }
+          } catch (e) {
+            // ignore sync errors here
+            console.error('Error in row action fn:', e)
           }
-          if (action.asyncFn) {
-            actionLoadingRowIdxSet.value.add(row.index)
-            try {
-              await action.asyncFn(row.original)
-            } finally {
-              actionLoadingRowIdxSet.value.delete(row.index)
-            }
-          }
-          if (action.fnWithModal) {
-            const result = await action.fnWithModal(row.original)
-            if (result) {
-              await fetchList()
-            }
+          if (action.refetchAfterFn) {
+            await fetchList()
           }
         }
-      })
+
+        if (action.asyncFn) {
+          actionLoadingRowIdxSet.value.add(row.index)
+          try {
+            await action.asyncFn(row.original)
+          } finally {
+            actionLoadingRowIdxSet.value.delete(row.index)
+          }
+        }
+
+        if (action.fnWithModal) {
+          const result = await action.fnWithModal(row.original)
+          if (result) {
+            await fetchList()
+          }
+        }
+      }
+
+      return item
+    }
+
+    extraRowActions?.forEach((action) => {
+      actionItems.push(buildActionItem(action))
     })
 
     if (!disableRowDeletion) {

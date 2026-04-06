@@ -39,6 +39,7 @@ export type RowActionProps<T> = {
   refetchAfterFn?: boolean
   fnWithModal?: (model: T) => Promise<boolean>
   asyncFn?: (model: T) => Promise<void>
+  children?: RowActionProps<T>[]
 }
 
 export type VTableExportExcelProps<T> = {
