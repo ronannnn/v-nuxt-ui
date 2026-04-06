@@ -1,4 +1,4 @@
-import type { VNode, Ref } from 'vue'
+import type { VNode, Ref, Component } from 'vue'
 import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, SelectProps, TreeItem } from '@nuxt/ui'
 import type { ZodType } from 'zod'
 import type { PageResult, RequestResult } from '../../request'
@@ -22,6 +22,10 @@ export type VFormFieldAsyncSelectProps<T> = {
   multiple?: boolean
   placeholder?: string
   size?: SelectProps['size']
+
+  canCreate?: boolean
+  createModalComponent?: Component
+  createModalOpenProps?: Record<string, any>
 }
 export type VFormFieldAsyncTreeSelectProps<T> = {
   fetchAll?: boolean

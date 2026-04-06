@@ -151,6 +151,9 @@ const fieldModelValue = computed({
     :disabled="field.disabled"
     :enable-empty-option="field.enableEmptyOption"
     :extra-search-field-fn="field.extraSearchFieldFn"
+    :can-create="field.canCreate"
+    :create-modal-component="field.createModalComponent"
+    :create-modal-open-props="field.createModalOpenProps"
     @update-init-model-values="field.onUpdateInitModelValues"
   />
   <FormFieldAsyncObjectSelect

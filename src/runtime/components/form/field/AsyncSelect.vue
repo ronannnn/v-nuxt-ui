@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T">
+import type { Component } from 'vue'
 import { ref, computed } from 'vue'
 import { useFetching } from '#v/composables/useBoolean'
 import type { QueryTemplate, VFormFieldAsyncSelectProps } from '#v/types'
@@ -8,7 +9,13 @@ import { useDebounceFn } from '@vueuse/core'
 import { defu } from 'defu'
 import { useApp } from '#v/composables/useApp'
 
-const props = withDefaults(defineProps<VFormFieldAsyncSelectProps<T> & { icon?: string, disabled?: boolean }>(), {
+const props = withDefaults(defineProps<VFormFieldAsyncSelectProps<T> & {
+  icon?: string
+  disabled?: boolean
+  canCreate?: boolean
+  createModalComponent?: Component
+  createModalOpenProps?: Record<string, any>
+}>(), {
   labelField: 'name' as any,
   valueField: 'id' as any,
   extraQuery: () => ({
