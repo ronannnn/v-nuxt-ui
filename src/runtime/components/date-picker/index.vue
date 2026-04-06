@@ -146,7 +146,7 @@ defineExpose({
       }
     }"
   >
-    <UFieldGroup>
+    <UFieldGroup v-if="peerButtons && peerButtons.length > 0">
       <UButton
         color="neutral"
         variant="outline"
@@ -161,6 +161,20 @@ defineExpose({
       </UButton>
       <UButton v-for="(btnProps, idx) in peerButtons" :key="idx" v-bind="btnProps" />
     </UFieldGroup>
+    <!-- TODO: vueuse -->
+    <UButton
+      v-else
+      color="neutral"
+      variant="outline"
+      :leading-icon="leadingIcon ?? 'i-lucide-calendar'"
+      trailing-icon="i-lucide-chevron-down"
+      :loading="loading"
+      :size="size"
+    >
+      <div class="flex items-center gap-1">
+        <span>{{ displayValue }}</span>
+      </div>
+    </UButton>
 
     <template #content>
       <div class="p-3 flex flex-col gap-2">
