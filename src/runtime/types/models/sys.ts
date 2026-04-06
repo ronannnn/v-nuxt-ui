@@ -101,3 +101,8 @@ export type RowRecord = {
   oldValue?: string
   newValue?: string
 } & BaseModel
+
+export type Calendar = {
+  date?: string // 日期
+  type?: number
+} & BaseModel

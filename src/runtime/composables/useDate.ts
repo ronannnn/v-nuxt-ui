@@ -1,10 +1,9 @@
 import { createSharedComposable } from '@vueuse/core'
 import { toZoned, parseAbsolute, type DateValue } from '@internationalized/date'
 import dayjs from 'dayjs'
-import type { TimeUnit } from '#v/constants'
 import { TIME_ZONE } from '#v/constants'
 import type { DateRange } from 'reka-ui'
-import type { DateShortcut } from '#v/types'
+import type { DateShortcut, TimeUnit } from '#v/types'
 
 const _useDate = () => {
   const dayjsToDateValue = (date: dayjs.Dayjs | null | undefined): DateValue | undefined => {
@@ -14,6 +13,10 @@ const _useDate = () => {
   const isoUtcStringToDateValue = (isoString: string | null | undefined): DateValue | undefined => {
     if (!isoString) return undefined
     return dayjsToDateValue(dayjs(isoString))
+  }
+  const isoUtcStringToDayjs = (isoString: string | null | undefined): dayjs.Dayjs | undefined => {
+    if (!isoString) return undefined
+    return dayjs(isoString)
   }
 
   const dateValueToDayjs = (dateValue: DateValue | null | undefined): dayjs.Dayjs | undefined => {
@@ -145,6 +148,7 @@ const _useDate = () => {
   return {
     dayjsToDateValue,
     isoUtcStringToDateValue,
+    isoUtcStringToDayjs,
     dateValueToDayjs,
     formatTimeUnit,
     getRecentDateRange,

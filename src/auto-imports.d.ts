@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     UBadge: typeof import('@nuxt/ui/components/Badge.vue')['default']
     UButton: typeof import('@nuxt/ui/components/Button.vue')['default']
+    UCard: typeof import('@nuxt/ui/components/Card.vue')['default']
     UCalendar: typeof import('@nuxt/ui/components/Calendar.vue')['default']
     UCheckbox: typeof import('@nuxt/ui/components/Checkbox.vue')['default']
     UChip: typeof import('@nuxt/ui/components/Chip.vue')['default']
