@@ -101,7 +101,12 @@ const columns: VColumn<User>[] = [
     header: '是否需要填写工时',
     filterOption: {
       type: 'select',
-      items: booleanOptions
+      items: booleanOptions,
+      empty: {
+        label: '否',
+        variant: 'outline',
+        color: 'neutral'
+      }
     }
   },
   {
@@ -109,7 +114,12 @@ const columns: VColumn<User>[] = [
     header: '性别',
     filterOption: {
       type: 'select',
-      items: genderOptions
+      items: genderOptions,
+      empty: {
+        label: '未知',
+        variant: 'outline',
+        color: 'neutral'
+      }
     },
     meta: {
       class: {
