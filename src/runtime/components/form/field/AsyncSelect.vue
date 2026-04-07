@@ -1,19 +1,19 @@
 <script setup lang="ts" generic="T">
-import type { Component } from 'vue'
-import { ref, computed } from 'vue'
-import { useFetching } from '#v/composables/useBoolean'
-import type { QueryTemplate, VFormFieldAsyncSelectProps } from '#v/types'
-import { isEmptyString } from '#v/utils'
+import { computed, ref, type Component as VueComponent } from 'vue'
 import type { SelectMenuItem } from '@nuxt/ui'
-import { useDebounceFn } from '@vueuse/core'
 import { defu } from 'defu'
+import type { QueryTemplate, VFormFieldAsyncSelectProps } from '#v/types'
+import { useFetching } from '#v/composables'
+import { isEmptyString } from '#v/utils'
+import { useOverlay } from '@nuxt/ui/runtime/composables/useOverlay.js'
+import { useDebounceFn } from '@vueuse/core'
 import { useApp } from '#v/composables/useApp'
 
 const props = withDefaults(defineProps<VFormFieldAsyncSelectProps<T> & {
   icon?: string
   disabled?: boolean
   canCreate?: boolean
-  createModalComponent?: Component
+  createModalComponent?: VueComponent
   createModalOpenProps?: Record<string, any>
 }>(), {
   labelField: 'name' as any,
@@ -72,14 +72,14 @@ const onSelect = (newVal: any) => {
   if (Array.isArray(newVal)) {
     const newInitModelValues: T[] = []
     newVal.forEach((val) => {
-      const foundItem = allData.value.find(p => (p as any)[props.valueField] === val)
+      const foundItem = allData.value.find(p => p[props.valueField] === val)
       if (foundItem) {
         newInitModelValues.push(foundItem)
       }
     })
     props.onUpdateInitModelValues?.(newInitModelValues)
   } else {
-    const newInitModelValues = allData.value.find(p => (p as any)[props.valueField] === newVal)
+    const newInitModelValues = allData.value.find(p => p[props.valueField] === newVal)
     props.onUpdateInitModelValues?.(newInitModelValues!)
   }
 }
@@ -109,6 +109,27 @@ const onFetchItems = async () => {
   }
 }
 const onDebounceFetchItems = useDebounceFn(onFetchItems, 512)
+
+const onCreateNew = async () => {
+  if (!props.createModalComponent) return
+  open.value = false
+  const modal = useOverlay().create(props.createModalComponent)
+  modal.open({
+    model: { id: 0 },
+    ...props.createModalOpenProps,
+    onSave: (newModel: T) => {
+      searchedData.value.push(newModel as any)
+      const newValue = newModel[props.valueField]
+      if (props.multiple) {
+        const currentValues = Array.isArray(modelValue.value) ? [...modelValue.value] : []
+        currentValues.push(newValue as any)
+        onSelect(currentValues)
+      } else {
+        onSelect(newValue)
+      }
+    }
+  })
+}
 </script>
 
 <template>
@@ -117,6 +138,10 @@ const onDebounceFetchItems = useDebounceFn(onFetchItems, 512)
     :model-value="modelValue"
     :search-term="searchTerm"
     :items="items"
+    :create-item="canCreate && createModalComponent && {
+      position: 'top',
+      when: 'always'
+    }"
     value-key="value"
     ignore-filter
     :multiple="multiple"
@@ -146,5 +171,6 @@ const onDebounceFetchItems = useDebounceFn(onFetchItems, 512)
       onDebounceFetchItems()
     }"
     @update:model-value="onSelect"
+    @create="onCreateNew"
   />
 </template>
