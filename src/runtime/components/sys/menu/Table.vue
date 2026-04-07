@@ -52,6 +52,11 @@ const columns: VColumn<Menu>[] = [
         { label: '是', value: true, color: 'primary' },
         { label: '否', value: false, color: 'neutral' }
       ],
+      empty: {
+        label: '否',
+        color: 'neutral',
+        variant: 'outline'
+      },
       initHide: false
     }
   },

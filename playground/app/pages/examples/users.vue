@@ -4,6 +4,10 @@ import type { RowActionProps, User, VColumn } from '#v/types'
 import dayjs from 'dayjs'
 import { useUserApi } from '#v/composables'
 
+definePageMeta({
+  layout: 'examples'
+})
+
 const overlay = useOverlay()
 const createModal = overlay.create(UserCreateModal)
 
@@ -201,20 +205,18 @@ const expandVNode = (row: User) => {
 </script>
 
 <template>
-  <ProLayoutDefault>
-    <ProTablePage
-      name="playground-users"
-      cn-name="用户信息"
-      :use-api-group="useUserApi"
-      :biz-columns="columns"
-      :on-edit-row-from-modal="async (row: User) => await createModal.open({ model: row }).result"
-      :extra-row-actions="extraRowActions"
-      expandable
-      :expand-v-node="expandVNode"
-      :export-excel="{
-        filename: 'users-export',
-        filenameWithDateTime: true
-      }"
-    />
-  </prolayoutdefault>
+  <ProTablePage
+    name="playground-users"
+    cn-name="用户信息"
+    :use-api-group="useUserApi"
+    :biz-columns="columns"
+    :on-edit-row-from-modal="async (row: User) => await createModal.open({ model: row }).result"
+    :extra-row-actions="extraRowActions"
+    expandable
+    :expand-v-node="expandVNode"
+    :export-excel="{
+      filename: 'users-export',
+      filenameWithDateTime: true
+    }"
+  />
 </template>

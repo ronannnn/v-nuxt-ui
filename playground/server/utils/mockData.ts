@@ -1,4 +1,35 @@
 // Mock user data for the playground
+export interface MockMenu {
+  id: number
+  isAdmin?: boolean
+  type: string // 'catalog' | 'menu' | 'button'
+  parentId?: number
+  name?: string
+  i18nKey?: string
+  staticRouteKeys?: string[]
+  permission?: string
+  order?: string
+  disabled?: boolean
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockRole {
+  id: number
+  name: string
+  permission: string
+  disabled: boolean
+  remark?: string
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
 export interface MockUser {
   id: number
   nickname: string
@@ -210,4 +241,295 @@ export function queryUsers(body: any) {
 
 function getNestedValue(obj: any, path: string): any {
   return path.split('.').reduce((o, k) => o?.[k], obj)
+}
+
+// ─── Menu mock data ───────────────────────────────────────────────────────────
+
+const menus: MockMenu[] = [
+  // ── 系统管理 (catalog, id=1) ──────────────────────────────────────────────
+  { id: 1, type: 'catalog', parentId: 0, name: '系统管理', i18nKey: 'menu.sys', order: '1', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 2, type: 'menu', parentId: 1, name: '用户管理', i18nKey: 'menu.sys.user', staticRouteKeys: ['/sys/users'], permission: 'sys:user:view', order: '1', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 3, type: 'button', parentId: 2, name: '新增用户', i18nKey: 'menu.sys.user.create', permission: 'sys:user:create', order: '1', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 4, type: 'button', parentId: 2, name: '编辑用户', i18nKey: 'menu.sys.user.update', permission: 'sys:user:update', order: '2', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 5, type: 'button', parentId: 2, name: '删除用户', i18nKey: 'menu.sys.user.delete', permission: 'sys:user:delete', order: '3', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 6, type: 'menu', parentId: 1, name: '角色管理', i18nKey: 'menu.sys.role', staticRouteKeys: ['/sys/roles'], permission: 'sys:role:view', order: '2', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 7, type: 'button', parentId: 6, name: '新增角色', i18nKey: 'menu.sys.role.create', permission: 'sys:role:create', order: '1', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 8, type: 'button', parentId: 6, name: '编辑角色', i18nKey: 'menu.sys.role.update', permission: 'sys:role:update', order: '2', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 9, type: 'button', parentId: 6, name: '删除角色', i18nKey: 'menu.sys.role.delete', permission: 'sys:role:delete', order: '3', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 10, type: 'menu', parentId: 1, name: '菜单管理', i18nKey: 'menu.sys.menu', staticRouteKeys: ['/sys/menus'], permission: 'sys:menu:view', order: '3', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 11, type: 'button', parentId: 10, name: '新增菜单', i18nKey: 'menu.sys.menu.create', permission: 'sys:menu:create', order: '1', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 12, type: 'button', parentId: 10, name: '编辑菜单', i18nKey: 'menu.sys.menu.update', permission: 'sys:menu:update', order: '2', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 13, type: 'button', parentId: 10, name: '删除菜单', i18nKey: 'menu.sys.menu.delete', permission: 'sys:menu:delete', order: '3', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 14, type: 'menu', parentId: 1, name: '部门管理', i18nKey: 'menu.sys.dept', staticRouteKeys: ['/sys/departments'], permission: 'sys:dept:view', order: '4', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 15, type: 'button', parentId: 14, name: '新增部门', i18nKey: 'menu.sys.dept.create', permission: 'sys:dept:create', order: '1', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 16, type: 'button', parentId: 14, name: '编辑部门', i18nKey: 'menu.sys.dept.update', permission: 'sys:dept:update', order: '2', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 17, type: 'button', parentId: 14, name: '删除部门', i18nKey: 'menu.sys.dept.delete', permission: 'sys:dept:delete', order: '3', disabled: false, createdAt: '2022-01-01T00:00:00Z', updatedAt: '2022-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+
+  // ── 运营管理 (catalog, id=18) ─────────────────────────────────────────────
+  { id: 18, type: 'catalog', parentId: 0, name: '运营管理', i18nKey: 'menu.ops', order: '2', disabled: false, createdAt: '2022-06-01T00:00:00Z', updatedAt: '2022-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 19, type: 'menu', parentId: 18, name: '公告管理', i18nKey: 'menu.ops.notice', staticRouteKeys: ['/ops/notices'], permission: 'ops:notice:view', order: '1', disabled: false, createdAt: '2022-06-01T00:00:00Z', updatedAt: '2022-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 20, type: 'button', parentId: 19, name: '发布公告', i18nKey: 'menu.ops.notice.create', permission: 'ops:notice:create', order: '1', disabled: false, createdAt: '2022-06-01T00:00:00Z', updatedAt: '2022-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 21, type: 'button', parentId: 19, name: '删除公告', i18nKey: 'menu.ops.notice.delete', permission: 'ops:notice:delete', order: '2', disabled: false, createdAt: '2022-06-01T00:00:00Z', updatedAt: '2022-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 22, type: 'menu', parentId: 18, name: '日志管理', i18nKey: 'menu.ops.log', staticRouteKeys: ['/ops/logs'], permission: 'ops:log:view', order: '2', disabled: false, createdAt: '2022-06-01T00:00:00Z', updatedAt: '2022-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 23, type: 'button', parentId: 22, name: '清空日志', i18nKey: 'menu.ops.log.clear', permission: 'ops:log:delete', order: '1', disabled: false, createdAt: '2022-06-01T00:00:00Z', updatedAt: '2022-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+
+  // ── 财务管理 (catalog, id=24) ─────────────────────────────────────────────
+  { id: 24, type: 'catalog', parentId: 0, name: '财务管理', i18nKey: 'menu.finance', order: '3', disabled: false, createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 25, type: 'menu', parentId: 24, name: '报销管理', i18nKey: 'menu.finance.expense', staticRouteKeys: ['/finance/expenses'], permission: 'finance:expense:view', order: '1', disabled: false, createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 26, type: 'button', parentId: 25, name: '提交报销', i18nKey: 'menu.finance.expense.create', permission: 'finance:expense:create', order: '1', disabled: false, createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 27, type: 'button', parentId: 25, name: '审批报销', i18nKey: 'menu.finance.expense.approve', permission: 'finance:expense:approve', order: '2', disabled: false, createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 28, type: 'menu', parentId: 24, name: '预算管理', i18nKey: 'menu.finance.budget', staticRouteKeys: ['/finance/budgets'], permission: 'finance:budget:view', order: '2', disabled: false, createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 29, type: 'button', parentId: 28, name: '新增预算', i18nKey: 'menu.finance.budget.create', permission: 'finance:budget:create', order: '1', disabled: false, createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+
+  // ── 已停用目录 (catalog, id=30) ───────────────────────────────────────────
+  { id: 30, type: 'catalog', parentId: 0, name: '旧版功能', i18nKey: 'menu.legacy', order: '99', disabled: true, createdAt: '2021-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 2 },
+  { id: 31, type: 'menu', parentId: 30, name: '旧版报表', i18nKey: 'menu.legacy.report', staticRouteKeys: ['/legacy/reports'], permission: 'legacy:report:view', order: '1', disabled: true, createdAt: '2021-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 2 }
+]
+
+let nextMenuId = 32
+
+export function getMenus() {
+  return menus
+}
+
+export function getMenuById(id: number) {
+  return menus.find(m => m.id === id)
+}
+
+export function createMenu(data: Partial<MockMenu>): MockMenu {
+  const now = new Date().toISOString()
+  const menu: MockMenu = {
+    id: nextMenuId++,
+    type: data.type || 'menu',
+    parentId: data.parentId,
+    name: data.name,
+    i18nKey: data.i18nKey,
+    staticRouteKeys: data.staticRouteKeys,
+    permission: data.permission,
+    order: data.order,
+    isAdmin: data.isAdmin,
+    disabled: data.disabled ?? false,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  menus.push(menu)
+  return menu
+}
+
+export function updateMenu(data: Partial<MockMenu>): MockMenu | null {
+  const idx = menus.findIndex(m => m.id === data.id)
+  if (idx === -1) return null
+  const updated: MockMenu = {
+    ...menus[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: menus[idx]!.version + 1
+  }
+  menus[idx] = updated
+  return updated
+}
+
+export function deleteMenus(ids: number[]): void {
+  for (const id of ids) {
+    const idx = menus.findIndex(m => m.id === id)
+    if (idx !== -1) menus.splice(idx, 1)
+  }
+}
+
+export function queryMenus(body: any) {
+  let filtered = [...menus]
+
+  if (body.whereQuery?.items) {
+    for (const item of body.whereQuery.items) {
+      if (item.value === null || item.value === undefined || item.value === '') continue
+      const field = item.field as string
+      const opr = item.opr as string
+      const value = item.value
+
+      filtered = filtered.filter((menu) => {
+        const fieldValue = getNestedValue(menu, field)
+        switch (opr) {
+          case 'eq': return fieldValue === value
+          case 'ne': return fieldValue !== value
+          case 'like': return String(fieldValue ?? '').toLowerCase().includes(String(value).toLowerCase())
+          case 'start_like': return String(fieldValue ?? '').toLowerCase().startsWith(String(value).toLowerCase())
+          case 'in': return Array.isArray(value) ? value.includes(fieldValue) : fieldValue === value
+          case 'not_in': return Array.isArray(value) ? !value.includes(fieldValue) : fieldValue !== value
+          case 'gt': return (fieldValue as any) > value
+          case 'gte': return (fieldValue as any) >= value
+          case 'lt': return (fieldValue as any) < value
+          case 'lte': return (fieldValue as any) <= value
+          case 'is_null': return fieldValue === null || fieldValue === undefined
+          case 'is_not_null': return fieldValue !== null && fieldValue !== undefined
+          default: return true
+        }
+      })
+    }
+  }
+
+  if (body.orderQuery && body.orderQuery.length > 0) {
+    filtered.sort((a, b) => {
+      for (const order of body.orderQuery) {
+        const field = order.field as string
+        const aVal = getNestedValue(a, field)
+        const bVal = getNestedValue(b, field)
+        if (aVal === bVal) continue
+        const dir = order.order === 'desc' ? -1 : 1
+        if (aVal == null) return dir
+        if (bVal == null) return -dir
+        return aVal < bVal ? -dir : dir
+      }
+      return 0
+    })
+  }
+
+  const total = filtered.length
+  const pageNum = body.pagination?.pageNum || 1
+  const pageSize = body.pagination?.pageSize
+
+  if (pageSize > 0) {
+    const start = (pageNum - 1) * pageSize
+    filtered = filtered.slice(start, start + pageSize)
+  }
+
+  return {
+    list: filtered,
+    total,
+    pageNum,
+    pageSize: pageSize || total
+  }
+}
+
+// ─── Role mock data ───────────────────────────────────────────────────────────
+
+const roles: MockRole[] = [
+  { id: 1, name: '超级管理员', permission: 'super_admin', disabled: false, remark: '拥有所有权限', createdAt: '2022-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 3 },
+  { id: 2, name: '系统管理员', permission: 'sys_admin', disabled: false, remark: '负责系统配置与用户管理', createdAt: '2022-01-01T00:00:00Z', updatedAt: '2025-02-10T08:30:00Z', createdBy: 'system', updatedBy: 'zhangsan', version: 2 },
+  { id: 3, name: '运营管理员', permission: 'ops_admin', disabled: false, remark: '负责日常运营管理', createdAt: '2022-03-15T00:00:00Z', updatedAt: '2025-03-01T10:00:00Z', createdBy: 'zhangsan', updatedBy: 'fengershi', version: 2 },
+  { id: 4, name: '财务管理员', permission: 'finance_admin', disabled: false, remark: '负责财务审批与报表', createdAt: '2022-06-01T00:00:00Z', updatedAt: '2024-12-15T09:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 5, name: '人事管理员', permission: 'hr_admin', disabled: false, remark: '负责人员招聘与绩效管理', createdAt: '2022-06-01T00:00:00Z', updatedAt: '2025-01-20T11:00:00Z', createdBy: 'zhangsan', updatedBy: 'wujiu', version: 1 },
+  { id: 6, name: '产品经理', permission: 'product_manager', disabled: false, remark: '负责产品规划与需求管理', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2025-02-18T14:00:00Z', createdBy: 'lisi', updatedBy: 'lisi', version: 1 },
+  { id: 7, name: '工程师', permission: 'engineer', disabled: false, remark: '负责产品研发与技术实现', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2025-03-10T09:30:00Z', createdBy: 'zhangsan', updatedBy: 'wangwu', version: 2 },
+  { id: 8, name: '设计师', permission: 'designer', disabled: false, remark: '负责产品 UI/UX 设计', createdAt: '2023-03-01T00:00:00Z', updatedAt: '2025-01-08T10:15:00Z', createdBy: 'zhaoliu', updatedBy: 'zhaoliu', version: 1 },
+  { id: 9, name: '市场专员', permission: 'marketing_staff', disabled: false, remark: '负责市场推广与品牌宣传', createdAt: '2023-04-01T00:00:00Z', updatedAt: '2025-02-22T13:00:00Z', createdBy: 'sunqi', updatedBy: 'sunqi', version: 1 },
+  { id: 10, name: '销售专员', permission: 'sales_staff', disabled: false, remark: '负责客户开发与销售跟进', createdAt: '2023-05-01T00:00:00Z', updatedAt: '2025-03-05T15:30:00Z', createdBy: 'huangshisi', updatedBy: 'caonianyi', version: 1 },
+  { id: 11, name: '访客', permission: 'guest', disabled: false, remark: '只读访问权限', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-06-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 12, name: '已停用角色', permission: 'deprecated_role', disabled: true, remark: '该角色已停用，请勿分配', createdAt: '2022-09-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 4 }
+]
+
+let nextRoleId = 13
+
+export function getRoles() {
+  return roles
+}
+
+export function getRoleById(id: number) {
+  return roles.find(r => r.id === id)
+}
+
+export function createRole(data: Partial<MockRole>): MockRole {
+  const now = new Date().toISOString()
+  const role: MockRole = {
+    id: nextRoleId++,
+    name: data.name || '',
+    permission: data.permission || '',
+    disabled: data.disabled ?? false,
+    remark: data.remark,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  roles.push(role)
+  return role
+}
+
+export function updateRole(data: Partial<MockRole>): MockRole | null {
+  const idx = roles.findIndex(r => r.id === data.id)
+  if (idx === -1) return null
+  const updated: MockRole = {
+    ...roles[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: roles[idx]!.version + 1
+  }
+  roles[idx] = updated
+  return updated
+}
+
+export function deleteRoles(ids: number[]): void {
+  for (const id of ids) {
+    const idx = roles.findIndex(r => r.id === id)
+    if (idx !== -1) roles.splice(idx, 1)
+  }
+}
+
+export function queryRoles(body: any) {
+  let filtered = [...roles]
+
+  if (body.whereQuery?.items) {
+    for (const item of body.whereQuery.items) {
+      if (item.value === null || item.value === undefined || item.value === '') continue
+      const field = item.field as string
+      const opr = item.opr as string
+      const value = item.value
+
+      filtered = filtered.filter((role) => {
+        const fieldValue = getNestedValue(role, field)
+        switch (opr) {
+          case 'eq': return fieldValue === value
+          case 'ne': return fieldValue !== value
+          case 'like': return String(fieldValue ?? '').toLowerCase().includes(String(value).toLowerCase())
+          case 'start_like': return String(fieldValue ?? '').toLowerCase().startsWith(String(value).toLowerCase())
+          case 'in': return Array.isArray(value) ? value.includes(fieldValue) : fieldValue === value
+          case 'not_in': return Array.isArray(value) ? !value.includes(fieldValue) : fieldValue !== value
+          case 'gt': return (fieldValue as any) > value
+          case 'gte': return (fieldValue as any) >= value
+          case 'lt': return (fieldValue as any) < value
+          case 'lte': return (fieldValue as any) <= value
+          case 'is_null': return fieldValue === null || fieldValue === undefined
+          case 'is_not_null': return fieldValue !== null && fieldValue !== undefined
+          default: return true
+        }
+      })
+    }
+  }
+
+  if (body.orderQuery && body.orderQuery.length > 0) {
+    filtered.sort((a, b) => {
+      for (const order of body.orderQuery) {
+        const field = order.field as string
+        const aVal = getNestedValue(a, field)
+        const bVal = getNestedValue(b, field)
+        if (aVal === bVal) continue
+        const dir = order.order === 'desc' ? -1 : 1
+        if (aVal == null) return dir
+        if (bVal == null) return -dir
+        return aVal < bVal ? -dir : dir
+      }
+      return 0
+    })
+  }
+
+  const total = filtered.length
+  const pageNum = body.pagination?.pageNum || 1
+  const pageSize = body.pagination?.pageSize || 10
+
+  if (pageSize > 0) {
+    const start = (pageNum - 1) * pageSize
+    filtered = filtered.slice(start, start + pageSize)
+  }
+
+  return {
+    list: filtered,
+    total,
+    pageNum,
+    pageSize: pageSize || total
+  }
 }

@@ -12,6 +12,14 @@ setGlobalSidebarMenus({
     icon: 'i-lucide-home',
     to: '/docs/getting-started'
   }, {
+    label: '菜单列表',
+    icon: 'i-lucide-list',
+    to: '/examples/menus'
+  }, {
+    label: '角色列表',
+    icon: 'i-lucide-user-cog',
+    to: '/examples/roles'
+  }, {
     label: '用户列表',
     icon: 'i-lucide-users',
     to: '/examples/users'
