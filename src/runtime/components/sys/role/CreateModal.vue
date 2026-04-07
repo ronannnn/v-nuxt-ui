@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TreeItem } from '@nuxt/ui'
-import type { Menu, Role } from '#v/types'
+import type { VFormFieldProps, Menu, Role } from '#v/types'
 import * as z from 'zod'
 import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
 import { useFormSubmission, useFormValues, useMenuApi, useRoleApi } from '#v/composables'
@@ -49,9 +49,8 @@ const sourceTreeItems = computed<TreeItem[]>(() => treeifyOptions(
 ))
 const targetTreeItems = computed<TreeItem[]>({
   get() {
-    const sortedMenus = (newValues.value.menus || []).sort((a, b) => a.order?.localeCompare(b.order || '') || 0)
     return treeifyOptions(
-      sortedMenus,
+      (newValues.value.menus || []).sort((a, b) => a.order?.localeCompare(b.order || '') || 0),
       () => {},
       'name',
       'id',
@@ -64,6 +63,31 @@ const targetTreeItems = computed<TreeItem[]>({
   }
 })
 
+function updateTargetTreeItems(newVal: TreeItem[]) {
+  targetTreeItems.value = newVal
+}
+
+const fields = computed<VFormFieldProps[]>(() => [
+  { name: 'name', type: 'input', label: '角色名称', colSpan: '12', zodType: z.string().min(2, '名称字数不足') },
+  { name: 'isAdmin', type: 'button-switch', label: '是否是系统角色', colSpan: '12', zodType: z.boolean() },
+  {
+    name: 'menus',
+    label: '菜单权限',
+    colSpan: '24',
+    zodType: z.array(z.object({ id: z.number() })),
+    type: 'tree-select-transfer',
+    sourceTreeItems: sourceTreeItems.value,
+    targetTreeItems: targetTreeItems.value,
+    onUpdateTargetTreeItems: updateTargetTreeItems
+  },
+  { name: 'disabled', type: 'button-switch', label: '是否禁用', colSpan: '12', zodType: z.boolean() },
+  { name: 'remark', type: 'input', label: '备注', colSpan: '24', zodType: z.string().optional().nullable() }
+])
+
+function updateModelValue(newVal: Partial<Role>) {
+  newValues.value = { id: 0, ...newVal }
+}
+
 onMounted(async () => {
   await onFetchMenus()
 })
@@ -73,24 +97,9 @@ onMounted(async () => {
   <FormCreateModalTemplate
     title="角色信息"
     :on-close="ok => emit('close', ok)"
-    :fields="[
-      { name: 'name', type: 'input', label: '角色名称', colSpan: '12', zodType: z.string().min(2, '名称字数不足') },
-      { name: 'isAdmin', type: 'button-switch', label: '是否是系统角色', colSpan: '12', zodType: z.boolean() },
-      {
-        name: 'menus',
-        label: '菜单权限',
-        colSpan: '24',
-        zodType: z.array(z.object({ id: z.number() })),
-        type: 'tree-select-transfer',
-        sourceTreeItems,
-        targetTreeItems,
-        onUpdateTargetTreeItems: newVal => targetTreeItems = newVal
-      },
-      { name: 'disabled', type: 'button-switch', label: '是否禁用', colSpan: '12', zodType: z.boolean() },
-      { name: 'remark', type: 'input', label: '备注', colSpan: '24', zodType: z.string().optional().nullable() }
-    ]"
+    :fields="fields"
     :model-value="newValues"
-    @update-model-value="newVal => newValues = { id: 0, ...newVal }"
+    @update-model-value="updateModelValue"
     @submit="onSubmit"
   />
 </template>
