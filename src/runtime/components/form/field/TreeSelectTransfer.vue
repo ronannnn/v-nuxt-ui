@@ -79,8 +79,7 @@ function handleUpdateModelValue(selectedItems: TreeItem[]) {
             :model-value="indeterminate ? 'indeterminate' : selected"
             tabindex="-1"
             size="sm"
-            @change="handleSelect"
-            @click.stop
+            @click.stop="handleSelect"
           />
         </template>
       </UTree>
