@@ -2,6 +2,7 @@
 import type { TableColumn, Table } from '#v/types'
 import { useTableColumnApi } from '#v/composables/api'
 import { ref, onMounted } from 'vue'
+import { useToast } from '@nuxt/ui/composables'
 
 const props = defineProps<{
   table: Table
@@ -14,7 +15,9 @@ const emit = defineEmits<{
 
 const tableColumnApi = useTableColumnApi()
 const columns = ref<TableColumn[]>([])
+const deletedColumnIds = ref<number[]>([])
 const loading = ref(false)
+const saving = ref(false)
 
 async function fetchColumns() {
   loading.value = true
@@ -49,7 +52,45 @@ function addColumn() {
 }
 
 function removeColumn(index: number) {
+  const col = columns.value[index]
+  if (col.id !== 0) {
+    deletedColumnIds.value.push(col.id)
+  }
   columns.value.splice(index, 1)
+}
+
+async function handleSave() {
+  saving.value = true
+  try {
+    for (const col of columns.value) {
+      if (col.id === 0) {
+        await tableColumnApi.create(tableColumnApi.prune(col))
+      } else {
+        await tableColumnApi.update(tableColumnApi.prune(col))
+      }
+    }
+    for (const id of deletedColumnIds.value) {
+      await tableColumnApi.delete(id)
+    }
+    useToast().add({
+      title: '保存成功',
+      description: `列配置已保存`,
+      color: 'success',
+      icon: 'i-lucide-check-circle'
+    })
+    emit('save', columns.value)
+    emit('close', true)
+  } catch (error) {
+    useToast().add({
+      title: '保存失败',
+      description: String(error),
+      color: 'error',
+      icon: 'i-lucide-x-circle'
+    })
+    emit('close', false)
+  } finally {
+    saving.value = false
+  }
 }
 
 onMounted(fetchColumns)
@@ -129,7 +170,8 @@ onMounted(fetchColumns)
         label="保存"
         color="primary"
         variant="solid"
-        @click="emit('save', columns)"
+        :loading="saving"
+        @click="handleSave"
       />
     </template>
   </UModal>

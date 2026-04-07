@@ -5,10 +5,12 @@ import { useTableApi, useTableColumnApi } from '#v/composables/api'
 import { getOprColumns } from '#v/constants'
 import TableColumnModal from './TableColumnModal.vue'
 import TablePage from '#v/components/table/Page.vue'
+import CreateModal from './CreateModal.vue'
 import { h, ref, watch } from 'vue'
 
 const overlay = useOverlay()
 const tableColumnModal = overlay.create(TableColumnModal)
+const createModal = overlay.create(CreateModal)
 
 const columnCounts = ref<Record<number, number>>({})
 
@@ -70,6 +72,14 @@ function getExpandVNode(row: Table) {
 
 const extraRowActions = [
   {
+    label: '编辑',
+    icon: 'i-lucide-edit',
+    fnWithModal: async (row: Table) => {
+      const result = await createModal.open({ model: { ...row } }).result
+      return result
+    }
+  },
+  {
     label: '配置列',
     icon: 'i-lucide-settings',
     fnWithModal: async (row: Table) => {
@@ -100,6 +110,9 @@ watch(
     :expandable="true"
     :expand-v-node="getExpandVNode"
     :extra-row-actions="extraRowActions"
-    @edit-row-from-modal="async (row: Table) => false"
+    @edit-row-from-modal="async (row: Table) => {
+      const result = await createModal.open({ model: { ...row } }).result
+      return result === true
+    }"
   />
 </template>
