@@ -138,7 +138,7 @@ export function useTableColumns<T>(props: {
                     variant: selectOption.variant ?? 'outline',
                     icon: item?.icon
                   }, () => item?.label ?? '未知值')
-                : h(UBadge, { ...selectOption.empty })
+                : (selectOption.empty ? h(UBadge, { ...selectOption.empty }) : null)
             }
           }
         }
