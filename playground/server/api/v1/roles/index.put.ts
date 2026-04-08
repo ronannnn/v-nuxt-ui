@@ -1,9 +1,13 @@
 // PUT /api/v1/roles - update role
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const role = updateRole(body)
+  const { tablePermissions, ...roleData } = body
+  const role = updateRole(roleData)
   if (!role) {
     throw createError({ statusCode: 404, message: 'Role not found' })
   }
-  return { error: null, data: role }
+  if (tablePermissions !== undefined) {
+    saveRoleTablePermissions(role.id, Array.isArray(tablePermissions) ? tablePermissions : [])
+  }
+  return { error: null, data: enrichRoleWithTablePermissions(role) }
 })

@@ -5,5 +5,5 @@ export default defineEventHandler(async (event) => {
   if (!role) {
     throw createError({ statusCode: 404, message: 'Role not found' })
   }
-  return { error: null, data: role }
+  return { error: null, data: enrichRoleWithTablePermissions(role) }
 })
