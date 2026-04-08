@@ -9,6 +9,7 @@ export const useRoleApi = createSharedComposable((): ApiGroup<Role> => ({
   prune: (model: Role): Role => {
     const cloned = cloneJson(model)
     cloned.menus = useBizModel().extractIds(cloned.menus)
+    cloned.tablePermissions = useBizModel().extractIds(cloned.tablePermissions)
     return cloned
   },
   copy: (model: Role): Role => ({
@@ -17,6 +18,7 @@ export const useRoleApi = createSharedComposable((): ApiGroup<Role> => ({
     permission: model.permission,
     disabled: model.disabled,
     remark: model.remark,
-    menus: model.menus
+    menus: model.menus,
+    tablePermissions: model.tablePermissions
   })
 }))

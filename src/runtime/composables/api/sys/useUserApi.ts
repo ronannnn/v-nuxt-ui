@@ -23,6 +23,7 @@ export const useUserApi = createSharedComposable((): UserApiGroup => ({
     const bizModel = useBizModel()
     cloned.roles = bizModel.extractIds(cloned.roles)
     cloned.menus = bizModel.extractIds(cloned.menus)
+    cloned.tablePermissions = bizModel.extractIds(cloned.tablePermissions)
     return cloned
   },
   copy: (model: User): User => ({
@@ -40,7 +41,8 @@ export const useUserApi = createSharedComposable((): UserApiGroup => ({
     resignDate: model.resignDate,
     gender: model.gender,
 
-    loginType: model.loginType
+    loginType: model.loginType,
+    tablePermissions: model.tablePermissions
   }),
   changePwd: (payload: ChangePwdPayload, customOptions: UseFetchOptions<unknown> = {}) => {
     return usePutFetch(`/users/pwd/change`, payload, customOptions)
