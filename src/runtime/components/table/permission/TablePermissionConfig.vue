@@ -37,14 +37,14 @@ const tableItems = computed(() => tables.value.map(t => ({
 async function fetchTables() {
   try {
     loading.value = true
-    const { data, error } = await tableApi.list({
+    const { data } = await tableApi.list({
       pagination: { pageNum: 0, pageSize: 0 },
       orderQuery: [{ field: 'label', order: 'asc' }]
     })
-    if (error.value) {
+    if (data.value.error) {
       useToast().add({
         title: '获取 Table 列表失败',
-        description: error.value.message,
+        description: data.value.error.message,
         color: 'error'
       })
       return
@@ -65,11 +65,11 @@ async function fetchTables() {
 
 async function fetchMergedColumns(tblName: string) {
   try {
-    const { data, error } = await tableColumnApi.getMergedColumns(tblName)
-    if (error.value) {
+    const { data } = await tableColumnApi.getMergedColumns(tblName)
+    if (data.value.error) {
       useToast().add({
         title: '获取列信息失败',
-        description: error.value.message,
+        description: data.value.error.message,
         color: 'error'
       })
       return

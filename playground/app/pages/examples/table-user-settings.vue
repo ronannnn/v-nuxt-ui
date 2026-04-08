@@ -5,5 +5,5 @@ definePageMeta({
 </script>
 
 <template>
-  <VTableSettings />
+  <ProTableSettings />
 </template>

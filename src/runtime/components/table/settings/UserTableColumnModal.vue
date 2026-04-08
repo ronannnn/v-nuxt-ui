@@ -13,8 +13,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:open': [boolean]
-  close: []
-  save: [UserTableColumn]
+  'close': []
+  'save': [UserTableColumn]
 }>()
 
 const openModel = ref(props.open)
@@ -29,14 +29,14 @@ watch(openModel, (val) => {
 
 const width = ref(props.column.width)
 const order = ref(props.column.order)
-const fixed = ref<'left' | 'right' | ''>(props.column.fixed)
+const fixed = ref<'left' | 'right' | ''>(props.column.fixed ?? '')
 const visible = ref(props.column.visible)
 
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
     width.value = props.column.width
     order.value = props.column.order
-    fixed.value = props.column.fixed
+    fixed.value = props.column.fixed ?? ''
     visible.value = props.column.visible
   }
 })
@@ -49,6 +49,7 @@ const fixedOptions = [
 
 function handleSave() {
   emit('save', {
+    id: props.column.tableColumnId!,
     userId: loginUser.value?.id ?? 0,
     tableColumnId: props.column.tableColumnId ?? 0,
     width: width.value,

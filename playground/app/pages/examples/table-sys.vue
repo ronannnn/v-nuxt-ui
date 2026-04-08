@@ -5,5 +5,5 @@ definePageMeta({
 </script>
 
 <template>
-  <VSysTable />
+  <ProSysTable />
 </template>

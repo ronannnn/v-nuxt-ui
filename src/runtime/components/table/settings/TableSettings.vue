@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { MergedTableColumn, UserTableColumn } from '#v/types'
+import type { MergedTableColumn, UserTableColumn, Table } from '#v/types'
 import { useTableColumnPermission } from '#v/composables/table/useTableColumnPermission'
 import UserTableColumnModal from './UserTableColumnModal.vue'
-import { ref } from 'vue'
+import { ref, h, onMounted } from 'vue'
+</script>
 
+<script lang="ts">
 const { tables, fetchTables, fetchMergedColumns, saveUserColumns } = useTableColumnPermission()
 
 const selectedTable = ref<Table | null>(null)
@@ -14,7 +16,7 @@ const saving = ref(false)
 
 async function onTableSelect(table: Table) {
   selectedTable.value = table
-  mergedColumns.value = await fetchMergedColumns(table.tblName)
+  mergedColumns.value = await fetchMergedColumns(table.tblName ?? '')
 }
 
 function onEditColumn(column: MergedTableColumn) {
@@ -24,11 +26,11 @@ function onEditColumn(column: MergedTableColumn) {
 
 async function onColumnSave(config: UserTableColumn) {
   if (!selectedTable.value) return
-  
+
   saving.value = true
   try {
-    await saveUserColumns(selectedTable.value.tblName, [config])
-    mergedColumns.value = await fetchMergedColumns(selectedTable.value.tblName)
+    await saveUserColumns(selectedTable.value.tblName ?? '', [config])
+    mergedColumns.value = await fetchMergedColumns(selectedTable.value.tblName ?? '')
     showColumnModal.value = false
   } finally {
     saving.value = false
@@ -83,15 +85,12 @@ const columns = [
 onMounted(fetchTables)
 </script>
 
-<script lang="ts">
-import type { Table } from '#v/types'
-import { h } from 'vue'
-</script>
-
 <template>
   <div class="flex gap-4 h-full">
     <div class="w-64 border-r pr-4">
-      <div class="font-bold mb-2">选择 Table</div>
+      <div class="font-bold mb-2">
+        选择 Table
+      </div>
       <div
         v-for="table in tables"
         :key="table.id"
@@ -105,7 +104,9 @@ import { h } from 'vue'
 
     <div class="flex-1">
       <template v-if="selectedTable">
-        <div class="font-bold mb-2">列配置 - {{ selectedTable.label }}</div>
+        <div class="font-bold mb-2">
+          列配置 - {{ selectedTable.label }}
+        </div>
         <UTable :data="mergedColumns" :columns="columns" />
       </template>
       <div v-else class="text-dimmed">
@@ -115,8 +116,8 @@ import { h } from 'vue'
 
     <UserTableColumnModal
       v-if="editingColumn"
-      :column="editingColumn"
       v-model:open="showColumnModal"
+      :column="editingColumn"
       :loading="saving"
       @save="onColumnSave"
       @close="showColumnModal = false"
