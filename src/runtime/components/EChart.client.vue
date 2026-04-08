@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { ref, useTemplateRef, watch } from 'vue'
-import { useTheme } from '#v/composables/useTheme'
-import { useApp } from '#v/composables/useApp'
-import { useEChart } from '#v/composables/useEChart'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart, PieChart, LineChart } from 'echarts/charts'
@@ -14,7 +10,10 @@ import {
   ToolboxComponent
 } from 'echarts/components'
 import VChart from 'vue-echarts'
-import { useColorMode } from '@vueuse/core'
+import { useTheme, useApp, useEChart } from '#v/composables'
+import { useColorMode, useLocalStorage } from '@vueuse/core'
+import { ref, useTemplateRef, watch } from 'vue'
+import { StorageKey } from '#v/types'
 
 interface Props {
   option: any
@@ -63,6 +62,8 @@ const colorMode = useColorMode()
 const app = useApp()
 const echart = useEChart()
 
+const rotateXAxisLabel = useLocalStorage<boolean>(StorageKey.ECHART_ROTATE_X_AXIS_LABEL, false)
+
 // 合并颜色配置到 option
 const finalOption = ref({})
 
@@ -74,7 +75,13 @@ const chartRef = useTemplateRef('v-chart')
 
 // 监听所有依赖变化
 watch(
-  [() => props.option, colorMode, () => theme.primary.value, () => theme.neutral.value, () => app.appConfig.value.radius],
+  [
+    () => props.option, colorMode,
+    () => theme.primary.value,
+    () => theme.neutral.value,
+    () => app.appConfig.value.radius,
+    () => rotateXAxisLabel.value
+  ],
   () => setTimeout(() => {
     updateOption() // TODO: 通过更好的方式实现
   }, 1),

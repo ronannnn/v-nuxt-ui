@@ -6,7 +6,11 @@ export enum StorageKey {
   FLOW_EDGE_STROKE_WIDTH = 'flow_edge_stroke_width',
   FLOW_EDGE_MARKER_START = 'flow_edge_marker_start',
   FLOW_EDGE_MARKER_END = 'flow_edge_marker_end',
-  FLOW_NODE_BORDER_WIDTH = 'flow_node_border_width'
+  FLOW_NODE_BORDER_WIDTH = 'flow_node_border_width',
+
+  // echarts
+  ECHART_ROTATE_X_AXIS_LABEL = 'echart_rotate_x_axis_label'
+
 }
 
 export type Column = {
