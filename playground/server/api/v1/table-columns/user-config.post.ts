@@ -1,6 +1,4 @@
 // POST /api/v1/table-columns/user-config
-import { getUserTableColumnsByUserId, createUserTableColumn, updateUserTableColumn, getTableColumnsByTableId, getTables } from '../../utils/mockData'
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { tblName, configs } = body

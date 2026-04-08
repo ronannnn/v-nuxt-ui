@@ -1,6 +1,4 @@
 // GET /api/v1/tables/:id
-import { getTableById } from '../../utils/mockData'
-
 export default defineEventHandler(async (event) => {
   const id = parseInt(getRouterParam(event, 'id') || '0')
   const table = getTableById(id)

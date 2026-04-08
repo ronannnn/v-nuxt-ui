@@ -1,6 +1,4 @@
 // POST /api/v1/tables/batch-delete
-import { deleteTables, deleteTableColumns } from '../../utils/mockData'
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { ids } = body

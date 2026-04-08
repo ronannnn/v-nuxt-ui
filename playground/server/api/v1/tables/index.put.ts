@@ -1,6 +1,4 @@
 // PUT /api/v1/tables
-import { updateTable } from '../../utils/mockData'
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const table = updateTable(body)

@@ -1,6 +1,4 @@
 // GET /api/v1/table-columns/:id
-import { getTableColumnById } from '../../utils/mockData'
-
 export default defineEventHandler(async (event) => {
   const id = parseInt(getRouterParam(event, 'id') || '0')
   const column = getTableColumnById(id)

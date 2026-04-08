@@ -1,10 +1,9 @@
 // GET /api/v1/table-columns/merged?tblName=xxx
-import { getTables, getTableColumnsByTableId, getUserTableColumnsByTableColumnIds, getTablePermissions, getTableColumnPermissionsByTablePermissionId } from '../../utils/mockData'
-import type { MergedTableColumn } from '../../utils/mockData'
+import type { MergedTableColumn } from '#v/types'
 
 export default defineEventHandler(async (event) => {
   const tblName = getQuery(event).tblName as string
-  
+
   // Find table by tblName
   const table = getTables().find(t => t.tblName === tblName)
   if (!table) {
@@ -13,17 +12,17 @@ export default defineEventHandler(async (event) => {
 
   // Get table columns for this table
   const tableColumns = getTableColumnsByTableId(table.id)
-  
+
   // For mock, use a fixed userId (in real app, would come from auth)
   const userId = 1
   const tableColumnIds = tableColumns.map(c => c.id)
   const userTableColumns = getUserTableColumnsByTableColumnIds(tableColumnIds, userId)
-  
+
   // Get table permissions (simplified - would need role-based logic in real app)
   const tablePermissions = getTablePermissions().filter(p => p.tableId === table.id)
-  
+
   // Build merged columns
-  const mergedColumns: MergedTableColumn[] = tableColumns.map(col => {
+  const mergedColumns: MergedTableColumn[] = tableColumns.map((col) => {
     const userCol = userTableColumns.find(uc => uc.tableColumnId === col.id)
     const colPerms = tablePermissions.flatMap(p => getTableColumnPermissionsByTablePermissionId(p.id))
     const colPerm = colPerms.find(cp => cp.columnKey === col.columnKey)
@@ -66,7 +65,7 @@ export default defineEventHandler(async (event) => {
   })
 
   // Sort by order
-  mergedColumns.sort((a, b) => a.order - b.order)
+  mergedColumns.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
   return { error: null, data: mergedColumns }
 })

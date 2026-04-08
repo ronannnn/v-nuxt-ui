@@ -1,6 +1,4 @@
 // PUT /api/v1/table-permissions
-import { updateTablePermission } from '../../utils/mockData'
-
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const permission = updateTablePermission(body)

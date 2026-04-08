@@ -1,10 +1,9 @@
-// GET /api/v1/table-permissions/effective?tblName=xxx
-import { getTables, getTablePermissions, getTableColumnPermissionsByTablePermissionId, getTableColumnsByTableId } from '../../utils/mockData'
-import type { EffectiveTablePermission, ColumnEffectivePerm } from '../../utils/mockData'
+import type { ColumnEffectivePerm, EffectiveTablePermission } from '#v/types'
 
+// GET /api/v1/table-permissions/effective?tblName=xxx
 export default defineEventHandler(async (event) => {
   const tblName = getQuery(event).tblName as string
-  
+
   // Find table by tblName
   const table = getTables().find(t => t.tblName === tblName)
   if (!table) {
@@ -21,7 +20,7 @@ export default defineEventHandler(async (event) => {
   // For mock: if any permission has canView/canEdit, use that
   let canViewTable = false
   let canEditTable = false
-  
+
   for (const tp of tablePermissions) {
     if (tp.canView) canViewTable = true
     if (tp.canEdit) canEditTable = true
