@@ -5,5 +5,5 @@ export default defineEventHandler(async (event) => {
   if (!user) {
     throw createError({ statusCode: 404, message: 'User not found' })
   }
-  return { error: null, data: user }
+  return { error: null, data: enrichUserWithTablePermissions(user) }
 })
