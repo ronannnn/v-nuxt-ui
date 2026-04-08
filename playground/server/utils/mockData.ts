@@ -535,6 +535,7 @@ export interface MockRole {
   permission: string
   disabled: boolean
   remark?: string
+  tablePermissions?: number[]
   createdAt: string
   updatedAt: string
   createdBy?: string
@@ -555,6 +556,7 @@ export interface MockUser {
   entryDate: string
   resignDate?: string
   telNo?: string
+  tablePermissions?: number[]
   createdAt: string
   updatedAt: string
   createdBy?: string
@@ -583,7 +585,7 @@ const departments: MockDepartment[] = [
 ]
 
 const users: MockUser[] = [
-  { id: 1, nickname: '张三', username: 'zhangsan', email: 'zhangsan@example.com', gender: 'male', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: true, status: 'active', entryDate: '2022-03-15', telNo: '13800001111', createdAt: '2022-03-15T08:00:00Z', updatedAt: '2025-01-10T10:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 5 },
+  { id: 1, nickname: '张三', username: 'zhangsan', email: 'zhangsan@example.com', gender: 'male', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: true, status: 'active', entryDate: '2022-03-15', telNo: '13800001111', tablePermissions: [1, 4], createdAt: '2022-03-15T08:00:00Z', updatedAt: '2025-01-10T10:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 5 },
   { id: 2, nickname: '李四', username: 'lisi', email: 'lisi@example.com', gender: 'female', departmentId: 2, department: { id: 2, name: '产品部' }, isAdmin: false, status: 'active', entryDate: '2022-06-20', telNo: '13800002222', createdAt: '2022-06-20T08:00:00Z', updatedAt: '2025-02-15T14:30:00Z', createdBy: 'system', updatedBy: 'zhangsan', version: 3 },
   { id: 3, nickname: '王五', username: 'wangwu', email: 'wangwu@example.com', gender: 'male', departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: false, status: 'active', entryDate: '2022-09-01', telNo: '13800003333', createdAt: '2022-09-01T08:00:00Z', updatedAt: '2025-03-20T09:15:00Z', createdBy: 'system', updatedBy: 'zhangsan', version: 2 },
   { id: 4, nickname: '赵六', username: 'zhaoliu', email: 'zhaoliu@example.com', gender: 'female', departmentId: 3, department: { id: 3, name: '设计部' }, isAdmin: false, status: 'active', entryDate: '2023-01-10', telNo: '13800004444', createdAt: '2023-01-10T08:00:00Z', updatedAt: '2025-01-05T11:20:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
@@ -919,8 +921,8 @@ export function queryMenus(body: any) {
 // ─── Role mock data ───────────────────────────────────────────────────────────
 
 const roles: MockRole[] = [
-  { id: 1, name: '超级管理员', permission: 'super_admin', disabled: false, remark: '拥有所有权限', createdAt: '2022-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 3 },
-  { id: 2, name: '系统管理员', permission: 'sys_admin', disabled: false, remark: '负责系统配置与用户管理', createdAt: '2022-01-01T00:00:00Z', updatedAt: '2025-02-10T08:30:00Z', createdBy: 'system', updatedBy: 'zhangsan', version: 2 },
+  { id: 1, name: '超级管理员', permission: 'super_admin', disabled: false, remark: '拥有所有权限', tablePermissions: [1, 4], createdAt: '2022-01-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 3 },
+  { id: 2, name: '系统管理员', permission: 'sys_admin', disabled: false, remark: '负责系统配置与用户管理', tablePermissions: [2], createdAt: '2022-01-01T00:00:00Z', updatedAt: '2025-02-10T08:30:00Z', createdBy: 'system', updatedBy: 'zhangsan', version: 2 },
   { id: 3, name: '运营管理员', permission: 'ops_admin', disabled: false, remark: '负责日常运营管理', createdAt: '2022-03-15T00:00:00Z', updatedAt: '2025-03-01T10:00:00Z', createdBy: 'zhangsan', updatedBy: 'fengershi', version: 2 },
   { id: 4, name: '财务管理员', permission: 'finance_admin', disabled: false, remark: '负责财务审批与报表', createdAt: '2022-06-01T00:00:00Z', updatedAt: '2024-12-15T09:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
   { id: 5, name: '人事管理员', permission: 'hr_admin', disabled: false, remark: '负责人员招聘与绩效管理', createdAt: '2022-06-01T00:00:00Z', updatedAt: '2025-01-20T11:00:00Z', createdBy: 'zhangsan', updatedBy: 'wujiu', version: 1 },
@@ -929,7 +931,7 @@ const roles: MockRole[] = [
   { id: 8, name: '设计师', permission: 'designer', disabled: false, remark: '负责产品 UI/UX 设计', createdAt: '2023-03-01T00:00:00Z', updatedAt: '2025-01-08T10:15:00Z', createdBy: 'zhaoliu', updatedBy: 'zhaoliu', version: 1 },
   { id: 9, name: '市场专员', permission: 'marketing_staff', disabled: false, remark: '负责市场推广与品牌宣传', createdAt: '2023-04-01T00:00:00Z', updatedAt: '2025-02-22T13:00:00Z', createdBy: 'sunqi', updatedBy: 'sunqi', version: 1 },
   { id: 10, name: '销售专员', permission: 'sales_staff', disabled: false, remark: '负责客户开发与销售跟进', createdAt: '2023-05-01T00:00:00Z', updatedAt: '2025-03-05T15:30:00Z', createdBy: 'huangshisi', updatedBy: 'caonianyi', version: 1 },
-  { id: 11, name: '访客', permission: 'guest', disabled: false, remark: '只读访问权限', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-06-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
+  { id: 11, name: '访客', permission: 'guest', disabled: false, remark: '只读访问权限', tablePermissions: [3], createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-06-01T00:00:00Z', createdBy: 'zhangsan', updatedBy: 'zhangsan', version: 1 },
   { id: 12, name: '已停用角色', permission: 'deprecated_role', disabled: true, remark: '该角色已停用，请勿分配', createdAt: '2022-09-01T00:00:00Z', updatedAt: '2025-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 4 }
 ]
 
@@ -1044,4 +1046,44 @@ export function queryRoles(body: any) {
     pageNum,
     pageSize: pageSize || total
   }
+}
+
+export function enrichRoleWithTablePermissions(role: MockRole): MockRole & { tablePermissions: MockTablePermission[] } {
+  const permIds = role.tablePermissions || []
+  const perms = (permIds as number[])
+    .map(id => getTablePermissionById(id))
+    .filter(Boolean) as MockTablePermission[]
+
+  const enrichedPerms = perms.map(p => ({
+    ...p,
+    columnPermissions: getTableColumnPermissionsByTablePermissionId(p.id)
+  }))
+
+  return { ...role, tablePermissions: enrichedPerms } as any
+}
+
+export function enrichUserWithTablePermissions(user: MockUser): MockUser & { tablePermissions: MockTablePermission[] } {
+  const permIds = user.tablePermissions || []
+  const perms = (permIds as number[])
+    .map(id => getTablePermissionById(id))
+    .filter(Boolean) as MockTablePermission[]
+
+  const enrichedPerms = perms.map(p => ({
+    ...p,
+    columnPermissions: getTableColumnPermissionsByTablePermissionId(p.id)
+  }))
+
+  return { ...user, tablePermissions: enrichedPerms } as any
+}
+
+export function saveRoleTablePermissions(roleId: number, permissions: any[]): void {
+  const role = getRoleById(roleId)
+  if (!role) return
+  role.tablePermissions = permissions.map(p => typeof p === 'number' ? p : p.id).filter(id => id > 0)
+}
+
+export function saveUserTablePermissions(userId: number, permissions: any[]): void {
+  const user = getUserById(userId)
+  if (!user) return
+  user.tablePermissions = permissions.map(p => typeof p === 'number' ? p : p.id).filter(id => id > 0)
 }
