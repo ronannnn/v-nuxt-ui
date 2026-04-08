@@ -3,9 +3,7 @@ import type { MergedTableColumn, UserTableColumn, Table } from '#v/types'
 import { useTableColumnPermission } from '#v/composables/table/useTableColumnPermission'
 import UserTableColumnModal from './UserTableColumnModal.vue'
 import { ref, h, onMounted } from 'vue'
-</script>
 
-<script lang="ts">
 const { tables, fetchTables, fetchMergedColumns, saveUserColumns } = useTableColumnPermission()
 
 const selectedTable = ref<Table | null>(null)
