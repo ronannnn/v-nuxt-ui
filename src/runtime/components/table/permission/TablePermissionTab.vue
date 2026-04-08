@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { useOverlay } from '@nuxt/ui/composables'
+import { useOverlay, useToast } from '@nuxt/ui/composables'
 import type { TablePermission } from '#v/types'
 import TablePermissionConfig from './TablePermissionConfig.vue'
+
+interface ModalResult {
+  save?: TablePermission
+}
 
 const props = defineProps<{
   modelValue: TablePermission[]
@@ -12,11 +16,12 @@ const emit = defineEmits<{
 }>()
 
 const overlay = useOverlay()
+const toast = useToast()
 const tablePermissionConfigModal = overlay.create(TablePermissionConfig)
 
 function openAddModal() {
-  tablePermissionConfigModal.open({}).result.then((result: any) => {
-    if (result && typeof result === 'object' && 'save' in result) {
+  tablePermissionConfigModal.open({}).result.then((result: ModalResult) => {
+    if (result?.save) {
       const newPermissions = [...props.modelValue, result.save]
       emit('update:modelValue', newPermissions)
     }
@@ -24,10 +29,10 @@ function openAddModal() {
 }
 
 function openEditModal(permission: TablePermission) {
-  tablePermissionConfigModal.open({ permission }).result.then((result: any) => {
-    if (result && typeof result === 'object' && 'save' in result) {
+  tablePermissionConfigModal.open({ permission }).result.then((result: ModalResult) => {
+    if (result?.save) {
       const newPermissions = props.modelValue.map(p =>
-        p.tableId === result.save.tableId ? result.save : p
+        p.tableId === result.save!.tableId ? result.save! : p
       )
       emit('update:modelValue', newPermissions)
     }
@@ -35,8 +40,22 @@ function openEditModal(permission: TablePermission) {
 }
 
 function removePermission(tableId: number) {
-  const newPermissions = props.modelValue.filter(p => p.tableId !== tableId)
-  emit('update:modelValue', newPermissions)
+  toast.add({
+    title: '确认删除',
+    description: '确定要删除该 Table 权限吗？',
+    color: 'warning',
+    actions: [
+      { label: '取消', variant: 'subtle' },
+      {
+        label: '删除',
+        color: 'error',
+        onClick: () => {
+          const newPermissions = props.modelValue.filter(p => p.tableId !== tableId)
+          emit('update:modelValue', newPermissions)
+        }
+      }
+    ]
+  })
 }
 </script>
 

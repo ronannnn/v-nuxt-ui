@@ -35,22 +35,55 @@ const tableItems = computed(() => tables.value.map(t => ({
 })))
 
 async function fetchTables() {
-  loading.value = true
-  const { data } = await tableApi.list({
-    pagination: { pageNum: 0, pageSize: 0 },
-    orderQuery: [{ field: 'label', order: 'asc' }]
-  })
-  if (data.value.data) {
-    tables.value = data.value.data.list
+  try {
+    loading.value = true
+    const { data, error } = await tableApi.list({
+      pagination: { pageNum: 0, pageSize: 0 },
+      orderQuery: [{ field: 'label', order: 'asc' }]
+    })
+    if (error.value) {
+      useToast().add({
+        title: '获取 Table 列表失败',
+        description: error.value.message,
+        color: 'error'
+      })
+      return
+    }
+    if (data.value.data) {
+      tables.value = data.value.data.list
+    }
+  } catch (e) {
+    useToast().add({
+      title: '获取 Table 列表失败',
+      description: e instanceof Error ? e.message : '未知错误',
+      color: 'error'
+    })
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
 async function fetchMergedColumns(tblName: string) {
-  const { data } = await tableColumnApi.getMergedColumns(tblName)
-  if (data.value.data) {
-    mergedColumns.value = data.value.data
-    initColumnPermissions()
+  try {
+    const { data, error } = await tableColumnApi.getMergedColumns(tblName)
+    if (error.value) {
+      useToast().add({
+        title: '获取列信息失败',
+        description: error.value.message,
+        color: 'error'
+      })
+      return
+    }
+    if (data.value.data) {
+      mergedColumns.value = data.value.data
+      initColumnPermissions()
+    }
+  } catch (e) {
+    useToast().add({
+      title: '获取列信息失败',
+      description: e instanceof Error ? e.message : '未知错误',
+      color: 'error'
+    })
   }
 }
 
@@ -78,7 +111,7 @@ function onTableChange(tableId: number) {
   }
 }
 
-function handleSave() {
+async function handleSave() {
   if (!selectedTableId.value || !selectedTable.value) {
     useToast().add({
       title: '请选择 Table',
@@ -87,20 +120,29 @@ function handleSave() {
     return
   }
 
-  saving.value = true
+  try {
+    saving.value = true
 
-  const result: TablePermission = {
-    id: props.permission?.id ?? 0,
-    name: selectedTable.value.label,
-    tableId: selectedTableId.value,
-    canView: canView.value,
-    canEdit: canEdit.value,
-    columnPermissions: columnPermissions.value
+    const result: TablePermission = {
+      id: props.permission?.id ?? 0,
+      name: selectedTable.value.label,
+      tableId: selectedTableId.value,
+      canView: canView.value,
+      canEdit: canEdit.value,
+      columnPermissions: columnPermissions.value
+    }
+
+    emit('save', result)
+    emit('close', true)
+  } catch (e) {
+    useToast().add({
+      title: '保存失败',
+      description: e instanceof Error ? e.message : '未知错误',
+      color: 'error'
+    })
+  } finally {
+    saving.value = false
   }
-
-  emit('save', result)
-  emit('close', true)
-  saving.value = false
 }
 
 function handleClose() {
