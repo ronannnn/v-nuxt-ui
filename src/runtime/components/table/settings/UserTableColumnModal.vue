@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { MergedTableColumn, UserTableColumn } from '#v/types'
 import { ref, watch } from 'vue'
+import { useAuth } from '#v/composables'
+
+const { loginUser } = useAuth()
 
 const props = defineProps<{
   column: MergedTableColumn
@@ -46,7 +49,7 @@ const fixedOptions = [
 
 function handleSave() {
   emit('save', {
-    userId: 0,
+    userId: loginUser.value?.id ?? 0,
     tableColumnId: props.column.tableColumnId ?? 0,
     width: width.value,
     order: order.value,
