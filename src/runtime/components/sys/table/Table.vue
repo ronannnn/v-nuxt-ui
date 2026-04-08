@@ -59,12 +59,14 @@ async function fetchTableMeta(tables: Table[]) {
   await Promise.all(
     tables.map(async (table) => {
       const [columnResult, permissionResult] = await Promise.all([
-        tableColumnApi.count({
+        tableColumnApi.list({
+          pagination: { pageNum: 1, pageSize: 1 },
           whereQuery: {
             items: [{ field: 'tableId', value: table.id, opr: 'eq' }]
           }
         }),
-        tablePermissionApi.count({
+        tablePermissionApi.list({
+          pagination: { pageNum: 1, pageSize: 1 },
           whereQuery: {
             items: [{ field: 'tableId', value: table.id, opr: 'eq' }]
           }
@@ -72,8 +74,8 @@ async function fetchTableMeta(tables: Table[]) {
       ])
 
       newMeta[table.id] = {
-        columnCount: columnResult.data.value?.data ?? 0,
-        permissionCount: permissionResult.data.value?.data ?? 0
+        columnCount: columnResult.data.value?.data?.total ?? 0,
+        permissionCount: permissionResult.data.value?.data?.total ?? 0
       }
     })
   )
