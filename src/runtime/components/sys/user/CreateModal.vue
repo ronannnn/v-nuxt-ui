@@ -25,7 +25,10 @@ const { onSubmit } = useFormSubmission(
   close => emit('close', close),
   model => emit('save', model),
   useUserApi,
-  ['roles', 'menus']
+  ['roles', 'menus'],
+  'id',
+  'version',
+  () => ({ tablePermissions: tablePermissions.value })
 )
 
 // role related
@@ -114,7 +117,7 @@ function updateMenuTargetTreeItems(newVal: TreeItem[]) {
   menuTargetTreeItems.value = newVal
 }
 
-const tablePermissions = ref<TablePermission[]>([])
+const tablePermissions = ref<TablePermission[]>(props.model.tablePermissions || [])
 
 function updateDepartment(newInitModelValues: any) {
   newValues.value.department = newInitModelValues

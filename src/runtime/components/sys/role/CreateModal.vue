@@ -25,7 +25,10 @@ const { onSubmit } = useFormSubmission(
   close => emit('close', close),
   model => emit('save', model),
   useRoleApi,
-  ['menus']
+  ['menus'],
+  'id',
+  'version',
+  () => ({ tablePermissions: tablePermissions.value })
 )
 
 // menu related
@@ -68,7 +71,7 @@ function updateTargetTreeItems(newVal: TreeItem[]) {
   targetTreeItems.value = newVal
 }
 
-const tablePermissions = ref<TablePermission[]>([])
+const tablePermissions = ref<TablePermission[]>(props.model.tablePermissions || [])
 
 const fields = computed<VFormFieldProps[]>(() => [
   { name: 'name', type: 'input', label: '角色名称', colSpan: '12', zodType: z.string().min(2, '名称字数不足') },

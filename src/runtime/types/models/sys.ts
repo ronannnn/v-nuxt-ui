@@ -1,4 +1,5 @@
 import type { BaseModel } from './base'
+import type { TablePermission } from './table'
 
 export type Menu = {
   isAdmin?: boolean
@@ -20,6 +21,7 @@ export type Role = {
   disabled?: boolean
   remark?: string
   menus?: Menu[]
+  tablePermissions?: TablePermission[]
 } & BaseModel
 
 export type Company = {
@@ -92,6 +94,8 @@ export type User = {
   needFillWh?: boolean // 是否需要填写工时
 
   isAdmin?: boolean
+
+  tablePermissions?: TablePermission[]
 }
 
 export type RowRecord = {

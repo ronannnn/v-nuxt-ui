@@ -35,7 +35,8 @@ export const useFormSubmission = <T extends BaseModel>(
   apiGroup: () => ApiGroup<T>,
   arrayTypeFieldKeys: (keyof T)[] = [],
   rowKey: keyof T = 'id',
-  versionKey: keyof T = 'version'
+  versionKey: keyof T = 'version',
+  getExtraFields?: () => Record<string, any>
 ) => {
   const apiFns = apiGroup()
   async function onSubmit() {
@@ -46,7 +47,11 @@ export const useFormSubmission = <T extends BaseModel>(
     }
   }
   async function onCreate() {
-    const { data } = await apiFns.create(apiFns.prune(newValues.value))
+    const extraFields = getExtraFields ? getExtraFields() : undefined
+    const payload = extraFields
+      ? { ...apiFns.prune(newValues.value), ...extraFields }
+      : apiFns.prune(newValues.value)
+    const { data } = await apiFns.create(payload)
     if (!data.value.error) {
       save(data.value.data)
       close(true)
@@ -68,7 +73,11 @@ export const useFormSubmission = <T extends BaseModel>(
       })
       return
     }
-    const { data } = await apiFns.update(apiFns.prune(objWithModifiedFields))
+    const extraFields = getExtraFields ? getExtraFields() : undefined
+    const payload = extraFields
+      ? { ...apiFns.prune(objWithModifiedFields), ...extraFields }
+      : apiFns.prune(objWithModifiedFields)
+    const { data } = await apiFns.update(payload)
     if (!data.value.error) {
       save(data.value.data)
       close(true)
