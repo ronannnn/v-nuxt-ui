@@ -6,3 +6,7 @@ export type RowRecordPayload = {
 export type IdPayload = {
   id: number
 }
+
+export type IdsPayload = {
+  ids: number[]
+}
