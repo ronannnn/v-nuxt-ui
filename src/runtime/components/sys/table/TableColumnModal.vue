@@ -14,10 +14,21 @@ const emit = defineEmits<{
 }>()
 
 const tableColumnApi = useTableColumnApi()
-const columns = ref<TableColumn[]>([])
-const deletedColumnIds = ref<number[]>([])
 const loading = ref(false)
 const saving = ref(false)
+
+interface ColumnRow {
+  id: number
+  columnKey: string
+  label: string
+  order: number
+  width: number
+  fixed: string
+  visible: boolean
+}
+
+const columns = ref<ColumnRow[]>([])
+const deletedColumnIds = ref<number[]>([])
 
 async function fetchColumns() {
   loading.value = true
@@ -29,26 +40,30 @@ async function fetchColumns() {
     }
   })
   if (data.value.data) {
-    columns.value = data.value.data.list
+    columns.value = data.value.data.list.map(col => ({
+      id: col.id,
+      columnKey: col.columnKey,
+      label: col.label,
+      order: col.order,
+      width: col.width,
+      fixed: col.fixed,
+      visible: col.visible
+    }))
   }
   loading.value = false
 }
 
 function addColumn() {
-  const maxOrder = columns.value.reduce((max, col) => Math.max(max, col.order), 0)
+  const maxOrder = columns.value.reduce((max, col) => Math.max(max, col.order ?? 0), 0)
   columns.value.push({
     id: 0,
-    tableId: props.table.id,
     columnKey: '',
     label: '',
     order: maxOrder + 1,
     width: 100,
     fixed: '',
-    visible: true,
-    version: 0,
-    createdAt: '',
-    updatedAt: ''
-  } as TableColumn)
+    visible: true
+  })
 }
 
 function removeColumn(index: number) {
@@ -63,14 +78,24 @@ async function handleSave() {
   saving.value = true
   try {
     for (const col of columns.value) {
+      const data = {
+        id: col.id,
+        tableId: props.table.id,
+        columnKey: col.columnKey,
+        label: col.label,
+        order: col.order,
+        width: col.width,
+        fixed: col.fixed as '' | 'left' | 'right',
+        visible: col.visible
+      }
       if (col.id === 0) {
-        await tableColumnApi.create(tableColumnApi.prune(col))
+        await tableColumnApi.create(tableColumnApi.prune(data as TableColumn))
       } else {
-        await tableColumnApi.update(tableColumnApi.prune(col))
+        await tableColumnApi.update(tableColumnApi.prune(data as TableColumn))
       }
     }
     for (const id of deletedColumnIds.value) {
-      await tableColumnApi.delete(id)
+      await tableColumnApi.deleteById(id)
     }
     useToast().add({
       title: '保存成功',
@@ -78,7 +103,7 @@ async function handleSave() {
       color: 'success',
       icon: 'i-lucide-check-circle'
     })
-    emit('save', columns.value)
+    emit('save', columns.value as TableColumn[])
     emit('close', true)
   } catch (error) {
     useToast().add({
@@ -103,59 +128,61 @@ onMounted(fetchColumns)
     :close="{ onClick: () => emit('close', false) }"
   >
     <div class="p-4">
-      <UTable :data="columns" :loading="loading">
-        <UTableColumn accessor-key="columnKey" header="列标识">
-          <template #cell="{ row }">
-            <UInput v-model="row.original.columnKey" placeholder="列标识" />
-          </template>
-        </UTableColumn>
-        <UTableColumn accessor-key="label" header="显示名">
-          <template #cell="{ row }">
-            <UInput v-model="row.original.label" placeholder="显示名" />
-          </template>
-        </UTableColumn>
-        <UTableColumn accessor-key="order" header="排序">
-          <template #cell="{ row }">
-            <UInputNumber v-model="row.original.order" :min="0" />
-          </template>
-        </UTableColumn>
-        <UTableColumn accessor-key="width" header="宽度">
-          <template #cell="{ row }">
-            <UInputNumber v-model="row.original.width" :min="0" />
-          </template>
-        </UTableColumn>
-        <UTableColumn accessor-key="fixed" header="固定">
-          <template #cell="{ row }">
-            <USelect
-              v-model="row.original.fixed"
-              :items="[
-                { label: '不固定', value: '' },
-                { label: '左侧', value: 'left' },
-                { label: '右侧', value: 'right' }
-              ]"
-            />
-          </template>
-        </UTableColumn>
-        <UTableColumn accessor-key="visible" header="显示">
-          <template #cell="{ row }">
-            <USwitch v-model="row.original.visible" />
-          </template>
-        </UTableColumn>
-        <UTableColumn header="操作">
-          <template #cell="{ index }">
-            <UButton
-              icon="i-lucide-trash-2"
-              color="error"
-              variant="ghost"
-              @click="removeColumn(index)"
-            />
-          </template>
-        </UTableColumn>
-      </UTable>
+      <div class="flex flex-col gap-2">
+        <div class="grid grid-cols-7 gap-2 text-sm font-medium text-dimmed px-2">
+          <div>列标识</div>
+          <div>显示名</div>
+          <div>顺序</div>
+          <div>宽度</div>
+          <div>固定</div>
+          <div>显示</div>
+          <div></div>
+        </div>
+        
+        <div
+          v-for="(col, idx) in columns"
+          :key="idx"
+          class="grid grid-cols-7 gap-2 items-center"
+        >
+          <UInput
+            v-model="col.columnKey"
+            placeholder="列标识"
+          />
+          <UInput
+            v-model="col.label"
+            placeholder="显示名"
+          />
+          <UInputNumber
+            v-model="col.order"
+            :min="0"
+          />
+          <UInputNumber
+            v-model="col.width"
+            :min="0"
+          />
+          <USelect
+            v-model="col.fixed"
+            :items="[
+              { label: '不固定', value: '' },
+              { label: '左侧', value: 'left' },
+              { label: '右侧', value: 'right' }
+            ]"
+          />
+          <USwitch v-model="col.visible" />
+          <UButton
+            icon="i-lucide-trash-2"
+            color="error"
+            variant="ghost"
+            @click="removeColumn(idx)"
+          />
+        </div>
+      </div>
+      
       <UButton
         label="添加列"
         icon="i-lucide-plus"
-        class="mt-4"
+        variant="soft"
+        class="mt-2"
         @click="addColumn"
       />
     </div>
