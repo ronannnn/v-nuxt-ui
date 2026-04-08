@@ -12,10 +12,10 @@ const activeTab = ref('sys')
     
     <UTabs v-model="activeTab" class="mb-4">
       <UTab value="sys" label="Table 系统配置">
-        <ProSysTable />
+        <VSysTable />
       </UTab>
       <UTab value="user" label="用户 Table 设置">
-        <ProTableSettings />
+        <VTableSettings />
       </UTab>
     </UTabs>
   </div>
