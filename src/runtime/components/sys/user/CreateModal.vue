@@ -2,9 +2,10 @@
 import { useFormValues, useFormSubmission, useUserApi, useRoleApi, useMenuApi, useDepartmentApi } from '#v/composables'
 import { treeifyOptions } from '#v/utils'
 import type { TreeItem } from '@nuxt/ui'
-import type { Menu, Role, User, VFormFieldProps } from '#v/types'
+import type { Menu, Role, TablePermission, User, VFormFieldProps } from '#v/types'
 import { toRef, ref, computed, onMounted } from 'vue'
 import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
+import TablePermissionTab from '#v/components/table/permission/TablePermissionTab.vue'
 import { loginTypeOptions, genderOptions, Gender } from '#v/constants'
 import * as z from 'zod'
 
@@ -113,6 +114,8 @@ function updateMenuTargetTreeItems(newVal: TreeItem[]) {
   menuTargetTreeItems.value = newVal
 }
 
+const tablePermissions = ref<TablePermission[]>([])
+
 function updateDepartment(newInitModelValues: any) {
   newValues.value.department = newInitModelValues
 }
@@ -207,5 +210,12 @@ onMounted(async () => {
     :model-value="newValues"
     @update-model-value="updateModelValue"
     @submit="onSubmit"
-  />
+  >
+    <template #after-form>
+      <div class="border-t pt-4 mt-4">
+        <div class="font-semibold mb-2">Table 权限</div>
+        <TablePermissionTab v-model="tablePermissions" />
+      </div>
+    </template>
+  </FormCreateModalTemplate>
 </template>

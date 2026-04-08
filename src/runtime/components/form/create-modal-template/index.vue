@@ -51,6 +51,7 @@ async function onSubmitWithValidation(e: Event) {
         @trigger-submit="onSubmitWithValidation"
         @update-model-value="onUpdateModelValue"
       />
+      <slot name="after-form" />
     </template>
     <template #footer>
       <UButton

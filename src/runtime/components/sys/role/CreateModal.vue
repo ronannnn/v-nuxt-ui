@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { TreeItem } from '@nuxt/ui'
-import type { VFormFieldProps, Menu, Role } from '#v/types'
+import type { VFormFieldProps, Menu, Role, TablePermission } from '#v/types'
 import * as z from 'zod'
 import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
+import TablePermissionTab from '#v/components/table/permission/TablePermissionTab.vue'
 import { useFormSubmission, useFormValues, useMenuApi, useRoleApi } from '#v/composables'
 import { computed, onMounted, ref, toRef } from 'vue'
 import { treeifyOptions } from '#v/utils'
@@ -67,6 +68,8 @@ function updateTargetTreeItems(newVal: TreeItem[]) {
   targetTreeItems.value = newVal
 }
 
+const tablePermissions = ref<TablePermission[]>([])
+
 const fields = computed<VFormFieldProps[]>(() => [
   { name: 'name', type: 'input', label: '角色名称', colSpan: '12', zodType: z.string().min(2, '名称字数不足') },
   { name: 'isAdmin', type: 'button-switch', label: '是否是系统角色', colSpan: '12', zodType: z.boolean() },
@@ -101,5 +104,12 @@ onMounted(async () => {
     :model-value="newValues"
     @update-model-value="updateModelValue"
     @submit="onSubmit"
-  />
+  >
+    <template #after-form>
+      <div class="border-t pt-4 mt-4">
+        <div class="font-semibold mb-2">Table 权限</div>
+        <TablePermissionTab v-model="tablePermissions" />
+      </div>
+    </template>
+  </FormCreateModalTemplate>
 </template>
