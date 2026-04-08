@@ -53,12 +53,12 @@ async function fetchColumns() {
   if (data.value.data) {
     columns.value = data.value.data.list.map(col => ({
       id: col.id,
-      columnKey: col.columnKey,
-      label: col.label,
-      order: col.order,
-      width: col.width,
-      fixed: col.fixed,
-      visible: col.visible
+      columnKey: col.columnKey ?? '',
+      label: col.label ?? '',
+      order: col.order ?? 0,
+      width: col.width ?? 100,
+      fixed: col.fixed ?? '',
+      visible: col.visible ?? true
     }))
   }
   loading.value = false
@@ -82,6 +82,7 @@ function addColumn() {
 
 function removeColumn(index: number) {
   const col = columns.value[index]
+  if (!col) return
   if (col.id !== 0) {
     deletedColumnIds.value.push(col.id)
   }
@@ -90,13 +91,14 @@ function removeColumn(index: number) {
 
 async function editColumn(index: number) {
   const col = columns.value[index]
+  if (!col) return
   const isNew = col.id === 0
   if (isNew) {
     return
   }
   const result = await columnModal.open({ table: props.model, column: col }).result
   if (result) {
-    const updatedCol = result as ColumnRow
+    const updatedCol = result as unknown as ColumnRow
     columns.value[index] = { ...updatedCol, _isDirty: true }
   }
 }

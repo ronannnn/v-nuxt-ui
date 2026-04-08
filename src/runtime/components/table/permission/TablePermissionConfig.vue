@@ -10,7 +10,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  close: [boolean]
+  close: [result: TablePermission | false]
   save: [TablePermission]
 }>()
 
@@ -107,7 +107,7 @@ function onTableChange(tableId: number) {
   const table = tables.value.find(t => t.id === tableId)
   if (table) {
     selectedTable.value = table
-    fetchMergedColumns(table.tblName)
+    fetchMergedColumns(table.tblName ?? '')
   }
 }
 
@@ -133,7 +133,7 @@ async function handleSave() {
     }
 
     emit('save', result)
-    emit('close', true)
+    emit('close', result)
   } catch (e) {
     useToast().add({
       title: '保存失败',
@@ -157,7 +157,7 @@ onMounted(async () => {
     const table = tables.value.find(t => t.id === props.tableId)
     if (table) {
       selectedTable.value = table
-      await fetchMergedColumns(table.tblName)
+      await fetchMergedColumns(table.tblName ?? '')
     }
   }
 

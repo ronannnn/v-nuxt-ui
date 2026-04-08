@@ -3,10 +3,6 @@ import { useOverlay, useToast } from '@nuxt/ui/composables'
 import type { TablePermission } from '#v/types'
 import TablePermissionConfig from './TablePermissionConfig.vue'
 
-interface ModalResult {
-  save?: TablePermission
-}
-
 const props = defineProps<{
   modelValue: TablePermission[]
 }>()
@@ -20,35 +16,38 @@ const toast = useToast()
 const tablePermissionConfigModal = overlay.create(TablePermissionConfig)
 
 function openAddModal() {
-  tablePermissionConfigModal.open({}).result.then((result: ModalResult) => {
-    if (result?.save) {
-      const newPermissions = [...props.modelValue, result.save]
+  tablePermissionConfigModal.open({}).result.then((result) => {
+    if (result && typeof result === 'object') {
+      const saved = result as TablePermission
+      const newPermissions = [...props.modelValue, saved]
       emit('update:modelValue', newPermissions)
     }
   })
 }
 
 function openEditModal(permission: TablePermission) {
-  tablePermissionConfigModal.open({ permission }).result.then((result: ModalResult) => {
-    if (result?.save) {
+  tablePermissionConfigModal.open({ permission }).result.then((result) => {
+    if (result && typeof result === 'object') {
+      const saved = result as TablePermission
       const newPermissions = props.modelValue.map(p =>
-        p.tableId === result.save!.tableId ? result.save! : p
+        p.tableId === saved.tableId ? saved : p
       )
       emit('update:modelValue', newPermissions)
     }
   })
 }
 
-function removePermission(tableId: number) {
+function removePermission(tableId: number | undefined) {
+  if (tableId === undefined) return
   toast.add({
     title: '确认删除',
     description: '确定要删除该 Table 权限吗？',
     color: 'warning',
     actions: [
-      { label: '取消', variant: 'subtle' },
+      { label: '取消', variant: 'subtle' as const },
       {
         label: '删除',
-        color: 'error',
+        color: 'error' as const,
         onClick: () => {
           const newPermissions = props.modelValue.filter(p => p.tableId !== tableId)
           emit('update:modelValue', newPermissions)
