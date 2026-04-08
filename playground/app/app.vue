@@ -24,6 +24,14 @@ setGlobalSidebarMenus({
     icon: 'i-lucide-users',
     to: '/examples/users'
   }, {
+    label: 'Table 系统配置',
+    icon: 'i-lucide-table',
+    to: '/examples/table-sys'
+  }, {
+    label: '用户 Table 设置',
+    icon: 'i-lucide-settings-2',
+    to: '/examples/table-user-settings'
+  }, {
     label: '登录界面',
     icon: 'i-lucide-compass',
     to: '/login/pwd'
