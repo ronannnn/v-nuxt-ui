@@ -6,7 +6,8 @@ import FormCreateModalTemplate from '#v/components/form/create-modal-template/in
 import ProSimpleTable from '#v/components/simple-table/index.vue'
 import TableColumnModal from './TableColumnModal.vue'
 import { useFormSubmission, useFormValues, useTableApi, useTableColumnApi } from '#v/composables'
-import { computed, ref, toRef, onMounted } from 'vue'
+import { computed, ref, toRef, onMounted, h } from 'vue'
+import UButton from '@nuxt/ui/components/Button.vue'
 
 const props = defineProps<{
   model: Table
@@ -127,43 +128,38 @@ const tableColumns: VColumn<ColumnRow>[] = [
     size: 80,
     cell: ({ row }) => {
       const fixedMap: Record<string, string> = { '': '否', left: '左', right: '右' }
-      return fixedMap[row.fixed] ?? '否'
+      return fixedMap[row.original.fixed] ?? '否'
     }
   },
   {
     accessorKey: 'visible',
     header: '显示',
     size: 60,
-    cell: ({ row }) => row.visible ? '是' : '否'
+    cell: ({ row }) => row.original.visible ? '是' : '否'
   },
   {
     accessorKey: 'actions',
     header: '操作',
     size: 100,
-    cell: ({ row, index }) => {
-      return {
-        type: 'div',
-        class: 'flex gap-1',
-        children: [
-          {
-            type: 'button',
-            label: '编辑',
-            icon: 'i-lucide-edit',
-            variant: 'ghost',
-            size: 'xs',
-            onClick: () => editColumn(index)
-          },
-          {
-            type: 'button',
-            label: '删除',
-            icon: 'i-lucide-trash-2',
-            color: 'error',
-            variant: 'ghost',
-            size: 'xs',
-            onClick: () => removeColumn(index)
-          }
-        ]
-      }
+    cell: ({ row }) => {
+      const index = columns.value.findIndex(c => c === row.original)
+      return h('div', { class: 'flex gap-1' }, [
+        h(UButton, {
+          label: '编辑',
+          icon: 'i-lucide-edit',
+          variant: 'ghost',
+          size: 'xs',
+          onClick: () => editColumn(index)
+        }),
+        h(UButton, {
+          label: '删除',
+          icon: 'i-lucide-trash-2',
+          color: 'error',
+          variant: 'ghost',
+          size: 'xs',
+          onClick: () => removeColumn(index)
+        })
+      ])
     }
   }
 ]
