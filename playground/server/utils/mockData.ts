@@ -1,3 +1,515 @@
+// Mock Table data
+export interface MockTable {
+  id: number
+  tblName: string
+  label: string
+  labelI18nKey?: string
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockTableColumn {
+  id: number
+  tableId: number
+  columnKey: string
+  label: string
+  labelI18nKey?: string
+  order: number
+  width: number
+  fixed: 'left' | 'right' | ''
+  visible: boolean
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockTablePermission {
+  id: number
+  name: string
+  tableId: number
+  canView?: boolean
+  canEdit?: boolean
+  columnPermissions?: MockTableColumnPermission[]
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockTableColumnPermission {
+  id: number
+  tablePermissionId: number
+  columnKey: string
+  canView?: boolean
+  canEdit?: boolean
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockUserTableColumn {
+  id: number
+  userId: number
+  tableColumnId: number
+  order?: number
+  width?: number
+  fixed?: 'left' | 'right' | ''
+  visible?: boolean
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+// ─── Table mock data ───────────────────────────────────────────────────────────
+
+const tables: MockTable[] = [
+  { id: 1, tblName: 'sys_user', label: '用户表', labelI18nKey: 'table.sys_user', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 2, tblName: 'sys_role', label: '角色表', labelI18nKey: 'table.sys_role', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 3, tblName: 'sys_menu', label: '菜单表', labelI18nKey: 'table.sys_menu', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 4, tblName: 'sys_department', label: '部门表', labelI18nKey: 'table.sys_department', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 5, tblName: 'ops_notice', label: '公告表', labelI18nKey: 'table.ops_notice', createdAt: '2024-06-01T00:00:00Z', updatedAt: '2024-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 6, tblName: 'finance_expense', label: '报销表', labelI18nKey: 'table.finance_expense', createdAt: '2024-06-01T00:00:00Z', updatedAt: '2024-06-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 }
+]
+
+let nextTableId = 7
+
+export function getTables() {
+  return tables
+}
+
+export function getTableById(id: number) {
+  return tables.find(t => t.id === id)
+}
+
+export function createTable(data: Partial<MockTable>): MockTable {
+  const now = new Date().toISOString()
+  const table: MockTable = {
+    id: nextTableId++,
+    tblName: data.tblName || '',
+    label: data.label || '',
+    labelI18nKey: data.labelI18nKey,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  tables.push(table)
+  return table
+}
+
+export function updateTable(data: Partial<MockTable>): MockTable | null {
+  const idx = tables.findIndex(t => t.id === data.id)
+  if (idx === -1) return null
+  const updated: MockTable = {
+    ...tables[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: tables[idx]!.version + 1
+  }
+  tables[idx] = updated
+  return updated
+}
+
+export function deleteTables(ids: number[]): void {
+  for (const id of ids) {
+    const idx = tables.findIndex(t => t.id === id)
+    if (idx !== -1) tables.splice(idx, 1)
+  }
+}
+
+export function queryTables(body: any) {
+  let filtered = [...tables]
+
+  if (body.whereQuery?.items) {
+    for (const item of body.whereQuery.items) {
+      if (item.value === null || item.value === undefined || item.value === '') continue
+      const field = item.field as string
+      const opr = item.opr as string
+      const value = item.value
+
+      filtered = filtered.filter((table) => {
+        const fieldValue = getNestedValue(table, field)
+        switch (opr) {
+          case 'eq': return fieldValue === value
+          case 'ne': return fieldValue !== value
+          case 'like': return String(fieldValue ?? '').toLowerCase().includes(String(value).toLowerCase())
+          case 'start_like': return String(fieldValue ?? '').toLowerCase().startsWith(String(value).toLowerCase())
+          case 'in': return Array.isArray(value) ? value.includes(fieldValue) : fieldValue === value
+          case 'not_in': return Array.isArray(value) ? !value.includes(fieldValue) : fieldValue !== value
+          default: return true
+        }
+      })
+    }
+  }
+
+  if (body.orderQuery && body.orderQuery.length > 0) {
+    filtered.sort((a, b) => {
+      for (const order of body.orderQuery) {
+        const field = order.field as string
+        const aVal = getNestedValue(a, field)
+        const bVal = getNestedValue(b, field)
+        if (aVal === bVal) continue
+        const dir = order.order === 'desc' ? -1 : 1
+        if (aVal == null) return dir
+        if (bVal == null) return -dir
+        return aVal < bVal ? -dir : dir
+      }
+      return 0
+    })
+  }
+
+  const total = filtered.length
+  const pageNum = body.pagination?.pageNum || 1
+  const pageSize = body.pagination?.pageSize || 10
+
+  if (pageSize > 0) {
+    const start = (pageNum - 1) * pageSize
+    filtered = filtered.slice(start, start + pageSize)
+  }
+
+  return {
+    list: filtered,
+    total,
+    pageNum,
+    pageSize: pageSize || total
+  }
+}
+
+// ─── TableColumn mock data ─────────────────────────────────────────────────────
+
+const tableColumns: MockTableColumn[] = [
+  // sys_user columns
+  { id: 1, tableId: 1, columnKey: 'id', label: 'ID', order: 1, width: 80, fixed: 'left', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 2, tableId: 1, columnKey: 'nickname', label: '昵称', order: 2, width: 120, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 3, tableId: 1, columnKey: 'username', label: '用户名', order: 3, width: 120, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 4, tableId: 1, columnKey: 'email', label: '邮箱', order: 4, width: 180, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 5, tableId: 1, columnKey: 'gender', label: '性别', order: 5, width: 80, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 6, tableId: 1, columnKey: 'department', label: '部门', order: 6, width: 120, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 7, tableId: 1, columnKey: 'isAdmin', label: '管理员', order: 7, width: 80, fixed: '', visible: false, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 8, tableId: 1, columnKey: 'status', label: '状态', order: 8, width: 100, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 9, tableId: 1, columnKey: 'entryDate', label: '入职日期', order: 9, width: 120, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 10, tableId: 1, columnKey: 'telNo', label: '电话', order: 10, width: 130, fixed: '', visible: false, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 11, tableId: 1, columnKey: 'actions', label: '操作', order: 99, width: 150, fixed: 'right', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+
+  // sys_role columns
+  { id: 12, tableId: 2, columnKey: 'id', label: 'ID', order: 1, width: 80, fixed: 'left', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 13, tableId: 2, columnKey: 'name', label: '角色名称', order: 2, width: 150, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 14, tableId: 2, columnKey: 'permission', label: '权限标识', order: 3, width: 150, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 15, tableId: 2, columnKey: 'disabled', label: '状态', order: 4, width: 100, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 16, tableId: 2, columnKey: 'remark', label: '备注', order: 5, width: 200, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 17, tableId: 2, columnKey: 'actions', label: '操作', order: 99, width: 150, fixed: 'right', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 }
+]
+
+let nextTableColumnId = 18
+
+export function getTableColumns() {
+  return tableColumns
+}
+
+export function getTableColumnById(id: number) {
+  return tableColumns.find(c => c.id === id)
+}
+
+export function getTableColumnsByTableId(tableId: number) {
+  return tableColumns.filter(c => c.tableId === tableId)
+}
+
+export function createTableColumn(data: Partial<MockTableColumn>): MockTableColumn {
+  const now = new Date().toISOString()
+  const col: MockTableColumn = {
+    id: nextTableColumnId++,
+    tableId: data.tableId || 0,
+    columnKey: data.columnKey || '',
+    label: data.label || '',
+    labelI18nKey: data.labelI18nKey,
+    order: data.order || 0,
+    width: data.width || 100,
+    fixed: data.fixed || '',
+    visible: data.visible ?? true,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  tableColumns.push(col)
+  return col
+}
+
+export function updateTableColumn(data: Partial<MockTableColumn>): MockTableColumn | null {
+  const idx = tableColumns.findIndex(c => c.id === data.id)
+  if (idx === -1) return null
+  const updated: MockTableColumn = {
+    ...tableColumns[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: tableColumns[idx]!.version + 1
+  }
+  tableColumns[idx] = updated
+  return updated
+}
+
+export function deleteTableColumns(ids: number[]): void {
+  for (const id of ids) {
+    const idx = tableColumns.findIndex(c => c.id === id)
+    if (idx !== -1) tableColumns.splice(idx, 1)
+  }
+}
+
+export function queryTableColumns(body: any) {
+  let filtered = [...tableColumns]
+
+  if (body.whereQuery?.items) {
+    for (const item of body.whereQuery.items) {
+      if (item.value === null || item.value === undefined || item.value === '') continue
+      const field = item.field as string
+      const opr = item.opr as string
+      const value = item.value
+
+      filtered = filtered.filter((col) => {
+        const fieldValue = getNestedValue(col, field)
+        switch (opr) {
+          case 'eq': return fieldValue === value
+          case 'ne': return fieldValue !== value
+          case 'in': return Array.isArray(value) ? value.includes(fieldValue) : fieldValue === value
+          default: return true
+        }
+      })
+    }
+  }
+
+  if (body.orderQuery && body.orderQuery.length > 0) {
+    filtered.sort((a, b) => {
+      for (const order of body.orderQuery) {
+        const field = order.field as string
+        const aVal = getNestedValue(a, field)
+        const bVal = getNestedValue(b, field)
+        if (aVal === bVal) continue
+        const dir = order.order === 'desc' ? -1 : 1
+        if (aVal == null) return dir
+        if (bVal == null) return -dir
+        return aVal < bVal ? -dir : dir
+      }
+      return 0
+    })
+  }
+
+  const total = filtered.length
+  const pageNum = body.pagination?.pageNum || 1
+  const pageSize = body.pagination?.pageSize || 10
+
+  if (pageSize > 0) {
+    const start = (pageNum - 1) * pageSize
+    filtered = filtered.slice(start, start + pageSize)
+  }
+
+  return {
+    list: filtered,
+    total,
+    pageNum,
+    pageSize: pageSize || total
+  }
+}
+
+// ─── TablePermission mock data ─────────────────────────────────────────────────
+
+const tablePermissions: MockTablePermission[] = [
+  { id: 1, name: '超级管理员-用户表', tableId: 1, canView: true, canEdit: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 2, name: '管理员-用户表', tableId: 1, canView: true, canEdit: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 3, name: '普通用户-用户表', tableId: 1, canView: true, canEdit: false, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 4, name: '超级管理员-角色表', tableId: 2, canView: true, canEdit: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 }
+]
+
+let nextTablePermissionId = 5
+
+export function getTablePermissions() {
+  return tablePermissions
+}
+
+export function getTablePermissionById(id: number) {
+  return tablePermissions.find(p => p.id === id)
+}
+
+export function getTablePermissionsByTableId(tableId: number) {
+  return tablePermissions.filter(p => p.tableId === tableId)
+}
+
+export function createTablePermission(data: Partial<MockTablePermission>): MockTablePermission {
+  const now = new Date().toISOString()
+  const perm: MockTablePermission = {
+    id: nextTablePermissionId++,
+    name: data.name || '',
+    tableId: data.tableId || 0,
+    canView: data.canView ?? false,
+    canEdit: data.canEdit ?? false,
+    columnPermissions: data.columnPermissions || [],
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  tablePermissions.push(perm)
+  return perm
+}
+
+export function updateTablePermission(data: Partial<MockTablePermission>): MockTablePermission | null {
+  const idx = tablePermissions.findIndex(p => p.id === data.id)
+  if (idx === -1) return null
+  const updated: MockTablePermission = {
+    ...tablePermissions[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: tablePermissions[idx]!.version + 1
+  }
+  tablePermissions[idx] = updated
+  return updated
+}
+
+export function deleteTablePermissions(ids: number[]): void {
+  for (const id of ids) {
+    const idx = tablePermissions.findIndex(p => p.id === id)
+    if (idx !== -1) tablePermissions.splice(idx, 1)
+  }
+}
+
+// ─── TableColumnPermission mock data ──────────────────────────────────────────
+
+const tableColumnPermissions: MockTableColumnPermission[] = [
+  { id: 1, tablePermissionId: 3, columnKey: 'id', canView: true, canEdit: false, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 2, tablePermissionId: 3, columnKey: 'nickname', canView: true, canEdit: false, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 3, tablePermissionId: 3, columnKey: 'email', canView: false, canEdit: false, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 }
+]
+
+let nextTableColumnPermissionId = 4
+
+export function getTableColumnPermissions() {
+  return tableColumnPermissions
+}
+
+export function getTableColumnPermissionsByTablePermissionId(tablePermissionId: number) {
+  return tableColumnPermissions.filter(p => p.tablePermissionId === tablePermissionId)
+}
+
+export function createTableColumnPermission(data: Partial<MockTableColumnPermission>): MockTableColumnPermission {
+  const now = new Date().toISOString()
+  const colPerm: MockTableColumnPermission = {
+    id: nextTableColumnPermissionId++,
+    tablePermissionId: data.tablePermissionId || 0,
+    columnKey: data.columnKey || '',
+    canView: data.canView ?? false,
+    canEdit: data.canEdit ?? false,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  tableColumnPermissions.push(colPerm)
+  return colPerm
+}
+
+export function updateTableColumnPermission(data: Partial<MockTableColumnPermission>): MockTableColumnPermission | null {
+  const idx = tableColumnPermissions.findIndex(p => p.id === data.id)
+  if (idx === -1) return null
+  const updated: MockTableColumnPermission = {
+    ...tableColumnPermissions[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: tableColumnPermissions[idx]!.version + 1
+  }
+  tableColumnPermissions[idx] = updated
+  return updated
+}
+
+export function deleteTableColumnPermissions(ids: number[]): void {
+  for (const id of ids) {
+    const idx = tableColumnPermissions.findIndex(p => p.id === id)
+    if (idx !== -1) tableColumnPermissions.splice(idx, 1)
+  }
+}
+
+// ─── UserTableColumn mock data ──────────────────────────────────────────────────
+
+const userTableColumns: MockUserTableColumn[] = [
+  { id: 1, userId: 1, tableColumnId: 10, order: 10, width: 130, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 },
+  { id: 2, userId: 1, tableColumnId: 7, order: 7, width: 80, fixed: '', visible: true, createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', createdBy: 'system', updatedBy: 'system', version: 1 }
+]
+
+let nextUserTableColumnId = 3
+
+export function getUserTableColumns() {
+  return userTableColumns
+}
+
+export function getUserTableColumnById(id: number) {
+  return userTableColumns.find(c => c.id === id)
+}
+
+export function getUserTableColumnsByUserId(userId: number) {
+  return userTableColumns.filter(c => c.userId === userId)
+}
+
+export function getUserTableColumnsByTableColumnIds(tableColumnIds: number[], userId: number) {
+  return userTableColumns.filter(c => c.userId === userId && tableColumnIds.includes(c.tableColumnId))
+}
+
+export function createUserTableColumn(data: Partial<MockUserTableColumn>): MockUserTableColumn {
+  const now = new Date().toISOString()
+  const utc: MockUserTableColumn = {
+    id: nextUserTableColumnId++,
+    userId: data.userId || 0,
+    tableColumnId: data.tableColumnId || 0,
+    order: data.order,
+    width: data.width,
+    fixed: data.fixed,
+    visible: data.visible,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  userTableColumns.push(utc)
+  return utc
+}
+
+export function updateUserTableColumn(data: Partial<MockUserTableColumn>): MockUserTableColumn | null {
+  const idx = userTableColumns.findIndex(c => c.id === data.id)
+  if (idx === -1) return null
+  const updated: MockUserTableColumn = {
+    ...userTableColumns[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: userTableColumns[idx]!.version + 1
+  }
+  userTableColumns[idx] = updated
+  return updated
+}
+
+export function deleteUserTableColumns(ids: number[]): void {
+  for (const id of ids) {
+    const idx = userTableColumns.findIndex(c => c.id === id)
+    if (idx !== -1) userTableColumns.splice(idx, 1)
+  }
+}
+
 // Mock user data for the playground
 export interface MockMenu {
   id: number
