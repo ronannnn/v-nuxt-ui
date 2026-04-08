@@ -27,6 +27,7 @@ export interface UserTableColumn extends BaseModel {
 }
 
 export interface MergedTableColumn {
+  tableColumnId?: number
   columnKey: string
   label: string
   i18nKey?: string

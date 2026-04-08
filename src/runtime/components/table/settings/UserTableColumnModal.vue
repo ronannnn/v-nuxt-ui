@@ -9,21 +9,25 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  'update:open': [boolean]
   close: []
   save: [UserTableColumn]
 }>()
+
+const openModel = ref(props.open)
+watch(() => props.open, (val) => {
+  openModel.value = val
+})
+watch(openModel, (val) => {
+  if (!val) {
+    emit('update:open', false)
+  }
+})
 
 const width = ref(props.column.width)
 const order = ref(props.column.order)
 const fixed = ref<'left' | 'right' | ''>(props.column.fixed)
 const visible = ref(props.column.visible)
-
-watch(() => props.column, (newColumn) => {
-  width.value = newColumn.width
-  order.value = newColumn.order
-  fixed.value = newColumn.fixed
-  visible.value = newColumn.visible
-})
 
 watch(() => props.open, (isOpen) => {
   if (isOpen) {
@@ -43,7 +47,7 @@ const fixedOptions = [
 function handleSave() {
   emit('save', {
     userId: 0,
-    tableColumnId: 0,
+    tableColumnId: props.column.tableColumnId ?? 0,
     width: width.value,
     order: order.value,
     fixed: fixed.value,
@@ -54,7 +58,7 @@ function handleSave() {
 
 <template>
   <UModal
-    :open="open"
+    v-model:open="openModel"
     title="编辑列设置"
     :close="{ onClick: () => emit('close') }"
   >
