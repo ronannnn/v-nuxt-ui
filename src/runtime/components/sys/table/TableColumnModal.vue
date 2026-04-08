@@ -1,109 +1,51 @@
 <script setup lang="ts">
 import type { TableColumn, Table } from '#v/types'
 import { useTableColumnApi } from '#v/composables/api'
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useToast } from '@nuxt/ui/composables'
 
 const props = defineProps<{
   table: Table
+  column?: {
+    id: number
+    columnKey: string
+    label: string
+    order: number
+    width: number
+    fixed: 'left' | 'right' | ''
+    visible: boolean
+  }
 }>()
 
 const emit = defineEmits<{
   close: [boolean]
-  save: [TableColumn[]]
+  save: [Partial<TableColumn>]
 }>()
 
 const tableColumnApi = useTableColumnApi()
-const loading = ref(false)
 const saving = ref(false)
 
-interface ColumnRow {
-  id: number
-  columnKey: string
-  label: string
-  order: number
-  width: number
-  fixed: string
-  visible: boolean
-}
-
-const columns = ref<ColumnRow[]>([])
-const deletedColumnIds = ref<number[]>([])
-
-async function fetchColumns() {
-  loading.value = true
-  const { data } = await tableColumnApi.list({
-    pagination: { pageNum: 0, pageSize: 0 },
-    orderQuery: [{ field: 'order', order: 'asc' }],
-    whereQuery: {
-      items: [{ field: 'tableId', value: props.table.id, opr: 'eq' }]
-    }
-  })
-  if (data.value.data) {
-    columns.value = data.value.data.list.map(col => ({
-      id: col.id,
-      columnKey: col.columnKey,
-      label: col.label,
-      order: col.order,
-      width: col.width,
-      fixed: col.fixed,
-      visible: col.visible
-    }))
-  }
-  loading.value = false
-}
-
-function addColumn() {
-  const maxOrder = columns.value.reduce((max, col) => Math.max(max, col.order ?? 0), 0)
-  columns.value.push({
-    id: 0,
-    columnKey: '',
-    label: '',
-    order: maxOrder + 1,
-    width: 100,
-    fixed: '',
-    visible: true
-  })
-}
-
-function removeColumn(index: number) {
-  const col = columns.value[index]
-  if (col.id !== 0) {
-    deletedColumnIds.value.push(col.id)
-  }
-  columns.value.splice(index, 1)
-}
+const formData = ref({
+  columnKey: props.column?.columnKey ?? '',
+  label: props.column?.label ?? '',
+  order: props.column?.order ?? 0,
+  width: props.column?.width ?? 100,
+  fixed: props.column?.fixed ?? ('' as '' | 'left' | 'right'),
+  visible: props.column?.visible ?? true
+})
 
 async function handleSave() {
   saving.value = true
   try {
-    for (const col of columns.value) {
-      const data = {
-        id: col.id,
-        tableId: props.table.id,
-        columnKey: col.columnKey,
-        label: col.label,
-        order: col.order,
-        width: col.width,
-        fixed: col.fixed as '' | 'left' | 'right',
-        visible: col.visible
-      }
-      if (col.id === 0) {
-        await tableColumnApi.create(tableColumnApi.prune(data as TableColumn))
-      } else {
-        await tableColumnApi.update(tableColumnApi.prune(data as TableColumn))
-      }
-    }
-    for (const id of deletedColumnIds.value) {
-      await tableColumnApi.deleteById(id)
-    }
-    useToast().add({
-      title: '保存成功',
-      description: `列配置已保存`,
-      color: 'success',
-      icon: 'i-lucide-check-circle'
+    emit('save', {
+      id: props.column?.id,
+      columnKey: formData.value.columnKey,
+      label: formData.value.label,
+      order: formData.value.order,
+      width: formData.value.width,
+      fixed: formData.value.fixed,
+      visible: formData.value.visible
     })
-    emit('save', columns.value as TableColumn[])
     emit('close', true)
   } catch (error) {
     useToast().add({
@@ -117,74 +59,51 @@ async function handleSave() {
     saving.value = false
   }
 }
-
-onMounted(fetchColumns)
 </script>
 
 <template>
   <UModal
-    :title="`配置列 - ${table.label} (${table.tblName})`"
-    size="xl"
+    :title="`编辑列 - ${column?.columnKey ?? ''}`"
+    size="md"
     :close="{ onClick: () => emit('close', false) }"
   >
-    <div class="p-4">
-      <div class="flex flex-col gap-2">
-        <div class="grid grid-cols-7 gap-2 text-sm font-medium text-dimmed px-2">
-          <div>列标识</div>
-          <div>显示名</div>
-          <div>顺序</div>
-          <div>宽度</div>
-          <div>固定</div>
-          <div>显示</div>
-          <div></div>
+    <div class="p-4 space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-sm font-medium mb-1 block">列标识</label>
+          <UInput v-model="formData.columnKey" placeholder="columnKey" />
         </div>
-        
-        <div
-          v-for="(col, idx) in columns"
-          :key="idx"
-          class="grid grid-cols-7 gap-2 items-center"
-        >
-          <UInput
-            v-model="col.columnKey"
-            placeholder="列标识"
-          />
-          <UInput
-            v-model="col.label"
-            placeholder="显示名"
-          />
-          <UInputNumber
-            v-model="col.order"
-            :min="0"
-          />
-          <UInputNumber
-            v-model="col.width"
-            :min="0"
-          />
+        <div>
+          <label class="text-sm font-medium mb-1 block">显示名</label>
+          <UInput v-model="formData.label" placeholder="显示名" />
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <label class="text-sm font-medium mb-1 block">顺序</label>
+          <UInputNumber v-model="formData.order" :min="0" class="w-full" />
+        </div>
+        <div>
+          <label class="text-sm font-medium mb-1 block">宽度</label>
+          <UInputNumber v-model="formData.width" :min="0" class="w-full" />
+        </div>
+        <div>
+          <label class="text-sm font-medium mb-1 block">固定</label>
           <USelect
-            v-model="col.fixed"
+            v-model="formData.fixed"
             :items="[
               { label: '不固定', value: '' },
               { label: '左侧', value: 'left' },
               { label: '右侧', value: 'right' }
             ]"
-          />
-          <USwitch v-model="col.visible" />
-          <UButton
-            icon="i-lucide-trash-2"
-            color="error"
-            variant="ghost"
-            @click="removeColumn(idx)"
+            class="w-full"
           />
         </div>
       </div>
-      
-      <UButton
-        label="添加列"
-        icon="i-lucide-plus"
-        variant="soft"
-        class="mt-2"
-        @click="addColumn"
-      />
+      <div class="flex items-center gap-2">
+        <USwitch v-model="formData.visible" />
+        <span class="text-sm">{{ formData.visible ? '显示' : '隐藏' }}</span>
+      </div>
     </div>
     <template #footer>
       <UButton

@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import type { VColumn, Table } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
-import { useTableApi, useTableColumnApi } from '#v/composables/api'
+import { useTableApi, useTableColumnApi, useTablePermissionApi } from '#v/composables/api'
 import { getOprColumns } from '#v/constants'
-import TableColumnModal from './TableColumnModal.vue'
 import TablePage from '#v/components/table/Page.vue'
 import CreateModal from './CreateModal.vue'
 import { h, ref, watch } from 'vue'
 
 const overlay = useOverlay()
-const tableColumnModal = overlay.create(TableColumnModal)
 const createModal = overlay.create(CreateModal)
 
-const columnCounts = ref<Record<number, number>>({})
+interface TableMeta {
+  columnCount: number
+  permissionCount: number
+}
+
+const tableMeta = ref<Record<number, TableMeta>>({})
 
 const columns: VColumn<Table>[] = [
   {
@@ -34,39 +37,59 @@ const columns: VColumn<Table>[] = [
     }
   },
   {
-    accessorKey: 'columnCount',
+    accessorKey: 'meta',
     header: '列数',
-    cell: ({ row }) => columnCounts.value[row.original.id] ?? '-'
+    cell: ({ row }) => tableMeta.value[row.original.id]?.columnCount ?? '-'
+  },
+  {
+    accessorKey: 'permissionCount',
+    header: '权限数',
+    cell: ({ row }) => tableMeta.value[row.original.id]?.permissionCount ?? '-'
   },
   ...getOprColumns<Table>()
 ]
 
 const tablePageRef = ref<any>(null)
 
-async function fetchColumnCounts(tables: Table[]) {
+async function fetchTableMeta(tables: Table[]) {
   const tableColumnApi = useTableColumnApi()
-  const newCounts: Record<number, number> = {}
+  const tablePermissionApi = useTablePermissionApi()
+  const newMeta: Record<number, TableMeta> = {}
+
   await Promise.all(
     tables.map(async (table) => {
-      const { data } = await tableColumnApi.count({
-        whereQuery: {
-          items: [{ field: 'tableId', value: table.id, opr: 'eq' }]
-        }
-      })
-      if (data.value.data !== undefined && data.value.data !== null) {
-        newCounts[table.id] = data.value.data
+      const [columnResult, permissionResult] = await Promise.all([
+        tableColumnApi.count({
+          whereQuery: {
+            items: [{ field: 'tableId', value: table.id, opr: 'eq' }]
+          }
+        }),
+        tablePermissionApi.count({
+          whereQuery: {
+            items: [{ field: 'tableId', value: table.id, opr: 'eq' }]
+          }
+        })
+      ])
+
+      newMeta[table.id] = {
+        columnCount: columnResult.data.value?.data ?? 0,
+        permissionCount: permissionResult.data.value?.data ?? 0
       }
     })
   )
-  columnCounts.value = { ...columnCounts.value, ...newCounts }
+
+  tableMeta.value = { ...tableMeta.value, ...newMeta }
 }
 
 function getExpandVNode(row: Table) {
-  const count = columnCounts.value[row.id] ?? '-'
+  const meta = tableMeta.value[row.id]
   return h('div', { class: 'p-4 text-sm text-dimmed' }, [
     h('div', { class: 'font-medium mb-2' }, `Table: ${row.tblName}`),
     h('div', {}, `显示名: ${row.label}`),
-    h('div', {}, `列数: ${count}`)
+    h('div', {}, `列数: ${meta?.columnCount ?? '-'}`),
+    h('div', {}, `权限配置数: ${meta?.permissionCount ?? '-'}`),
+    h('div', {}, `创建时间: ${row.createdAt ? new Date(row.createdAt).toLocaleString() : '-'}`),
+    h('div', {}, `更新时间: ${row.updatedAt ? new Date(row.updatedAt).toLocaleString() : '-'}`)
   ])
 }
 
@@ -78,14 +101,6 @@ const extraRowActions = [
       const result = await createModal.open({ model: { ...row } }).result
       return result
     }
-  },
-  {
-    label: '配置列',
-    icon: 'i-lucide-settings',
-    fnWithModal: async (row: Table) => {
-      const result = await tableColumnModal.open({ table: row }).result
-      return result
-    }
   }
 ]
 
@@ -93,7 +108,7 @@ watch(
   () => tablePageRef.value?.data,
   async (newData) => {
     if (newData && newData.length > 0) {
-      await fetchColumnCounts(newData)
+      await fetchTableMeta(newData)
     }
   },
   { immediate: true }
