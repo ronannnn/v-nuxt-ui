@@ -18,10 +18,6 @@ const columns: VColumn<User>[] = [
     accessorKey: 'isResigned',
     header: '是否离职',
     sortOption: true,
-    filterOption: {
-      type: 'input',
-      initHide: false
-    },
     cell: ({ row }) => h(
       UBadge,
       {
@@ -153,8 +149,8 @@ const columns: VColumn<User>[] = [
     header: '是否是系统管理员',
     sortOption: true,
     filterOption: {
-      type: 'input',
-      initHide: false
+      type: 'select',
+      items: booleanOptions
     },
     cell: ({ row }) => h(
       UBadge,
