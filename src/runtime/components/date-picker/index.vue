@@ -182,19 +182,19 @@ defineExpose({
           <DatePickerInput
             ref="startDateStrValueInput"
             v-model:value="startDateStrValue"
-            placeholder="YYYY/MM/DD 开始日期"
+            placeholder="YYYY-MM-DD 开始日期"
           />
           <DatePickerInput
             ref="endDateStrValueInput"
             v-model:value="endDateStrValue"
-            placeholder="YYYY/MM/DD 结束日期"
+            placeholder="YYYY-MM-DD 结束日期"
           />
         </div>
         <DatePickerInput
           v-else
           ref="singleDateStrValueInput"
           v-model:value="singleDateStrValue"
-          placeholder="YYYY/MM/DD 日期"
+          placeholder="YYYY-MM-DD 日期"
         />
         <UCalendar
           :model-value="modelValue"

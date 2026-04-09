@@ -25,7 +25,7 @@ const dateValue = computed<DateValue | undefined | null>({
     modelValue.value = useDate().dateValueToDayjs(newVal)?.toISOString()
   }
 })
-// DateValue <-> YYYY/MM/DD
+// DateValue <-> YYYY-MM-DD
 const dateStrValue = computed<string | undefined>({
   get() {
     return useDate().dateValueToDayjs(dateValue.value)?.format(dateFormat) ?? undefined
@@ -79,7 +79,7 @@ const dateStrInputFocus = () => {
           <DatePickerInput
             ref="dateStrValueInput"
             v-model:value="dateStrValue"
-            placeholder="YYYY/MM/DD 日期"
+            placeholder="YYYY-MM-DD 日期"
           />
           <UCalendar
             :model-value="dateValue"

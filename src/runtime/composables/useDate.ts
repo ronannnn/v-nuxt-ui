@@ -45,7 +45,7 @@ const _useDate = () => {
         return `${date.year()}-W${weekNumber}`
       }
       case 'day':
-        return date.format('YYYY/MM/DD')
+        return date.format('YYYY-MM-DD')
       default:
         throw new Error(`Unsupported time unit: ${unit}`)
     }

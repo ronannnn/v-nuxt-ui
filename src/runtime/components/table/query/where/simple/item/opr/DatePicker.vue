@@ -2,11 +2,11 @@
 import type { WhereQueryItem, WhereQueryOpr, DateShortcut } from '#v/types'
 import type { DateRange, DateValue } from 'reka-ui'
 import { computed, useTemplateRef, nextTick, ref } from 'vue'
-import { now, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from '@internationalized/date'
+import { now } from '@internationalized/date'
 import dayjs from 'dayjs'
 import { useDate } from '#v/composables/useDate'
 import { useApp } from '#v/composables/useApp'
-import { dateFormat, TIME_ZONE } from '#v/constants'
+import { TIME_ZONE } from '#v/constants'
 import DatePickerInput from '#v/components/date-picker/Input.vue'
 
 defineProps<{
@@ -71,172 +71,159 @@ const calendarValue = computed<null | undefined | DateValue | DateValue[] | Date
   }
 })
 
-// 日期字符串输入处理
-const createDateStrComputed = (
-  getValue: () => string | undefined,
-  setValue: (formattedDate: any) => void
-) => computed<string | undefined>({
-  get: getValue,
+// 日期显示格式 (用斜杠分隔)
+const displayDateFormat = 'YYYY-MM-DD'
+
+// Range 输入
+const startDateStrValueInput = useTemplateRef('startDateStrValueInput')
+const endDateStrValueInput = useTemplateRef('endDateStrValueInput')
+const startDateStrValue = computed<string | undefined>({
+  get() {
+    return useDate().dateValueToDayjs((calendarValue.value as DateRange)?.start)?.format(displayDateFormat) ?? undefined
+  },
   set(newValue) {
     if (!newValue) {
-      setValue(undefined)
+      calendarValue.value = { ...(calendarValue.value as DateRange), start: undefined }
       return
     }
-    const formattedDayjs = dayjs(newValue, dateFormat, true)
+    const formattedDayjs = dayjs(newValue, displayDateFormat, true)
     if (formattedDayjs.isValid()) {
-      setValue(useDate().dayjsToDateValue(formattedDayjs))
+      calendarValue.value = {
+        ...(calendarValue.value as DateRange),
+        start: useDate().dayjsToDateValue(formattedDayjs)
+      }
+    }
+  }
+})
+const endDateStrValue = computed<string | undefined>({
+  get() {
+    return useDate().dateValueToDayjs((calendarValue.value as DateRange)?.end)?.format(displayDateFormat) ?? undefined
+  },
+  set(newValue) {
+    if (!newValue) {
+      calendarValue.value = { ...(calendarValue.value as DateRange), end: undefined }
+      return
+    }
+    const formattedDayjs = dayjs(newValue, displayDateFormat, true)
+    if (formattedDayjs.isValid()) {
+      calendarValue.value = {
+        ...(calendarValue.value as DateRange),
+        end: useDate().dayjsToDateValue(formattedDayjs)
+      }
     }
   }
 })
 
-// Range 输入
-const startDateStrValueInput = useTemplateRef('startDateStrValueInput')
-const startDateStrValue = createDateStrComputed(
-  () => useDate().dateValueToDayjs((calendarValue.value as DateRange)?.start)?.format(dateFormat) ?? undefined,
-  (start) => {
-    calendarValue.value = { ...(calendarValue.value as DateRange), start }
-  }
-)
-const endDateStrValue = createDateStrComputed(
-  () => useDate().dateValueToDayjs((calendarValue.value as DateRange)?.end)?.format(dateFormat) ?? undefined,
-  (end) => {
-    calendarValue.value = { ...(calendarValue.value as DateRange), end }
-  }
-)
-
 // Single 输入
 const singleDateStrValueInput = useTemplateRef('singleDateStrValueInput')
-const singleDateStrValue = createDateStrComputed(
-  () => useDate().dateValueToDayjs(calendarValue.value as DateValue)?.format(dateFormat) || undefined,
-  (date) => {
-    calendarValue.value = date
+const singleDateStrValue = computed<string | undefined>({
+  get() {
+    return useDate().dateValueToDayjs(calendarValue.value as DateValue)?.format(displayDateFormat) || undefined
+  },
+  set(newValue) {
+    if (!newValue) {
+      calendarValue.value = null
+      return
+    }
+    const formattedDayjs = dayjs(newValue, displayDateFormat, true)
+    if (formattedDayjs.isValid()) {
+      calendarValue.value = useDate().dayjsToDateValue(formattedDayjs)
+    }
   }
-)
+})
 
-const dateStrInputFocus = () => {
+// Popover 打开/关闭控制
+const popoverOpen = ref(false)
+const onOpenCalendar = () => {
+  popoverOpen.value = true
+}
+const onCloseCalendar = () => {
+  popoverOpen.value = false
+}
+
+const focusStartInput = () => {
   nextTick(() => {
-    const input = isRangeOpr.value ? startDateStrValueInput : singleDateStrValueInput
-    input.value?.focus()
+    if (isRangeOpr.value) {
+      startDateStrValueInput.value?.focus()
+    } else {
+      singleDateStrValueInput.value?.focus()
+    }
   })
 }
 
-const popoverOpen = ref(false)
-
 defineExpose({
   focus: () => {
-    popoverOpen.value = true
-    dateStrInputFocus()
+    focusStartInput()
   }
 })
 
 // 日期快捷方式
+const date = useDate()
 const dateRangeShortcuts: DateShortcut[] = [
-  {
-    label: '本周',
-    dateFn: () => {
-      const today = now(TIME_ZONE)
-      return {
-        start: startOfWeek(today, 'zh-CN', 'mon'),
-        end: endOfWeek(today, 'zh-CN', 'mon')
-      }
-    }
-  },
-  {
-    label: '本月',
-    dateFn: () => {
-      const today = now(TIME_ZONE)
-      return {
-        start: startOfMonth(today),
-        end: endOfMonth(today)
-      }
-    }
-  },
-  {
-    label: '上周',
-    dateFn: () => {
-      const today = now(TIME_ZONE)
-      const lastWeek = today.subtract({ weeks: 1 })
-      return {
-        start: startOfWeek(lastWeek, 'zh-CN', 'mon'),
-        end: endOfWeek(lastWeek, 'zh-CN', 'mon')
-      }
-    }
-  },
-  {
-    label: '上月',
-    dateFn: () => {
-      const today = now(TIME_ZONE)
-      const lastMonth = today.subtract({ months: 1 })
-      return {
-        start: startOfMonth(lastMonth),
-        end: endOfMonth(lastMonth)
-      }
-    }
-  }
+  date.lastWeekDateShortcut,
+  date.lastMonthDateShortcut,
+  date.currentWeekDateShortcut,
+  date.currentMonthDateShortcut
 ]
-
-const isValueEmpty = computed(() => {
-  if (isNoCalendarOpr.value) return false
-
-  const value = whereQueryItem.value.value
-  if (isRangeOpr.value) {
-    return value === null || (value?.start === null && value?.end === null)
-  }
-
-  return value === null || value === ''
-})
-
-const displayValue = computed(() => {
-  if (isValueEmpty.value) return ''
-
-  if (isRangeOpr.value) {
-    const range = calendarValue.value as DateRange
-    const start = useDate().dateValueToDayjs(range?.start)?.format(dateFormat) || ''
-    const end = useDate().dateValueToDayjs(range?.end)?.format(dateFormat) || ''
-    return `${start} ~ ${end}`
-  }
-
-  return useDate().dateValueToDayjs(calendarValue.value as DateValue)?.format(dateFormat) || ''
-})
 </script>
 
 <template>
   <UPopover
     v-model:open="popoverOpen"
+    :dismissible="false"
     :content="{
       align: 'start',
-      onCloseAutoFocus: e => e.preventDefault()
+      onCloseAutoFocus: (e: Event) => e.preventDefault(),
+      onOpenAutoFocus: (e: Event) => e.preventDefault()
     }"
   >
-    <UButton size="sm" color="neutral" variant="outline">
-      {{ isValueEmpty ? '--' : displayValue }}
-    </UButton>
+    <!-- 输入框直接暴露 -->
+    <template v-if="isNoCalendarOpr" />
+
+    <template v-else-if="isRangeOpr">
+      <!-- 必须加这个div，不然第一个输入框无法正确渲染 -->
+      <div />
+      <DatePickerInput
+        ref="startDateStrValueInput"
+        v-model:value="startDateStrValue"
+        icon=""
+        input-class="w-32"
+        placeholder="YYYY-MM-DD"
+        @focus="onOpenCalendar"
+        @blur="onCloseCalendar"
+      />
+      <UBadge variant="outline" color="neutral">
+        ~
+      </UBadge>
+      <DatePickerInput
+        ref="endDateStrValueInput"
+        v-model:value="endDateStrValue"
+        icon=""
+        input-class="w-32"
+        placeholder="YYYY-MM-DD"
+        @focus="onOpenCalendar"
+        @blur="onCloseCalendar"
+      />
+    </template>
+
+    <template v-else>
+      <div />
+      <DatePickerInput
+        ref="singleDateStrValueInput"
+        v-model:value="singleDateStrValue"
+        icon=""
+        input-class="w-32"
+        placeholder="YYYY-MM-DD"
+        @focus="onOpenCalendar"
+        @blur="onCloseCalendar"
+      />
+    </template>
 
     <template #content>
-      <div class="p-3 flex flex-col gap-2">
-        <UFieldGroup v-if="isRangeOpr" :orientation="app.isMobile.value ? 'vertical' : 'horizontal'">
-          <DatePickerInput
-            ref="startDateStrValueInput"
-            v-model:value="startDateStrValue"
-            placeholder="YYYY/MM/DD 开始日期"
-            :disabled="disabled"
-          />
-          <DatePickerInput
-            ref="endDateStrValueInput"
-            v-model:value="endDateStrValue"
-            placeholder="YYYY/MM/DD 结束日期"
-            :disabled="disabled"
-          />
-        </UFieldGroup>
-
-        <DatePickerInput
-          v-else
-          ref="singleDateStrValueInput"
-          v-model:value="singleDateStrValue"
-          placeholder="YYYY/MM/DD 日期"
-          :disabled="disabled"
-        />
-
+      <div
+        class="p-3 flex flex-col gap-2"
+        @mousedown.prevent
+      >
         <UCalendar
           v-if="!isNoCalendarOpr"
           :model-value="calendarValue"
@@ -247,20 +234,30 @@ const displayValue = computed(() => {
           @update:model-value="(newValue) => calendarValue = newValue ?? null"
         />
 
-        <div v-if="isRangeOpr" class="ml-auto">
-          <UFieldGroup>
-            <UButton
-              v-for="shortcut in dateRangeShortcuts"
-              :key="shortcut.label"
-              :label="shortcut.label"
-              size="xs"
-              color="neutral"
-              variant="outline"
-              :disabled="disabled"
-              @click="calendarValue = shortcut.dateFn()"
-            />
-          </UFieldGroup>
-        </div>
+        <UFieldGroup class="ml-auto">
+          <UButton
+            v-for="shortcut in isRangeOpr ? dateRangeShortcuts : []"
+            :key="shortcut.label"
+            :label="shortcut.label"
+            size="xs"
+            color="neutral"
+            variant="outline"
+            :disabled="disabled"
+            :tabindex="-1"
+            @click="calendarValue = shortcut.dateFn()"
+          />
+          <UButton
+            v-if="!isRangeOpr"
+            label="今天"
+            size="xs"
+            color="neutral"
+            variant="outline"
+            :tabindex="-1"
+            @click="() => {
+              calendarValue = now(TIME_ZONE)
+            }"
+          />
+        </UFieldGroup>
       </div>
     </template>
   </UPopover>

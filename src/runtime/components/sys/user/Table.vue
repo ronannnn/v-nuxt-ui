@@ -127,6 +127,9 @@ const columns: VColumn<User>[] = [
     accessorKey: 'entryDate',
     header: '入职时间',
     sortOption: true,
+    filterOption: {
+      type: 'date-picker'
+    },
     cell: ({ row }) => dayjs(row.getValue('entryDate')).format(dateFormat)
   },
   {
