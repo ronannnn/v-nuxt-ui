@@ -12,7 +12,6 @@ export enum Gender {
 }
 
 export const genderOptions: SelectOption[] = [
-  { label: 'Male', value: Gender.MALE },
-  { label: 'Female', value: Gender.FEMALE },
-  { label: 'Unknown', value: Gender.UNKNOWN }
+  { label: '男', value: Gender.MALE },
+  { label: '女', value: Gender.FEMALE }
 ]
