@@ -97,8 +97,12 @@ defineExpose({
         :model-value="commandPaletteModelValue"
         :selection-behavior="multiple ? 'toggle': 'replace'"
         :groups="groups"
+        size="sm"
         :multiple="multiple"
-        :ui="{ input: '[&>input]:h-8 [&>input]:text-sm' }"
+        :ui="{
+          input: '[&>input]:h-7',
+          itemLeadingIcon: 'size-3 self-center'
+        }"
         placeholder="搜索"
         :search-term="searchTerm"
         @update:model-value="newValue => {
