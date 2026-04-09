@@ -1,9 +1,10 @@
 <script setup lang="ts" generic="T">
+import type { ComponentPublicInstance } from 'vue'
 import type { WhereQueryProps } from '#v/types'
-import { computed, useTemplateRef, nextTick } from 'vue'
+import { computed, ref, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
 import { useToast } from '@nuxt/ui/composables'
-import TableQueryWhereSimple from '#v/components/table/query/where/simple/index.vue'
+import TableQueryWhereSimpleItem from '#v/components/table/query/where/simple/item/index.vue'
 import TableQueryWhereNewer from '#v/components/table/query/where/Newer.vue'
 
 const props = defineProps<WhereQueryProps<T>>()
@@ -15,7 +16,23 @@ const unselectedWhereFields = computed<string[]>(() => {
   return props.whereOptions.map(option => option.field as string).filter(field => !selectedWhereFields.value.includes(field))
 })
 
-const simpleWhereQueryRef = useTemplateRef('simpleWhereQuery')
+// simple query: item ref map & helpers (merged from simple/index.vue)
+const itemRefMap = ref<Map<string, { focus: () => void }>>(new Map())
+
+function setItemRef(field: string, el: Element | ComponentPublicInstance | null) {
+  if (el && 'focus' in el && typeof el.focus === 'function') {
+    itemRefMap.value.set(field, el as { focus: () => void })
+  }
+}
+
+const onRemoveFilter = (field: string) => {
+  const updatedItems = props.whereQuery?.items?.filter(query => query.field !== field) ?? []
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items: updatedItems
+  })
+}
+
 const onNewField = (field: string) => {
   const option = props.whereOptions.find(option => option.field === field)
   if (!option || !option.type) {
@@ -36,7 +53,10 @@ const onNewField = (field: string) => {
     }]
   })
   nextTick(() => {
-    simpleWhereQueryRef.value?.focusItem(field)
+    const item = itemRefMap.value.get(field)
+    if (item) {
+      item.focus()
+    }
   })
 }
 
@@ -51,7 +71,12 @@ const isWhereQueryEmpty = computed(() => {
 
 // 从列头筛选触发的聚焦
 const focusField = (field: string): boolean => {
-  return simpleWhereQueryRef.value?.focusItem(field) ?? false
+  const item = itemRefMap.value.get(field)
+  if (item) {
+    item.focus()
+    return true
+  }
+  return false
 }
 defineExpose({ focusField })
 </script>
@@ -60,16 +85,27 @@ defineExpose({ focusField })
   <div class="flex items-start gap-2 pl-4 pr-2.5 py-2.5">
     <!-- conditions -->
     <div class="flex flex-wrap items-center gap-2.5">
-      <TableQueryWhereSimple
-        v-if="!isWhereQueryEmpty"
-        v-bind="props"
-        ref="simpleWhereQuery"
-        :items="whereQuery?.items"
-        @update-items="newItems => onUpdateWhereQuery({
-          ...whereQuery,
-          items: newItems
-        })"
-      />
+      <!-- key如果是field，那么field修改后，不能聚焦后面的组件，所以这里的key用idx代替 -->
+      <template v-if="!isWhereQueryEmpty">
+        <TableQueryWhereSimpleItem
+          v-for="(item, idx) in whereQuery?.items"
+          :ref="(el) => setItemRef(item.field as string, el)"
+          :key="idx"
+          :where-query-item="item"
+          :options="whereOptions"
+          :fetching="fetching"
+          :trigger-fetching="() => triggerFetching(true)"
+          @remove="onRemoveFilter"
+          @update:where-query-item="newWhereQueryItem => {
+            const updatedItems = [...props.whereQuery?.items ?? []]
+            updatedItems[idx] = newWhereQueryItem
+            onUpdateWhereQuery({
+              ...whereQuery,
+              items: updatedItems
+            })
+          }"
+        />
+      </template>
       <TableQueryWhereNewer
         :options="whereOptions"
         :unselected-fields="unselectedWhereFields"

@@ -1,4 +1,4 @@
-import type { VColumn, WhereQuery, WhereQueryColumnOption, WhereQueryItem, WhereQueryItemGroup } from '../../..'
+import type { VColumn, WhereQuery, WhereQueryColumnOption, WhereQueryItemGroup } from '../../..'
 
 export type WhereQueryOption<T> = {
   field: string & keyof T | string
@@ -18,11 +18,6 @@ export type WhereQueryProps<T> = {
   bizColumns?: VColumn<T>[]
   hideQueryButton?: boolean
 }
-
-export type WhereSimpleQueryProps<T> = {
-  items?: WhereQueryItem<T>[]
-  onUpdateItems: (items: WhereQueryItem<T>[] | undefined) => void
-} & Pick<WhereQueryProps<T>, 'whereOptions' | 'fetching' | 'triggerFetching' | 'bizColumns'>
 
 export type WhereAdvancedQueryProps<T> = {
   group?: WhereQueryItemGroup<T>
