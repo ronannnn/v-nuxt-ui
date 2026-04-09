@@ -3,6 +3,7 @@ import type { WhereQueryOption, VColumn, Size } from '#v/types'
 import type { CommandPaletteGroup } from '@nuxt/ui'
 import { ref, computed } from 'vue'
 import ButtonDropdown from '#v/components/button/Dropdown.vue'
+import { tableWhereQueryItemIconMap } from '#v/constants'
 
 const props = defineProps<{
   options: WhereQueryOption<T>[]
@@ -26,6 +27,7 @@ const unselectedOptions = computed(() => {
         const column = props.bizColumns.find(column => (column as any)['accessorKey'] === field)
         return {
           label: column?.header as string || option?.label || field,
+          icon: tableWhereQueryItemIconMap.get(option?.type ?? 'unknown') || 'field',
           onSelect: () => {
             emit('new', field)
             popoverOpen.value = false
