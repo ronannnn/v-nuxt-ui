@@ -1,12 +1,11 @@
 <script setup lang="ts" generic="T">
-import type { CommandPaletteGroup } from '@nuxt/ui'
-import { ref, computed, useTemplateRef } from 'vue'
+import type { InputMenuItem } from '@nuxt/ui'
+import { ref, computed, useTemplateRef, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { defu } from 'defu'
 import { useFetching } from '#v/composables/useBoolean'
 import { isEmptyString } from '#v/utils'
-import type { VFormFieldAsyncSelectProps, WhereQueryItem, SelectOption, QueryTemplate } from '#v/types'
-import ButtonDropdown from '#v/components/button/Dropdown.vue'
+import type { VFormFieldAsyncSelectProps, WhereQueryItem, QueryTemplate } from '#v/types'
 
 const props = withDefaults(defineProps<{
   label: string
@@ -42,7 +41,7 @@ const allData = computed<T[]>(() => {
   })
   return newSearchedData
 })
-const items = computed<SelectOption[]>(() => {
+const items = computed<InputMenuItem[]>(() => {
   return fetching.value
     ? currentSelectedData.value
         .map((p: T) => ({
@@ -57,7 +56,7 @@ const items = computed<SelectOption[]>(() => {
         }))
         .filter(p => p.label && !isEmptyString(String(p.value)))
 })
-const commandPaletteValue = computed<(string | number)[] | null>({
+const inputMenuValue = computed<(string | number)[]>({
   get() {
     return whereQueryItem.value.value
   },
@@ -81,17 +80,6 @@ const commandPaletteValue = computed<(string | number)[] | null>({
   }
 })
 
-const commandPaletteGroups = computed(() => {
-  const options: CommandPaletteGroup<any>[] = [
-    {
-      id: 'fields',
-      items: items.value,
-      ignoreFilter: true
-    }
-  ]
-  return options
-})
-
 const onFetchItems = async (searchTerm: string) => {
   try {
     startFetching()
@@ -112,46 +100,53 @@ const onFetchItems = async (searchTerm: string) => {
     endFetching()
   }
 }
-const onDebounceFetchItems = useDebounceFn(onFetchItems, 512)
 
-const dropdownBtnRef = useTemplateRef('dropdownBtn')
+const searchTerm = ref('')
+const onDebounceFetchItems = useDebounceFn(onFetchItems, 512)
+watch(searchTerm, (newVal) => {
+  onDebounceFetchItems(newVal)
+}, { immediate: false })
+
+const inputMenuRef = useTemplateRef('inputMenu')
 defineExpose({
   focus: () => {
-    dropdownBtnRef.value?.focus()
+    inputMenuRef.value?.inputRef.focus()
   }
 })
 </script>
 
 <template>
-  <ButtonDropdown
-    ref="dropdownBtn"
-    v-model="commandPaletteValue"
-    :groups="commandPaletteGroups"
+  <UInputMenu
+    ref="inputMenu"
+    v-model:search-term="searchTerm"
+    v-model="inputMenuValue"
+    :items="items"
+    :placeholder="placeholder"
     multiple
-    enable-footer-toolbar
-    @open="() => onFetchItems('')"
-    @search="onDebounceFetchItems"
-  >
-    <UButton
-      size="sm"
-      color="neutral"
-      variant="outline"
-    >
-      <div v-if="!whereQueryItem?.value || whereQueryItem.value.length === 0">
-        --
-      </div>
-      <div v-else-if="whereQueryItem.value.length <= 2" class="flex items-center gap-1">
-        {{ whereQueryItem.value.map((value: any) => items.find(item => item.value === value)?.label || value).join(', ') }}
-      </div>
-      <div v-else>
-        <!-- 打印前两项,后面+1代替 -->
-        <div class="flex items-center gap-1">
-          <div v-for="value in whereQueryItem.value.slice(0, 2)" :key="value">
-            {{ items.find(item => item.value === value)?.label || value }}
-          </div>
-          <span>+{{ whereQueryItem.value.length - 2 }}</span>
-        </div>
-      </div>
-    </UButton>
-  </ButtonDropdown>
+    color="neutral"
+    delete-icon="i-lucide-trash"
+    value-key="value"
+    clear
+    clear-icon="i-lucide-circle-x"
+    icon=""
+    :loading="fetching"
+    :disabled="disabled"
+    open-on-focus
+    trailing
+    :ui="{
+      root: 'rounded-none', // TODO: 不然有rounded，这个应该是个bug
+      content: 'min-w-fit'
+    }"
+    :content="{
+      align: 'start'
+    }"
+    @update:open="opened => {
+      if (opened) {
+        onFetchItems(searchTerm)
+      }
+    }"
+    @update:model-value="() => {
+      inputMenuRef?.inputRef.focus()
+    }"
+  />
 </template>

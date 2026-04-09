@@ -26,6 +26,7 @@ declare module 'vue' {
     UFormField: typeof import('@nuxt/ui/components/FormField.vue')['default']
     UIcon: typeof import('@nuxt/ui/components/Icon.vue')['default']
     UInput: typeof import('@nuxt/ui/components/Input.vue')['default']
+    UInputMenu: typeof import('@nuxt/ui/components/InputMenu.vue')['default']
     UInputNumber: typeof import('@nuxt/ui/components/InputNumber.vue')['default']
     UKbd: typeof import('@nuxt/ui/components/Kbd.vue')['default']
     UModal: typeof import('@nuxt/ui/components/Modal.vue')['default']

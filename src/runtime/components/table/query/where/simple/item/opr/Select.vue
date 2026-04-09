@@ -1,17 +1,17 @@
 <script setup lang="ts" generic="T">
-import type { SelectOption, WhereQueryItem } from '#v/types'
-import type { CommandPaletteGroup } from '@nuxt/ui'
-import { computed, useTemplateRef } from 'vue'
-import ButtonDropdown from '#v/components/button/Dropdown.vue'
+import type { WhereQueryItem } from '#v/types'
+import type { InputMenuItem, InputMenuProps } from '@nuxt/ui'
+import { computed, ref, useTemplateRef } from 'vue'
 
 const props = defineProps<{
   disabled?: boolean
-  items: SelectOption[]
+  items: InputMenuItem[]
+  placeholder?: InputMenuProps['placeholder']
 }>()
 
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
-const queryValue = computed<(string | number)[] | null>({
+const inputMenuValue = computed<(string | number)[]>({
   get() {
     return whereQueryItem.value.value
   },
@@ -20,50 +20,48 @@ const queryValue = computed<(string | number)[] | null>({
   }
 })
 
-const groups = computed<CommandPaletteGroup[]>(() => [
-  {
-    id: 'fields',
-    items: props.items,
-    ignoreFilter: true
+const searchTerm = ref('')
+const filteredItems = computed(() => {
+  if (!searchTerm.value) {
+    return props.items
   }
-])
+  return props.items.filter(item => (item as any)?.label.toLowerCase().includes(searchTerm.value.toLowerCase()))
+})
 
-const ref = useTemplateRef('dropdownBtn')
+const inputMenuRef = useTemplateRef('inputMenu')
 defineExpose({
   focus: () => {
-    ref.value?.focus()
+    inputMenuRef.value?.inputRef.focus()
   }
 })
 </script>
 
 <template>
-  <ButtonDropdown
-    ref="dropdownBtn"
-    v-model="queryValue"
-    :groups="groups"
+  <UInputMenu
+    ref="inputMenu"
+    v-model:search-term="searchTerm"
+    v-model="inputMenuValue"
+    :items="filteredItems"
+    :placeholder="placeholder"
     multiple
-    enable-footer-toolbar
-  >
-    <UButton
-      size="sm"
-      color="neutral"
-      variant="outline"
-    >
-      <div v-if="!queryValue || queryValue.length === 0">
-        --
-      </div>
-      <div v-else-if="queryValue.length <= 2" class="flex items-center gap-1">
-        {{ queryValue.map(value => items.find(item => item.value === value)?.label || value).join(', ') }}
-      </div>
-      <div v-else>
-        <!-- 打印前两项，后面+1代替 -->
-        <div class="flex items-center gap-1">
-          <div v-for="value in queryValue.slice(0, 2)" :key="value">
-            {{ items.find(item => item.value === value)?.label || value }}
-          </div>
-          <span>+{{ queryValue.length - 2 }}</span>
-        </div>
-      </div>
-    </UButton>
-  </ButtonDropdown>
+    color="neutral"
+    delete-icon="i-lucide-trash"
+    value-key="value"
+    clear
+    clear-icon="i-lucide-circle-x"
+    icon=""
+    :disabled="disabled"
+    open-on-focus
+    trailing
+    :ui="{
+      root: 'rounded-none', // TODO: 不然有rounded，这个应该是个bug
+      content: 'min-w-fit'
+    }"
+    :content="{
+      align: 'start'
+    }"
+    @update:model-value="() => {
+      inputMenuRef?.inputRef.focus()
+    }"
+  />
 </template>

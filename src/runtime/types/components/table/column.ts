@@ -1,6 +1,6 @@
 import type { OrderQueryOpr, WhereQueryOpr, QueryTemplate, WhereQueryItem } from '../../query'
 import type { PageResult, RequestResult } from '../../request'
-import type { TableColumn, BadgeProps, SelectProps } from '@nuxt/ui'
+import type { TableColumn, BadgeProps, InputMenuProps } from '@nuxt/ui'
 import type { SelectOption } from '../../index'
 import type { Ref } from 'vue'
 
@@ -24,8 +24,8 @@ export type WhereQueryColumnAsyncSelectProps<T> = {
   enableEmptyOption?: boolean
   disableOprSelector?: boolean
   multiple?: boolean
-  placeholder?: string
-  size?: SelectProps['size']
+  placeholder?: InputMenuProps['placeholder']
+  size?: InputMenuProps['size']
 }
 
 export type WhereQueryColumnOption<T> = {
@@ -43,6 +43,7 @@ export type WhereQueryColumnOption<T> = {
     variant?: BadgeProps['variant']
     items: SelectOption[]
     empty?: BadgeProps
+    placeholder?: InputMenuProps['placeholder']
   }
   | {
     type: 'async-select'
