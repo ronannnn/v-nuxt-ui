@@ -229,6 +229,7 @@ const dateRangeShortcuts: DateShortcut[] = [
           :model-value="calendarValue"
           :range="isRangeOpr"
           size="sm"
+          variant="subtle"
           :disabled="disabled"
           :number-of-months="app.isMobile.value || !isRangeOpr ? 1 : 2"
           @update:model-value="(newValue) => calendarValue = newValue ?? null"
