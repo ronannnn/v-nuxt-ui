@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import type { VColumn, User } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { isEmptyString } from '#v/utils'
-import { useDepartmentApi, useUserApi } from '#v/composables'
+import { useDepartmentApi, useRoleApi, useUserApi } from '#v/composables'
 import { booleanOptions, dateFormat, genderOptions, loginTypeOptions } from '#v/constants'
 import SysUsersCreateModal from './CreateModal.vue'
 import UBadge from '@nuxt/ui/components/Badge.vue'
@@ -55,16 +55,37 @@ const columns: VColumn<User>[] = [
     accessorKey: 'supervisorId',
     header: '直属上级',
     sortOption: true,
-    cell: ({ row }) => row.original.supervisor?.nickname
+    cell: ({ row }) => row.original.supervisor?.nickname,
+    filterOption: {
+      type: 'async-select',
+      listApi: useUserApi().list,
+      searchFields: ['name'],
+      labelField: 'name',
+      valueField: 'id',
+      multiple: true,
+      defaultOpr: 'in'
+    }
   },
   {
     accessorKey: 'roles',
     header: '系统权限角色',
-    cell: ({ row }) => row.original.roles?.map(role => role.name).join(', ')
+    cell: ({ row }) => row.original.roles?.map(role => role.name).join(', '),
+    filterOption: {
+      type: 'async-select',
+      listApi: useRoleApi().list,
+      searchFields: ['name'],
+      labelField: 'name',
+      valueField: 'id',
+      multiple: true,
+      defaultOpr: 'in'
+    }
   },
   {
     accessorKey: 'username',
     header: '用户名',
+    filterOption: {
+      type: 'input'
+    },
     meta: {
       class: {
         td: 'min-w-24'
@@ -74,23 +95,22 @@ const columns: VColumn<User>[] = [
   {
     accessorKey: 'loginType',
     header: '登录方式',
+    filterOption: {
+      type: 'select',
+      items: loginTypeOptions
+    },
     meta: {
       class: {
         td: 'min-w-24'
       }
-    },
-    cell: ({ row }) => {
-      const loginTypes = row.original.loginType?.split(',')
-      return h(
-        'div',
-        { class: 'flex flex-wrap items-center gap-1' },
-        [loginTypes?.map(loginType => h(UBadge, { variant: 'outline' }, () => loginTypeOptions.find(opt => opt.value === loginType)?.label as string))]
-      )
     }
   },
   {
     accessorKey: 'email',
-    header: '邮箱'
+    header: '邮箱',
+    filterOption: {
+      type: 'input'
+    }
   },
   {
     accessorKey: 'needFillWh',
@@ -135,12 +155,18 @@ const columns: VColumn<User>[] = [
   {
     accessorKey: 'resignDate',
     header: '离职时间',
+    filterOption: {
+      type: 'date-picker'
+    },
     sortOption: true,
     cell: ({ row }) => dayjs(row.getValue('resignDate')).format(dateFormat)
   },
   {
     accessorKey: 'telNo',
     header: '电话',
+    filterOption: {
+      type: 'input'
+    },
     meta: {
       class: {
         td: 'min-w-24'
@@ -154,15 +180,7 @@ const columns: VColumn<User>[] = [
     filterOption: {
       type: 'select',
       items: booleanOptions
-    },
-    cell: ({ row }) => h(
-      UBadge,
-      {
-        label: row.original.isAdmin ? '是' : '否',
-        variant: 'soft',
-        color: row.original.isAdmin ? 'primary' : 'neutral'
-      }
-    )
+    }
   }
 ]
 </script>
