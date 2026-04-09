@@ -4,6 +4,7 @@ import type { WhereQueryItem, WhereQueryOption } from '#v/types'
 import { computed, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
 import ButtonDropdown from '#v/components/button/Dropdown.vue'
+import { tableWhereQueryItemIconMap } from '#v/constants'
 
 const props = defineProps<{
   options: WhereQueryOption<T>[]
@@ -21,6 +22,7 @@ const items = computed<CommandPaletteGroup[]>(() => {
       items: props.options.map(option => ({
         label: option.label,
         value: option.field,
+        icon: tableWhereQueryItemIconMap.get(option.type) || 'field',
         onSelect: () => {
           modelValue.value = option.field as string
           nextTick(() => {
@@ -50,9 +52,8 @@ const modelValue = computed({
   }
 })
 
-const currentLabel = computed(() => {
-  const option = props.options.find(opt => opt.field === modelValue.value)
-  return option?.label || ''
+const currentOption = computed(() => {
+  return props.options.find(opt => opt.field === modelValue.value)
 })
 </script>
 
@@ -65,8 +66,12 @@ const currentLabel = computed(() => {
       :size="'sm'"
       :color="'neutral'"
       :variant="'outline'"
-      :label="currentLabel"
+      :label="currentOption?.label || '选择字段'"
       :disabled="disabled"
+      :icon="tableWhereQueryItemIconMap.get(currentOption?.type ?? 'unknown') || 'field'"
+      :ui="{
+        label: 'font-bold'
+      }"
     />
   </ButtonDropdown>
 </template>

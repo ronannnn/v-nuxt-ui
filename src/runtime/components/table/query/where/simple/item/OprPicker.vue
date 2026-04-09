@@ -69,9 +69,9 @@ const currentLabel = computed(() => {
     :groups="items"
   >
     <UButton
-      :size="'sm'"
-      :color="'neutral'"
-      :variant="'outline'"
+      size="sm"
+      color="neutral"
+      variant="outline"
       :label="currentLabel"
       :disabled="disabled"
     />
