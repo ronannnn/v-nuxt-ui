@@ -134,8 +134,9 @@ defineExpose({
     open-on-focus
     trailing
     :ui="{
-      root: 'rounded-none', // TODO: 不然有rounded，这个应该是个bug
-      content: 'min-w-fit'
+      root: 'rounded-none min-w-32', // TODO: 不然有rounded，这个应该是个bug
+      content: 'min-w-fit',
+      tagsInput: 'min-w-4 w-0'
     }"
     :content="{
       align: 'start'
