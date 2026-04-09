@@ -61,8 +61,8 @@ const _useDate = () => {
   }
 
   const getlastWeekDateRange = (): DateRange => {
-    const end = dayjs().subtract(1, 'week').endOf('week')
-    const start = end.subtract(6, 'day').startOf('day')
+    const end = dayjs().endOf('week').subtract(1, 'week')
+    const start = end.startOf('week')
     return {
       start: dayjsToDateValue(start)!,
       end: dayjsToDateValue(end)!
@@ -74,7 +74,7 @@ const _useDate = () => {
   }
   const getCurrentWeekDateRange = (): DateRange => {
     const end = dayjs().endOf('week')
-    const start = end.subtract(6, 'day').startOf('day')
+    const start = end.startOf('week')
     return {
       start: dayjsToDateValue(start)!,
       end: dayjsToDateValue(end)!
@@ -86,7 +86,7 @@ const _useDate = () => {
   }
   const getLastMonthDateRange = (): DateRange => {
     const end = dayjs().subtract(1, 'month').endOf('month')
-    const start = end.subtract(1, 'month').startOf('month')
+    const start = end.startOf('month')
     return {
       start: dayjsToDateValue(start)!,
       end: dayjsToDateValue(end)!
@@ -98,7 +98,7 @@ const _useDate = () => {
   }
   const getCurrentMonthDateRange = (): DateRange => {
     const end = dayjs().endOf('month')
-    const start = end.subtract(1, 'month').startOf('month')
+    const start = end.startOf('month')
     return {
       start: dayjsToDateValue(start)!,
       end: dayjsToDateValue(end)!
@@ -110,7 +110,7 @@ const _useDate = () => {
   }
   const getlastYearDateRange = (): DateRange => {
     const end = dayjs().subtract(1, 'year').endOf('year')
-    const start = end.subtract(1, 'year').startOf('year')
+    const start = end.startOf('year')
     return {
       start: dayjsToDateValue(start)!,
       end: dayjsToDateValue(end)!
@@ -122,7 +122,7 @@ const _useDate = () => {
   }
   const getCurrentYearDateRange = (): DateRange => {
     const end = dayjs().endOf('year')
-    const start = end.subtract(1, 'year').startOf('year')
+    const start = end.startOf('year')
     return {
       start: dayjsToDateValue(start)!,
       end: dayjsToDateValue(end)!
