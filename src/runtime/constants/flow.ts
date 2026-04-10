@@ -1,4 +1,6 @@
 import { Position } from '@vue-flow/core'
+import type { InjectionKey, Ref } from 'vue'
+import type { FlowMousePosition } from '#v/types'
 
 export type HandlePosition
   = | 'tl' | 'tr' | 'bl' | 'br' // 4 corners
@@ -14,6 +16,11 @@ export interface FlowHandle {
   position: Position
   offsetPercent?: { x?: number, y?: number }
 }
+
+/**
+ * 鼠标位置注入 Key
+ */
+export const FLOW_MOUSE_POSITION_KEY: InjectionKey<Ref<FlowMousePosition>> = Symbol('flow-mouse-position')
 
 // 定义16个固定连接点位置
 export const FLOW_HANDLES: FlowHandle[] = [

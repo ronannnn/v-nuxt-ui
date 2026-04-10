@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
 import { Handle } from '@vue-flow/core'
-import { FLOW_HANDLES } from '#v/constants'
+import { FLOW_HANDLES, FLOW_MOUSE_POSITION_KEY } from '#v/constants'
 
 const props = defineProps<{
   data: any
@@ -10,8 +10,12 @@ const props = defineProps<{
 }>()
 
 const nodeRef = ref<HTMLElement | null>(null)
-const mousePosition = ref({ x: 0, y: 0 })
 const PROXIMITY_THRESHOLD = 50 // 鼠标距离节点的阈值（像素）
+
+// 优先使用父组件注入的鼠标位置（避免每个节点都添加独立的 mousemove 监听）
+const injectedMousePosition = inject(FLOW_MOUSE_POSITION_KEY, null)
+const localMousePosition = ref({ x: 0, y: 0 })
+const mousePosition = computed(() => injectedMousePosition?.value ?? localMousePosition.value)
 
 // 根据选中状态设置边框颜色
 const borderColor = computed(() =>
@@ -39,17 +43,21 @@ const isHovered = computed(() => props.hoveredNodeId === String(props.data.id))
 // 显示 handle：hover 或靠近
 const showHandles = computed(() => isHovered.value || isNearby.value)
 
-// 监听全局鼠标移动
+// 仅在没有注入鼠标位置时，使用本地监听作为降级方案
 const handleGlobalMouseMove = (e: MouseEvent) => {
-  mousePosition.value = { x: e.clientX, y: e.clientY }
+  localMousePosition.value = { x: e.clientX, y: e.clientY }
 }
 
 onMounted(() => {
-  window.addEventListener('mousemove', handleGlobalMouseMove)
+  if (!injectedMousePosition) {
+    window.addEventListener('mousemove', handleGlobalMouseMove)
+  }
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('mousemove', handleGlobalMouseMove)
+  if (!injectedMousePosition) {
+    window.removeEventListener('mousemove', handleGlobalMouseMove)
+  }
 })
 </script>
 

@@ -64,6 +64,7 @@ export default defineNuxtModule<ModuleOptions>({
       'dayjs/plugin/timezone',
       'defu',
       '@vue-flow/core',
+      '@vue-flow/background',
       'maska/vue',
       'sql-formatter'
     )

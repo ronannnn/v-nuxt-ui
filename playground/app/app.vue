@@ -32,6 +32,10 @@ setGlobalSidebarMenus({
     icon: 'i-lucide-settings-2',
     to: '/examples/table-user-settings'
   }, {
+    label: '流程图',
+    icon: 'i-lucide-workflow',
+    to: '/examples/flow'
+  }, {
     label: '登录界面',
     icon: 'i-lucide-compass',
     to: '/login/pwd'
