@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { useFlowStyles } from '#v/composables/flow/useFlowStyles'
 import { EdgeLabelRenderer, getSmoothStepPath, BaseEdge } from '@vue-flow/core'
 import type { EdgeProps } from '@vue-flow/core'
@@ -8,30 +8,51 @@ const props = defineProps<EdgeProps>()
 
 const path = computed(() => getSmoothStepPath(props))
 
-// 使用全局样式配置
 const flowStyles = useFlowStyles()
 const { edgeMarkerStart, edgeMarkerEnd } = flowStyles
 
-// 自定义 marker ID - 只有在全局设置启用时才显示
 const customMarkerEnd = computed(() => edgeMarkerEnd.value ? `url(#custom-arrow-end-${props.id})` : undefined)
 const customMarkerStart = computed(() => edgeMarkerStart.value ? `url(#custom-arrow-start-${props.id})` : undefined)
 
-// 根据选中状态设置颜色
 const strokeColor = computed(() =>
   props.selected ? 'var(--ui-primary)' : 'var(--ui-text-dimmed)'
 )
 
-// 合并样式，添加颜色
 const edgeStyle = computed(() => ({
   ...props.style,
   stroke: strokeColor.value
 }))
+
+// Label editing state
+const editingLabel = ref(false)
+const tempLabel = ref('')
+const inputRef = ref<HTMLInputElement | null>(null)
+
+const startEditing = () => {
+  editingLabel.value = true
+  tempLabel.value = typeof props.label === 'string' ? props.label : ''
+  nextTick(() => {
+    inputRef.value?.focus()
+    inputRef.value?.select()
+  })
+}
+
+const saveLabel = () => {
+  if (!editingLabel.value) return
+  editingLabel.value = false
+  const newLabel = tempLabel.value.trim()
+  // @ts-expect-error data is dynamic
+  props.data?.onUpdateLabel?.(newLabel)
+}
+
+const cancelEditing = () => {
+  editingLabel.value = false
+}
 </script>
 
 <template>
   <svg style="position: absolute; width: 0; height: 0">
     <defs>
-      <!-- 自定义箭头 - 终点 -->
       <marker
         :id="`custom-arrow-end-${id}`"
         viewBox="-4 -4 14 18"
@@ -46,8 +67,6 @@ const edgeStyle = computed(() => ({
           :fill="strokeColor"
         />
       </marker>
-
-      <!-- 自定义箭头 - 起点 -->
       <marker
         :id="`custom-arrow-start-${id}`"
         viewBox="0 -4 14 18"
@@ -72,19 +91,40 @@ const edgeStyle = computed(() => ({
     :marker-end="customMarkerEnd"
     :marker-start="customMarkerStart"
   />
+
   <EdgeLabelRenderer>
     <div
-      v-if="label"
       :style="{
         position: 'absolute',
         transform: `translate(-50%, -50%) translate(${path[1]}px,${path[2]}px)`,
         pointerEvents: 'all'
       }"
       class="nodrag nopan"
+      @dblclick.stop="startEditing"
     >
-      <div class="bg-background border border-default rounded px-2 py-1 text-xs shadow-sm">
+      <!-- Editing mode -->
+      <input
+        v-if="editingLabel"
+        ref="inputRef"
+        v-model="tempLabel"
+        class="bg-background border border-default rounded px-2 py-1 text-xs outline-none"
+        style="min-width: 40px; width: auto;"
+        @keydown.enter="saveLabel"
+        @keydown.escape="cancelEditing"
+        @blur="saveLabel"
+      />
+      <!-- Display mode: show label or invisible placeholder for no-label edges -->
+      <div
+        v-else-if="label"
+        class="bg-background border border-default rounded px-2 py-1 text-xs shadow-sm"
+      >
         {{ label }}
       </div>
+      <!-- Invisible placeholder for edges without label -->
+      <div
+        v-else
+        class="w-6 h-4 opacity-0 hover:opacity-30 hover:bg-muted rounded transition-opacity"
+      />
     </div>
   </EdgeLabelRenderer>
 </template>

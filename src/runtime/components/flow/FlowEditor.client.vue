@@ -62,7 +62,9 @@ const {
   createEdge,
   updateNodePosition,
   updateNodeDimensions,
-  createNode
+  createNode,
+  updateEdgeLabel,
+  syncEdges
 } = flowLogic
 
 // 样式设置
@@ -133,6 +135,13 @@ watchEffect(() => {
     edge.markerStart = edgeMarkerStart.value ? MarkerType.Arrow : undefined
     edge.markerEnd = edgeMarkerEnd.value ? MarkerType.Arrow : undefined
   })
+})
+
+// 同步边的事件处理器
+watchEffect(() => {
+  flowLogic.syncEdges(edgeId => ({
+    onUpdateLabel: (newLabel: string) => updateEdgeLabel(edgeId, newLabel)
+  }))
 })
 
 // 检查是否为删除键

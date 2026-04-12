@@ -20,6 +20,8 @@ export interface UseFlowReturn {
   updateNode: (updatedNode: FlowNode) => Promise<void>
   createNode: () => void
   syncNodes: (createHandlers: (nodeId: string) => Record<string, any>) => void
+  updateEdgeLabel: (edgeId: string, label: string) => void
+  syncEdges: (createHandlers: (edgeId: string) => Record<string, any>) => void
 }
 
 const GRID_SIZE = 20
@@ -148,6 +150,15 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     }
   }
 
+  // 更新边标签
+  const updateEdgeLabel = (edgeId: string, label: string) => {
+    const edge = edges.value.find(e => e.id === edgeId)
+    if (edge) {
+      edge.label = label || undefined
+      emitUpdate()
+    }
+  }
+
   // 更新节点数据
   const updateNode = async (updatedNode: FlowNode) => {
     const index = nodes.value.findIndex(n => n.id === String(updatedNode.id))
@@ -191,6 +202,15 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     })
   }
 
+  // 同步边数据（添加事件处理器）
+  const syncEdges = (createHandlers: (edgeId: string) => Record<string, any>) => {
+    edges.value.forEach((edge) => {
+      const handlers = createHandlers(edge.id)
+      if (!edge.data) edge.data = {}
+      Object.assign(edge.data, handlers)
+    })
+  }
+
   return {
     nodes,
     edges,
@@ -202,6 +222,8 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     updateNodeDimensions,
     updateNode,
     createNode,
-    syncNodes
+    syncNodes,
+    updateEdgeLabel,
+    syncEdges
   }
 }
