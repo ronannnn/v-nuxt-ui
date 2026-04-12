@@ -268,7 +268,11 @@ const isValidConnection = () => true
     />
 
     <template #node-custom="nodeProps">
-      <FlowNode v-bind="nodeProps" />
+      <FlowNode v-bind="nodeProps">
+        <template v-if="$slots.node" #default="{ data }">
+          <slot name="node" :data="data" />
+        </template>
+      </FlowNode>
     </template>
 
     <template #edge-custom="edgeProps">

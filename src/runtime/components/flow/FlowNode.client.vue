@@ -103,7 +103,9 @@ onBeforeUnmount(() => {
     />
 
     <div class="flex items-center justify-center gap-2 w-full">
-      <span class="font-medium">{{ data.name }}</span>
+      <slot :data="data">
+        <span class="font-medium">{{ data.name }}</span>
+      </slot>
     </div>
 
     <!-- Resize handles (12px hit area for better sensitivity) -->
