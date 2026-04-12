@@ -28,6 +28,8 @@ export interface FlowEdge {
  * Flow 数据模型
  */
 export interface Flow {
+  id?: number | string
+  name?: string
   nodes?: FlowNode[]
   edges?: FlowEdge[]
 }

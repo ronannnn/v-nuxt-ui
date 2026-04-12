@@ -8,10 +8,10 @@ definePageMeta({
 // 示例初始数据
 const flowData = ref<Flow>({
   nodes: [
-    { id: 1, name: '开始', x: 100, y: 100, width: 128, height: 40 },
-    { id: 2, name: '处理', x: 360, y: 100, width: 128, height: 40 },
-    { id: 3, name: '审核', x: 360, y: 260, width: 128, height: 40 },
-    { id: 4, name: '结束', x: 620, y: 180, width: 128, height: 40 }
+    { id: 1, name: '开始', x: 100, y: 100, width: 120, height: 40 },
+    { id: 2, name: '处理', x: 360, y: 100, width: 120, height: 40 },
+    { id: 3, name: '审核', x: 360, y: 260, width: 120, height: 40 },
+    { id: 4, name: '结束', x: 620, y: 180, width: 120, height: 40 }
   ],
   edges: [
     { id: 'e1-2', source: '1', target: '2', sourceHandle: 'r2', targetHandle: 'l2' },

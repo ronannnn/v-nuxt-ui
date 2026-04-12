@@ -8,8 +8,8 @@ import FlowNode from './FlowNode.client.vue'
 import FlowEdge from './FlowEdge.client.vue'
 import FlowToolbar from './FlowToolbar.vue'
 import FlowStats from './FlowStats.vue'
+import type { ResizeEdge } from '#v/composables'
 import { useFlow, useFlowResize, useFlowStyles } from '#v/composables'
-import type { ResizeEdge } from '../../../composables/flow/useFlowResize'
 
 const props = withDefaults(defineProps<{
   /** Flow 数据模型 (v-model) */
@@ -63,8 +63,7 @@ const {
   updateNodePosition,
   updateNodeDimensions,
   createNode,
-  updateEdgeLabel,
-  syncEdges
+  updateEdgeLabel
 } = flowLogic
 
 // 样式设置
@@ -81,7 +80,7 @@ const {
 } = flowStyles
 
 // VueFlow 实例
-const { onConnect, onNodeDragStop, onEdgeUpdateEnd, getSelectedNodes, getSelectedEdges, getViewport } = useVueFlow()
+const { onConnect, onNodeDragStop, onEdgeUpdate, getSelectedNodes, getSelectedEdges, getViewport } = useVueFlow()
 
 // Resize 功能
 const handleResizeEnd = (nodeId: string, dimensions: UseFlowResizeDimensions) => {
@@ -124,7 +123,7 @@ watchEffect(() => {
       if (node) {
         startResize(event, nodeId, node, edge)
       }
-    },
+    }
   }))
 })
 
@@ -198,8 +197,8 @@ onConnect(async (params) => {
   await createEdge(params)
 })
 
-// Edge reconnect：拖拽边端点到新 handle，拖到空白处自动回弹
-onEdgeUpdateEnd(({ edge, connection }) => {
+// Edge reconnect：拖拽边端点到新 handle 时触发（onEdgeUpdate 提供 connection）
+onEdgeUpdate(({ edge, connection }) => {
   deleteEdge(edge.id)
   if (connection.source && connection.target) {
     createEdge(connection)

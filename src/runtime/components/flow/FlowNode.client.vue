@@ -103,44 +103,44 @@ onBeforeUnmount(() => {
       <span class="text-sm font-medium">{{ data.name }}</span>
     </div>
 
-    <!-- Resize handles -->
+    <!-- Resize handles (12px hit area for better sensitivity) -->
     <div
-      class="absolute top-0 left-[8px] right-[8px] h-[8px] cursor-ns-resize nodrag"
+      class="absolute top-[-4px] left-[12px] right-[12px] h-[12px] cursor-ns-resize nodrag"
       style="z-index: 10;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'top')"
     />
     <div
-      class="absolute bottom-0 left-[8px] right-[8px] h-[8px] cursor-ns-resize nodrag"
+      class="absolute bottom-[-4px] left-[12px] right-[12px] h-[12px] cursor-ns-resize nodrag"
       style="z-index: 10;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'bottom')"
     />
     <div
-      class="absolute left-0 top-[8px] bottom-[8px] w-[8px] cursor-ew-resize nodrag"
+      class="absolute left-[-4px] top-[12px] bottom-[12px] w-[12px] cursor-ew-resize nodrag"
       style="z-index: 10;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'left')"
     />
     <div
-      class="absolute right-0 top-[8px] bottom-[8px] w-[8px] cursor-ew-resize nodrag"
+      class="absolute right-[-4px] top-[12px] bottom-[12px] w-[12px] cursor-ew-resize nodrag"
       style="z-index: 10;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'right')"
     />
     <div
-      class="absolute top-0 left-0 w-[8px] h-[8px] cursor-nwse-resize nodrag"
+      class="absolute top-[-4px] left-[-4px] w-[12px] h-[12px] cursor-nwse-resize nodrag"
       style="z-index: 11;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'top-left')"
     />
     <div
-      class="absolute top-0 right-0 w-[8px] h-[8px] cursor-nesw-resize nodrag"
+      class="absolute top-[-4px] right-[-4px] w-[12px] h-[12px] cursor-nesw-resize nodrag"
       style="z-index: 11;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'top-right')"
     />
     <div
-      class="absolute bottom-0 left-0 w-[8px] h-[8px] cursor-nesw-resize nodrag"
+      class="absolute bottom-[-4px] left-[-4px] w-[12px] h-[12px] cursor-nesw-resize nodrag"
       style="z-index: 11;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'bottom-left')"
     />
     <div
-      class="absolute bottom-0 right-0 w-[8px] h-[8px] cursor-nwse-resize nodrag"
+      class="absolute bottom-[-4px] right-[-4px] w-[12px] h-[12px] cursor-nwse-resize nodrag"
       style="z-index: 11;"
       @mousedown.stop.prevent="data.onResizeStart?.($event, 'bottom-right')"
     />
