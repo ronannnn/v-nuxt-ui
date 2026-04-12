@@ -81,7 +81,7 @@ const {
 } = flowStyles
 
 // VueFlow 实例
-const { onConnect, onNodeDragStop, getSelectedNodes, getSelectedEdges, getViewport } = useVueFlow()
+const { onConnect, onNodeDragStop, onEdgeUpdateEnd, getSelectedNodes, getSelectedEdges, getViewport } = useVueFlow()
 
 // Resize 功能
 const handleResizeEnd = (nodeId: string, dimensions: UseFlowResizeDimensions) => {
@@ -198,6 +198,14 @@ onConnect(async (params) => {
   await createEdge(params)
 })
 
+// Edge reconnect：拖拽边端点到新 handle，拖到空白处自动回弹
+onEdgeUpdateEnd(({ edge, connection }) => {
+  deleteEdge(edge.id)
+  if (connection.source && connection.target) {
+    createEdge(connection)
+  }
+})
+
 // 边的默认样式配置
 const defaultEdgeOptions = computed(() => ({
   style: {
@@ -222,6 +230,7 @@ const isValidConnection = () => true
     :snap-grid="[GRID_SIZE, GRID_SIZE]"
     :default-edge-options="defaultEdgeOptions"
     :is-valid-connection="isValidConnection"
+    :edges-updatable="true"
   >
     <Background
       v-if="showBackground"
