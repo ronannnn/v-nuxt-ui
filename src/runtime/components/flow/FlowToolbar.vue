@@ -1,15 +1,23 @@
 <script setup lang="ts">
 import ButtonTheme from '#v/components/button/Theme.vue'
+import { FLOW_EDGE_STROKE_TYPES, FLOW_EDGE_PATH_TYPES } from '#v/constants'
+import type { FlowEdgeStrokeType, FlowEdgePathType } from '#v/constants'
 
 defineProps<{
   onAddNode?: () => void
   edgeStrokeWidth?: number
+  edgeStrokeType?: FlowEdgeStrokeType
+  edgePathType?: FlowEdgePathType
   edgeMarkerStart?: boolean
   edgeMarkerEnd?: boolean
+  edgeAnimated?: boolean
   nodeBorderWidth?: number
   onEdgeStrokeWidthChange?: (width: number) => void
+  onEdgeStrokeTypeChange?: (type: FlowEdgeStrokeType) => void
+  onEdgePathTypeChange?: (type: FlowEdgePathType) => void
   onToggleEdgeMarkerStart?: () => void
   onToggleEdgeMarkerEnd?: () => void
+  onToggleEdgeAnimated?: () => void
   onNodeBorderWidthChange?: (width: number) => void
 }>()
 </script>
@@ -63,6 +71,66 @@ defineProps<{
 
         <fieldset>
           <legend class="text-[11px] leading-none font-semibold mb-2">
+            连接线类型
+          </legend>
+
+          <div class="grid grid-cols-4 gap-2 -mx-2">
+            <ButtonTheme
+              v-for="opt in FLOW_EDGE_STROKE_TYPES"
+              :key="opt.type"
+              :label="opt.label"
+              :selected="edgeStrokeType === opt.type"
+              class="justify-center min-w-10"
+              @click="onEdgeStrokeTypeChange?.(opt.type)"
+            >
+              <template #leading>
+                <svg width="20" height="10" class="text-current">
+                  <line
+                    x1="0" y1="5" x2="20" y2="5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    :stroke-dasharray="opt.dasharray || 'none'"
+                  />
+                </svg>
+              </template>
+            </ButtonTheme>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
+            连接线路径
+          </legend>
+
+          <div class="grid grid-cols-4 gap-2 -mx-2">
+            <ButtonTheme
+              v-for="opt in FLOW_EDGE_PATH_TYPES"
+              :key="opt.type"
+              :label="opt.label"
+              :selected="edgePathType === opt.type"
+              class="justify-center min-w-10"
+              @click="onEdgePathTypeChange?.(opt.type)"
+            >
+              <template #leading>
+                <svg v-if="opt.type === 'smoothstep'" width="20" height="14" class="text-current">
+                  <path d="M 0 12 L 6 12 Q 10 12 10 7 Q 10 2 14 2 L 20 2" fill="none" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <svg v-else-if="opt.type === 'bezier'" width="20" height="14" class="text-current">
+                  <path d="M 0 12 C 10 12, 10 2, 20 2" fill="none" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <svg v-else-if="opt.type === 'step'" width="20" height="14" class="text-current">
+                  <path d="M 0 12 L 10 12 L 10 2 L 20 2" fill="none" stroke="currentColor" stroke-width="2" />
+                </svg>
+                <svg v-else-if="opt.type === 'straight'" width="20" height="14" class="text-current">
+                  <line x1="0" y1="12" x2="20" y2="2" stroke="currentColor" stroke-width="2" />
+                </svg>
+              </template>
+            </ButtonTheme>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
             连接线箭头
           </legend>
 
@@ -78,6 +146,21 @@ defineProps<{
               :icon="edgeMarkerEnd ? 'i-lucide-arrow-right' : 'i-lucide-minus'"
               :selected="edgeMarkerEnd"
               @click="onToggleEdgeMarkerEnd?.()"
+            />
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
+            连接线动画
+          </legend>
+
+          <div class="grid grid-cols-2 gap-2 -mx-2">
+            <ButtonTheme
+              label="流动"
+              icon="i-lucide-activity"
+              :selected="edgeAnimated"
+              @click="onToggleEdgeAnimated?.()"
             />
           </div>
         </fieldset>

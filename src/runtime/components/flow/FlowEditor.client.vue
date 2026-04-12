@@ -3,7 +3,7 @@ import { ref, computed, provide, watchEffect, onMounted, onBeforeUnmount } from 
 import { VueFlow, useVueFlow, Panel, MarkerType } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import type { Flow, FlowMousePosition, UseFlowResizeDimensions, FlowNode as FlowNodeType } from '#v/types'
-import { FLOW_MOUSE_POSITION_KEY } from '#v/constants'
+import { FLOW_MOUSE_POSITION_KEY, FLOW_EDGE_STROKE_TYPES } from '#v/constants'
 import FlowNode from './FlowNode.client.vue'
 import FlowEdge from './FlowEdge.client.vue'
 import FlowToolbar from './FlowToolbar.vue'
@@ -72,10 +72,16 @@ const {
   edgeStrokeWidth,
   edgeMarkerStart,
   edgeMarkerEnd,
+  edgeAnimated,
+  edgeStrokeType,
+  edgePathType,
   nodeBorderWidth,
   setEdgeStrokeWidth,
   toggleEdgeMarkerStart,
   toggleEdgeMarkerEnd,
+  toggleEdgeAnimated,
+  setEdgeStrokeType,
+  setEdgePathType,
   setNodeBorderWidth
 } = flowStyles
 
@@ -129,10 +135,15 @@ watchEffect(() => {
 
 // 同步边的样式（在初始化和样式变化时）
 watchEffect(() => {
+  const dasharray = FLOW_EDGE_STROKE_TYPES.find(t => t.type === edgeStrokeType.value)?.dasharray || ''
   edges.value.forEach((edge) => {
-    edge.style = { strokeWidth: edgeStrokeWidth.value }
+    edge.style = {
+      strokeWidth: edgeStrokeWidth.value,
+      ...(dasharray ? { strokeDasharray: dasharray } : {})
+    }
     edge.markerStart = edgeMarkerStart.value ? MarkerType.Arrow : undefined
     edge.markerEnd = edgeMarkerEnd.value ? MarkerType.Arrow : undefined
+    edge.animated = edgeAnimated.value
   })
 })
 
@@ -206,13 +217,18 @@ onEdgeUpdate(({ edge, connection }) => {
 })
 
 // 边的默认样式配置
-const defaultEdgeOptions = computed(() => ({
-  style: {
-    strokeWidth: edgeStrokeWidth.value
-  },
-  markerStart: edgeMarkerStart.value ? MarkerType.Arrow : undefined,
-  markerEnd: edgeMarkerEnd.value ? MarkerType.Arrow : undefined
-}))
+const defaultEdgeOptions = computed(() => {
+  const dasharray = FLOW_EDGE_STROKE_TYPES.find(t => t.type === edgeStrokeType.value)?.dasharray || ''
+  return {
+    style: {
+      strokeWidth: edgeStrokeWidth.value,
+      ...(dasharray ? { strokeDasharray: dasharray } : {})
+    },
+    markerStart: edgeMarkerStart.value ? MarkerType.Arrow : undefined,
+    markerEnd: edgeMarkerEnd.value ? MarkerType.Arrow : undefined,
+    animated: edgeAnimated.value
+  }
+})
 
 // 允许任意连接
 const isValidConnection = () => true
@@ -250,12 +266,18 @@ const isValidConnection = () => true
       <FlowToolbar
         :on-add-node="createNode"
         :edge-stroke-width="edgeStrokeWidth"
+        :edge-stroke-type="edgeStrokeType"
+        :edge-path-type="edgePathType"
         :edge-marker-start="edgeMarkerStart"
         :edge-marker-end="edgeMarkerEnd"
+        :edge-animated="edgeAnimated"
         :node-border-width="nodeBorderWidth"
         :on-edge-stroke-width-change="setEdgeStrokeWidth"
+        :on-edge-stroke-type-change="setEdgeStrokeType"
+        :on-edge-path-type-change="setEdgePathType"
         :on-toggle-edge-marker-start="toggleEdgeMarkerStart"
         :on-toggle-edge-marker-end="toggleEdgeMarkerEnd"
+        :on-toggle-edge-animated="toggleEdgeAnimated"
         :on-node-border-width-change="setNodeBorderWidth"
       />
     </Panel>

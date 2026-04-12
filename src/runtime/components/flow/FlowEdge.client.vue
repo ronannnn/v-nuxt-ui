@@ -1,15 +1,27 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { useFlowStyles } from '#v/composables/flow/useFlowStyles'
-import { EdgeLabelRenderer, getSmoothStepPath, BaseEdge } from '@vue-flow/core'
+import { EdgeLabelRenderer, getSmoothStepPath, getBezierPath, getStraightPath, BaseEdge } from '@vue-flow/core'
 import type { EdgeProps } from '@vue-flow/core'
 
 const props = defineProps<EdgeProps>()
 
-const path = computed(() => getSmoothStepPath(props))
-
 const flowStyles = useFlowStyles()
-const { edgeMarkerStart, edgeMarkerEnd } = flowStyles
+const { edgeMarkerStart, edgeMarkerEnd, edgePathType } = flowStyles
+
+const path = computed(() => {
+  switch (edgePathType.value) {
+    case 'bezier':
+      return getBezierPath(props)
+    case 'step':
+      return getSmoothStepPath({ ...props, borderRadius: 0 })
+    case 'straight':
+      return getStraightPath(props)
+    case 'smoothstep':
+    default:
+      return getSmoothStepPath(props)
+  }
+})
 
 const customMarkerEnd = computed(() => edgeMarkerEnd.value ? `url(#custom-arrow-end-${props.id})` : undefined)
 const customMarkerStart = computed(() => edgeMarkerStart.value ? `url(#custom-arrow-start-${props.id})` : undefined)

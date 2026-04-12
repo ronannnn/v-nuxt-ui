@@ -72,3 +72,38 @@ export const FLOW_HANDLES_SMALL: FlowHandle[] = FLOW_HANDLES.filter(h =>
 export const FLOW_HANDLES_MEDIUM: FlowHandle[] = FLOW_HANDLES.filter(h =>
   ['t2', 'r2', 'b2', 'l2', 'tl', 'tr', 'bl', 'br'].includes(h.id)
 )
+
+/**
+ * 连接线线型
+ */
+export type FlowEdgeStrokeType = 'solid' | 'dashed' | 'dotted' | 'dashdot'
+
+export interface FlowEdgeStrokeOption {
+  type: FlowEdgeStrokeType
+  label: string
+  dasharray: string
+}
+
+export const FLOW_EDGE_STROKE_TYPES: FlowEdgeStrokeOption[] = [
+  { type: 'solid', label: '实线', dasharray: '' },
+  { type: 'dashed', label: '虚线', dasharray: '8 4' },
+  { type: 'dotted', label: '点线', dasharray: '2 4' },
+  { type: 'dashdot', label: '点划线', dasharray: '8 4 2 4' },
+]
+
+/**
+ * 连接线路径类型
+ */
+export type FlowEdgePathType = 'smoothstep' | 'bezier' | 'step' | 'straight'
+
+export interface FlowEdgePathOption {
+  type: FlowEdgePathType
+  label: string
+}
+
+export const FLOW_EDGE_PATH_TYPES: FlowEdgePathOption[] = [
+  { type: 'smoothstep', label: '平滑' },
+  { type: 'bezier', label: '曲线' },
+  { type: 'step', label: '直角' },
+  { type: 'straight', label: '直线' },
+]
