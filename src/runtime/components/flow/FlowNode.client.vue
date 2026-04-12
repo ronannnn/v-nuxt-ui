@@ -5,24 +5,21 @@ import { FLOW_HANDLES, FLOW_MOUSE_POSITION_KEY } from '#v/constants'
 
 const props = defineProps<{
   data: any
-  hoveredNodeId: string | null
   selected?: boolean
 }>()
 
 const nodeRef = ref<HTMLElement | null>(null)
-const PROXIMITY_THRESHOLD = 50 // 鼠标距离节点的阈值（像素）
+const isHoveredLocal = ref(false)
+const PROXIMITY_THRESHOLD = 50
 
-// 优先使用父组件注入的鼠标位置（避免每个节点都添加独立的 mousemove 监听）
 const injectedMousePosition = inject(FLOW_MOUSE_POSITION_KEY, null)
 const localMousePosition = ref({ x: 0, y: 0 })
 const mousePosition = computed(() => injectedMousePosition?.value ?? localMousePosition.value)
 
-// 根据选中状态设置边框颜色
 const borderColor = computed(() =>
   props.selected ? 'var(--ui-primary)' : 'var(--ui-border-default)'
 )
 
-// 计算鼠标是否靠近节点
 const isNearby = computed(() => {
   if (!nodeRef.value) return false
 
@@ -30,7 +27,6 @@ const isNearby = computed(() => {
   const mouseX = mousePosition.value.x
   const mouseY = mousePosition.value.y
 
-  // 计算鼠标到矩形边界的最短距离
   const dx = Math.max(rect.left - mouseX, 0, mouseX - rect.right)
   const dy = Math.max(rect.top - mouseY, 0, mouseY - rect.bottom)
   const distance = Math.sqrt(dx * dx + dy * dy)
@@ -38,12 +34,8 @@ const isNearby = computed(() => {
   return distance <= PROXIMITY_THRESHOLD
 })
 
-const isHovered = computed(() => props.hoveredNodeId === String(props.data.id))
+const showHandles = computed(() => isHoveredLocal.value || isNearby.value)
 
-// 显示 handle：hover 或靠近
-const showHandles = computed(() => isHovered.value || isNearby.value)
-
-// 仅在没有注入鼠标位置时，使用本地监听作为降级方案
 const handleGlobalMouseMove = (e: MouseEvent) => {
   localMousePosition.value = { x: e.clientX, y: e.clientY }
 }
@@ -74,12 +66,11 @@ onBeforeUnmount(() => {
       borderStyle: 'solid',
       borderColor: borderColor
     }"
-    @mouseenter="data.onMouseEnter?.()"
-    @mouseleave="data.onMouseLeave?.()"
-    @mousemove="(e) => data.onMouseMove?.(e, e.currentTarget)"
+    @mouseenter="isHoveredLocal = true"
+    @mouseleave="isHoveredLocal = false"
     @dblclick="data.onEdit?.()"
   >
-    <!-- 连接点 - 可以作为 source 或 target -->
+    <!-- Connection handles -->
     <Handle
       v-for="handle in FLOW_HANDLES"
       :id="`${handle.id}`"
@@ -101,5 +92,47 @@ onBeforeUnmount(() => {
     <div class="flex items-center justify-center gap-2 w-full">
       <span class="text-sm font-medium">{{ data.name }}</span>
     </div>
+
+    <!-- Resize handles -->
+    <div
+      class="absolute top-0 left-[8px] right-[8px] h-[8px] cursor-ns-resize nodrag"
+      style="z-index: 10;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'top')"
+    />
+    <div
+      class="absolute bottom-0 left-[8px] right-[8px] h-[8px] cursor-ns-resize nodrag"
+      style="z-index: 10;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'bottom')"
+    />
+    <div
+      class="absolute left-0 top-[8px] bottom-[8px] w-[8px] cursor-ew-resize nodrag"
+      style="z-index: 10;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'left')"
+    />
+    <div
+      class="absolute right-0 top-[8px] bottom-[8px] w-[8px] cursor-ew-resize nodrag"
+      style="z-index: 10;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'right')"
+    />
+    <div
+      class="absolute top-0 left-0 w-[8px] h-[8px] cursor-nwse-resize nodrag"
+      style="z-index: 11;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'top-left')"
+    />
+    <div
+      class="absolute top-0 right-0 w-[8px] h-[8px] cursor-nesw-resize nodrag"
+      style="z-index: 11;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'top-right')"
+    />
+    <div
+      class="absolute bottom-0 left-0 w-[8px] h-[8px] cursor-nesw-resize nodrag"
+      style="z-index: 11;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'bottom-left')"
+    />
+    <div
+      class="absolute bottom-0 right-0 w-[8px] h-[8px] cursor-nwse-resize nodrag"
+      style="z-index: 11;"
+      @mousedown.stop.prevent="data.onResizeStart?.($event, 'bottom-right')"
+    />
   </div>
 </template>

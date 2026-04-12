@@ -9,6 +9,7 @@ import FlowEdge from './FlowEdge.client.vue'
 import FlowToolbar from './FlowToolbar.vue'
 import FlowStats from './FlowStats.vue'
 import { useFlow, useFlowResize, useFlowStyles } from '#v/composables'
+import type { ResizeEdge } from '../../../composables/flow/useFlowResize'
 
 const props = withDefaults(defineProps<{
   /** Flow 数据模型 (v-model) */
@@ -93,12 +94,9 @@ const resizeLogic = useFlowResize({
 })
 
 const {
-  hoveredNodeId,
-  hoveredNodeEdge,
   startResize,
   handleMouseMove,
-  handleMouseUp,
-  createNodeHandlers
+  handleMouseUp
 } = resizeLogic
 
 // 共享鼠标位置（通过 provide/inject 传递给子组件，避免每个 FlowNode 都添加独立的 mousemove 监听）
@@ -119,7 +117,12 @@ watchEffect(() => {
     onEdit: () => handleEditNode(nodeId),
     onDelete: () => deleteNode(nodeId),
     borderWidth: nodeBorderWidth.value,
-    ...createNodeHandlers(nodeId)
+    onResizeStart: (event: MouseEvent, edge: ResizeEdge) => {
+      const node = props.modelValue?.nodes?.find(n => String(n.id) === nodeId)
+      if (node) {
+        startResize(event, nodeId, node, edge)
+      }
+    },
   }))
 })
 
@@ -135,12 +138,6 @@ watchEffect(() => {
 // 检查是否为删除键
 const isDeleteKey = (event: KeyboardEvent) => {
   return event.key === 'Delete' || event.key === 'Backspace' || event.code === 'Backspace'
-}
-
-// 检查是否点击在 Handle 上
-const isClickOnHandle = (target: HTMLElement) => {
-  return target.classList.contains('vue-flow__handle')
-    || target.closest('.vue-flow__handle') !== null
 }
 
 // 键盘事件处理
@@ -164,21 +161,6 @@ const handleKeyDown = async (event: KeyboardEvent) => {
 
 // 生命周期钩子
 onMounted(() => {
-  const handleGlobalMouseDown = (event: MouseEvent) => {
-    const target = event.target as HTMLElement
-
-    // 如果点击在 Handle 上，不处理 resize
-    if (isClickOnHandle(target)) return
-
-    // 检查是否有 hover 的节点和边缘
-    if (hoveredNodeId.value && hoveredNodeEdge.value) {
-      const node = props.modelValue?.nodes?.find(n => String(n.id) === hoveredNodeId.value)
-      if (node) {
-        startResize(event, hoveredNodeId.value, node, hoveredNodeEdge.value)
-      }
-    }
-  }
-
   // 合并鼠标移动处理：更新共享位置 + 处理 resize 逻辑
   const handleGlobalMouseMove = (event: MouseEvent) => {
     mousePosition.value = { x: event.clientX, y: event.clientY }
@@ -186,13 +168,11 @@ onMounted(() => {
   }
 
   document.addEventListener('keydown', handleKeyDown, true)
-  window.addEventListener('mousedown', handleGlobalMouseDown, true)
   window.addEventListener('mousemove', handleGlobalMouseMove)
   window.addEventListener('mouseup', handleMouseUp)
 
   onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyDown, true)
-    window.removeEventListener('mousedown', handleGlobalMouseDown, true)
     window.removeEventListener('mousemove', handleGlobalMouseMove)
     window.removeEventListener('mouseup', handleMouseUp)
   })
@@ -242,7 +222,7 @@ const isValidConnection = () => true
     />
 
     <template #node-custom="nodeProps">
-      <FlowNode v-bind="nodeProps" :hovered-node-id="hoveredNodeId" />
+      <FlowNode v-bind="nodeProps" />
     </template>
 
     <template #edge-custom="edgeProps">
