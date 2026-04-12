@@ -175,7 +175,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
       data: {
         id,
         name: `节点 ${nodes.value.length + 1}`,
-        width: 128,
+        width: 120,
         height: 40
       }
     }

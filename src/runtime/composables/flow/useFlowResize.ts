@@ -95,7 +95,7 @@ export function useFlowResize(options: UseFlowResizeOptions) {
     resizeEdge.value = edge
     resizeStartX.value = event.clientX
     resizeStartY.value = event.clientY
-    resizeStartWidth.value = node.width ?? 128
+    resizeStartWidth.value = node.width ?? 120
     resizeStartHeight.value = node.height ?? 40
     resizeStartNodeX.value = node.x ?? 0
     resizeStartNodeY.value = node.y ?? 0
@@ -125,20 +125,20 @@ export function useFlowResize(options: UseFlowResizeOptions) {
 
       // 水平调整
       if (edge.includes('right')) {
-        newWidth = Math.max(64, resizeStartWidth.value + dx)
+        newWidth = Math.max(60, resizeStartWidth.value + dx)
       }
       if (edge.includes('left')) {
-        const deltaWidth = Math.min(dx, resizeStartWidth.value - 64)
+        const deltaWidth = Math.min(dx, resizeStartWidth.value - 60)
         newWidth = resizeStartWidth.value - deltaWidth
         newX = resizeStartNodeX.value + deltaWidth
       }
 
       // 垂直调整
       if (edge.includes('bottom')) {
-        newHeight = Math.max(32, resizeStartHeight.value + dy)
+        newHeight = Math.max(40, resizeStartHeight.value + dy)
       }
       if (edge === 'top' || edge === 'top-left' || edge === 'top-right') {
-        const deltaHeight = Math.min(dy, resizeStartHeight.value - 32)
+        const deltaHeight = Math.min(dy, resizeStartHeight.value - 40)
         newHeight = resizeStartHeight.value - deltaHeight
         newY = resizeStartNodeY.value + deltaHeight
       }
@@ -161,7 +161,7 @@ export function useFlowResize(options: UseFlowResizeOptions) {
       const node = nodes.value.find(n => n.id === resizingNodeId.value)
       if (node) {
         onResizeEnd(resizingNodeId.value, {
-          width: node.data.width ?? 128,
+          width: node.data.width ?? 120,
           height: node.data.height ?? 40
         })
       }

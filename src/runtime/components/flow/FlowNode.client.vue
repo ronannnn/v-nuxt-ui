@@ -66,9 +66,10 @@ onBeforeUnmount(() => {
     ref="nodeRef"
     class="bg-background border rounded-md px-3 py-2 relative flex"
     :style="{
-      width: data.width ? `${data.width}px` : '128px',
+      boxSizing: 'border-box',
+      width: data.width ? `${data.width}px` : '120px',
       height: data.height ? `${data.height}px` : 'auto',
-      minWidth: '128px',
+      minWidth: '120px',
       borderWidth: data.borderWidth ? `${data.borderWidth}px` : '2px',
       borderStyle: 'solid',
       borderColor: borderColor
