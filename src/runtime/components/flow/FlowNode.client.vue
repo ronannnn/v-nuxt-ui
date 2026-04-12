@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
 import { Handle } from '@vue-flow/core'
-import { FLOW_HANDLES, FLOW_MOUSE_POSITION_KEY } from '#v/constants'
+import { FLOW_HANDLES, FLOW_HANDLES_SMALL, FLOW_HANDLES_MEDIUM, FLOW_HANDLE_TIER_THRESHOLDS, FLOW_MOUSE_POSITION_KEY } from '#v/constants'
 
 const props = defineProps<{
   data: any
@@ -35,6 +35,16 @@ const isNearby = computed(() => {
 })
 
 const showHandles = computed(() => isHoveredLocal.value || isNearby.value)
+
+// 根据节点尺寸动态选择 handle 层级
+const activeHandles = computed(() => {
+  const w = props.data.width ?? 120
+  const h = props.data.height ?? 40
+  const t = FLOW_HANDLE_TIER_THRESHOLDS
+  if (w < t.small.maxWidth || h < t.small.maxHeight) return FLOW_HANDLES_SMALL
+  if (w < t.medium.maxWidth || h < t.medium.maxHeight) return FLOW_HANDLES_MEDIUM
+  return FLOW_HANDLES
+})
 
 const handleGlobalMouseMove = (e: MouseEvent) => {
   localMousePosition.value = { x: e.clientX, y: e.clientY }
@@ -72,7 +82,7 @@ onBeforeUnmount(() => {
   >
     <!-- Connection handles -->
     <Handle
-      v-for="handle in FLOW_HANDLES"
+      v-for="handle in activeHandles"
       :id="`${handle.id}`"
       :key="`${handle.id}`"
       type="source"

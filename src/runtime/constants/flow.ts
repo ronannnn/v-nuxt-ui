@@ -50,3 +50,25 @@ export const FLOW_HANDLES: FlowHandle[] = [
   { id: 'l2', position: Position.Left, offsetPercent: { y: 50 } },
   { id: 'l3', position: Position.Left, offsetPercent: { y: 75 } }
 ]
+
+/**
+ * Handle 层级阈值（可配置）
+ */
+export const FLOW_HANDLE_TIER_THRESHOLDS = {
+  small: { maxWidth: 80, maxHeight: 40 },
+  medium: { maxWidth: 160, maxHeight: 80 },
+} as const
+
+/**
+ * Small 层级：每边中心各 1 个 = 4 个
+ */
+export const FLOW_HANDLES_SMALL: FlowHandle[] = FLOW_HANDLES.filter(h =>
+  ['t2', 'r2', 'b2', 'l2'].includes(h.id)
+)
+
+/**
+ * Medium 层级：4 中心 + 4 角 = 8 个
+ */
+export const FLOW_HANDLES_MEDIUM: FlowHandle[] = FLOW_HANDLES.filter(h =>
+  ['t2', 'r2', 'b2', 'l2', 'tl', 'tr', 'bl', 'br'].includes(h.id)
+)
