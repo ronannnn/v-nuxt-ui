@@ -107,3 +107,22 @@ export const FLOW_EDGE_PATH_TYPES: FlowEdgePathOption[] = [
   { type: 'step', label: '直角' },
   { type: 'straight', label: '直线' },
 ]
+
+/**
+ * 连接线颜色预设
+ */
+export interface FlowEdgeColorOption {
+  color: string // CSS color value, empty string = theme default
+  label: string
+}
+
+export const FLOW_EDGE_COLORS: FlowEdgeColorOption[] = [
+  { color: '', label: '默认' },
+  { color: '#ef4444', label: '红' },
+  { color: '#f97316', label: '橙' },
+  { color: '#eab308', label: '黄' },
+  { color: '#22c55e', label: '绿' },
+  { color: '#3b82f6', label: '蓝' },
+  { color: '#8b5cf6', label: '紫' },
+  { color: '#6b7280', label: '灰' },
+]

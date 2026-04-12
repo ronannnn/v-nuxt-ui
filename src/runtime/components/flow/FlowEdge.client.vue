@@ -7,7 +7,7 @@ import type { EdgeProps } from '@vue-flow/core'
 const props = defineProps<EdgeProps>()
 
 const flowStyles = useFlowStyles()
-const { edgeMarkerStart, edgeMarkerEnd, edgePathType } = flowStyles
+const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeColor } = flowStyles
 
 const path = computed(() => {
   switch (edgePathType.value) {
@@ -26,9 +26,10 @@ const path = computed(() => {
 const customMarkerEnd = computed(() => edgeMarkerEnd.value ? `url(#custom-arrow-end-${props.id})` : undefined)
 const customMarkerStart = computed(() => edgeMarkerStart.value ? `url(#custom-arrow-start-${props.id})` : undefined)
 
-const strokeColor = computed(() =>
-  props.selected ? 'var(--ui-primary)' : 'var(--ui-text-dimmed)'
-)
+const strokeColor = computed(() => {
+  if (props.selected) return 'var(--ui-primary)'
+  return edgeColor.value || 'var(--ui-text-dimmed)'
+})
 
 const edgeStyle = computed(() => ({
   ...props.style,

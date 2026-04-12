@@ -25,6 +25,9 @@ export function useFlowStyles() {
   // 连接线路径类型
   const edgePathType = useLocalStorage<FlowEdgePathType>(StorageKey.FLOW_EDGE_PATH_TYPE, 'smoothstep')
 
+  // 连接线颜色（空字符串 = 主题默认）
+  const edgeColor = useLocalStorage(StorageKey.FLOW_EDGE_COLOR, '')
+
   // 节点边框粗细 (1-5)
   const nodeBorderWidth = useLocalStorage(StorageKey.FLOW_NODE_BORDER_WIDTH, 2)
 
@@ -58,6 +61,11 @@ export function useFlowStyles() {
     edgePathType.value = type
   }
 
+  // 设置连接线颜色
+  const setEdgeColor = (color: string) => {
+    edgeColor.value = color
+  }
+
   // 更新节点边框粗细
   const setNodeBorderWidth = (width: number) => {
     nodeBorderWidth.value = Math.max(1, Math.min(5, width))
@@ -71,6 +79,7 @@ export function useFlowStyles() {
     edgeAnimated,
     edgeStrokeType,
     edgePathType,
+    edgeColor,
     nodeBorderWidth,
 
     // 方法
@@ -80,6 +89,7 @@ export function useFlowStyles() {
     toggleEdgeAnimated,
     setEdgeStrokeType,
     setEdgePathType,
+    setEdgeColor,
     setNodeBorderWidth
   }
 }

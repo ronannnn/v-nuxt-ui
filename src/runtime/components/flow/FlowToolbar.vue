@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ButtonTheme from '#v/components/button/Theme.vue'
-import { FLOW_EDGE_STROKE_TYPES, FLOW_EDGE_PATH_TYPES } from '#v/constants'
+import { FLOW_EDGE_STROKE_TYPES, FLOW_EDGE_PATH_TYPES, FLOW_EDGE_COLORS } from '#v/constants'
 import type { FlowEdgeStrokeType, FlowEdgePathType } from '#v/constants'
 
 defineProps<{
@@ -11,6 +11,7 @@ defineProps<{
   edgeMarkerStart?: boolean
   edgeMarkerEnd?: boolean
   edgeAnimated?: boolean
+  edgeColor?: string
   nodeBorderWidth?: number
   onEdgeStrokeWidthChange?: (width: number) => void
   onEdgeStrokeTypeChange?: (type: FlowEdgeStrokeType) => void
@@ -18,6 +19,7 @@ defineProps<{
   onToggleEdgeMarkerStart?: () => void
   onToggleEdgeMarkerEnd?: () => void
   onToggleEdgeAnimated?: () => void
+  onEdgeColorChange?: (color: string) => void
   onNodeBorderWidthChange?: (width: number) => void
 }>()
 </script>
@@ -162,6 +164,26 @@ defineProps<{
               :selected="edgeAnimated"
               @click="onToggleEdgeAnimated?.()"
             />
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
+            连接线颜色
+          </legend>
+
+          <div class="flex gap-2 -mx-2 px-2">
+            <button
+              v-for="opt in FLOW_EDGE_COLORS"
+              :key="opt.color"
+              class="w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center"
+              :class="edgeColor === opt.color ? 'border-primary ring-2 ring-primary/30 scale-110' : 'border-default hover:scale-105'"
+              :style="opt.color ? { backgroundColor: opt.color } : {}"
+              :title="opt.label"
+              @click="onEdgeColorChange?.(opt.color)"
+            >
+              <span v-if="!opt.color" class="text-[10px] text-muted">A</span>
+            </button>
           </div>
         </fieldset>
 

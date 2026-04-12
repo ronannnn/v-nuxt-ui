@@ -75,6 +75,7 @@ const {
   edgeAnimated,
   edgeStrokeType,
   edgePathType,
+  edgeColor,
   nodeBorderWidth,
   setEdgeStrokeWidth,
   toggleEdgeMarkerStart,
@@ -82,6 +83,7 @@ const {
   toggleEdgeAnimated,
   setEdgeStrokeType,
   setEdgePathType,
+  setEdgeColor,
   setNodeBorderWidth
 } = flowStyles
 
@@ -139,7 +141,8 @@ watchEffect(() => {
   edges.value.forEach((edge) => {
     edge.style = {
       strokeWidth: edgeStrokeWidth.value,
-      ...(dasharray ? { strokeDasharray: dasharray } : {})
+      ...(dasharray ? { strokeDasharray: dasharray } : {}),
+      ...(edgeColor.value ? { stroke: edgeColor.value } : {})
     }
     edge.markerStart = edgeMarkerStart.value ? MarkerType.Arrow : undefined
     edge.markerEnd = edgeMarkerEnd.value ? MarkerType.Arrow : undefined
@@ -222,7 +225,8 @@ const defaultEdgeOptions = computed(() => {
   return {
     style: {
       strokeWidth: edgeStrokeWidth.value,
-      ...(dasharray ? { strokeDasharray: dasharray } : {})
+      ...(dasharray ? { strokeDasharray: dasharray } : {}),
+      ...(edgeColor.value ? { stroke: edgeColor.value } : {})
     },
     markerStart: edgeMarkerStart.value ? MarkerType.Arrow : undefined,
     markerEnd: edgeMarkerEnd.value ? MarkerType.Arrow : undefined,
@@ -278,6 +282,8 @@ const isValidConnection = () => true
         :on-toggle-edge-marker-start="toggleEdgeMarkerStart"
         :on-toggle-edge-marker-end="toggleEdgeMarkerEnd"
         :on-toggle-edge-animated="toggleEdgeAnimated"
+        :edge-color="edgeColor"
+        :on-edge-color-change="setEdgeColor"
         :on-node-border-width-change="setNodeBorderWidth"
       />
     </Panel>
