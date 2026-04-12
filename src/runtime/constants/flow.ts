@@ -126,3 +126,17 @@ export const FLOW_EDGE_COLORS: FlowEdgeColorOption[] = [
   { color: '#8b5cf6', label: '紫' },
   { color: '#6b7280', label: '灰' },
 ]
+
+/**
+ * 节点背景颜色预设（复用连接线颜色）
+ */
+export const FLOW_NODE_COLORS: FlowEdgeColorOption[] = [
+  { color: '', label: '默认' },
+  { color: '#fef2f2', label: '红' },
+  { color: '#fff7ed', label: '橙' },
+  { color: '#fefce8', label: '黄' },
+  { color: '#f0fdf4', label: '绿' },
+  { color: '#eff6ff', label: '蓝' },
+  { color: '#f5f3ff', label: '紫' },
+  { color: '#f9fafb', label: '灰' },
+]

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ButtonTheme from '#v/components/button/Theme.vue'
-import { FLOW_EDGE_STROKE_TYPES, FLOW_EDGE_PATH_TYPES, FLOW_EDGE_COLORS } from '#v/constants'
+import { FLOW_EDGE_STROKE_TYPES, FLOW_EDGE_PATH_TYPES, FLOW_EDGE_COLORS, FLOW_NODE_COLORS } from '#v/constants'
 import type { FlowEdgeStrokeType, FlowEdgePathType } from '#v/constants'
 
 defineProps<{
@@ -13,6 +13,9 @@ defineProps<{
   edgeAnimated?: boolean
   edgeColor?: string
   nodeBorderWidth?: number
+  nodeBorderRadius?: number
+  nodeBgColor?: string
+  nodeFontSize?: number
   onEdgeStrokeWidthChange?: (width: number) => void
   onEdgeStrokeTypeChange?: (type: FlowEdgeStrokeType) => void
   onEdgePathTypeChange?: (type: FlowEdgePathType) => void
@@ -21,6 +24,9 @@ defineProps<{
   onToggleEdgeAnimated?: () => void
   onEdgeColorChange?: (color: string) => void
   onNodeBorderWidthChange?: (width: number) => void
+  onNodeBorderRadiusChange?: (radius: number) => void
+  onNodeBgColorChange?: (color: string) => void
+  onNodeFontSizeChange?: (size: number) => void
 }>()
 </script>
 
@@ -209,6 +215,62 @@ defineProps<{
                     class="w-4 h-0.5 bg-current rounded-full"
                   />
                 </div>
+              </template>
+            </ButtonTheme>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">节点圆角</legend>
+          <div class="grid grid-cols-5 gap-2 -mx-2">
+            <ButtonTheme
+              v-for="radius in [0, 4, 8, 12, 16]"
+              :key="radius"
+              :label="radius.toString()"
+              :selected="nodeBorderRadius === radius"
+              class="justify-center min-w-10"
+              @click="onNodeBorderRadiusChange?.(radius)"
+            >
+              <template #leading>
+                <div
+                  class="w-4 h-3 border-2 border-current"
+                  :style="{ borderRadius: `${radius}px` }"
+                />
+              </template>
+            </ButtonTheme>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">节点背景色</legend>
+          <div class="flex gap-2 -mx-2 px-2">
+            <button
+              v-for="opt in FLOW_NODE_COLORS"
+              :key="opt.color"
+              class="w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center"
+              :class="nodeBgColor === opt.color ? 'border-primary ring-2 ring-primary/30 scale-110' : 'border-default hover:scale-105'"
+              :style="opt.color ? { backgroundColor: opt.color } : {}"
+              :title="opt.label"
+              @click="onNodeBgColorChange?.(opt.color)"
+            >
+              <span v-if="!opt.color" class="text-[10px] text-muted">A</span>
+            </button>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">节点字号</legend>
+          <div class="grid grid-cols-5 gap-2 -mx-2">
+            <ButtonTheme
+              v-for="size in [12, 14, 16, 18, 20]"
+              :key="size"
+              :label="size.toString()"
+              :selected="nodeFontSize === size"
+              class="justify-center min-w-10"
+              @click="onNodeFontSizeChange?.(size)"
+            >
+              <template #leading>
+                <span class="font-medium" :style="{ fontSize: `${Math.max(size - 4, 10)}px` }">A</span>
               </template>
             </ButtonTheme>
           </div>

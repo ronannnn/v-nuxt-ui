@@ -11,6 +11,9 @@ export enum StorageKey {
   FLOW_NODE_BORDER_WIDTH = 'flow_node_border_width',
   FLOW_EDGE_PATH_TYPE = 'flow_edge_path_type',
   FLOW_EDGE_COLOR = 'flow_edge_color',
+  FLOW_NODE_BORDER_RADIUS = 'flow_node_border_radius',
+  FLOW_NODE_BG_COLOR = 'flow_node_bg_color',
+  FLOW_NODE_FONT_SIZE = 'flow_node_font_size',
 
   // echarts
   ECHART_ROTATE_X_AXIS_LABEL = 'echart_rotate_x_axis_label'

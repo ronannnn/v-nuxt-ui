@@ -66,7 +66,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     ref="nodeRef"
-    class="bg-background border rounded-md px-3 py-2 relative flex"
+    class="bg-background border px-3 py-2 relative flex"
     :style="{
       boxSizing: 'border-box',
       width: data.width ? `${data.width}px` : '120px',
@@ -74,7 +74,10 @@ onBeforeUnmount(() => {
       minWidth: '120px',
       borderWidth: data.borderWidth ? `${data.borderWidth}px` : '2px',
       borderStyle: 'solid',
-      borderColor: borderColor
+      borderColor: borderColor,
+      borderRadius: data.borderRadius !== undefined ? `${data.borderRadius}px` : '6px',
+      ...(data.bgColor ? { backgroundColor: data.bgColor } : {}),
+      fontSize: data.fontSize ? `${data.fontSize}px` : '14px'
     }"
     @mouseenter="isHoveredLocal = true"
     @mouseleave="isHoveredLocal = false"
@@ -100,7 +103,7 @@ onBeforeUnmount(() => {
     />
 
     <div class="flex items-center justify-center gap-2 w-full">
-      <span class="text-sm font-medium">{{ data.name }}</span>
+      <span class="font-medium">{{ data.name }}</span>
     </div>
 
     <!-- Resize handles (12px hit area for better sensitivity) -->

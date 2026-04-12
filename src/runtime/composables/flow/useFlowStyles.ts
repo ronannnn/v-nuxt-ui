@@ -31,6 +31,15 @@ export function useFlowStyles() {
   // 节点边框粗细 (1-5)
   const nodeBorderWidth = useLocalStorage(StorageKey.FLOW_NODE_BORDER_WIDTH, 2)
 
+  // 节点圆角 (0-16, step 4)
+  const nodeBorderRadius = useLocalStorage(StorageKey.FLOW_NODE_BORDER_RADIUS, 6)
+
+  // 节点背景色（空字符串 = 主题默认）
+  const nodeBgColor = useLocalStorage(StorageKey.FLOW_NODE_BG_COLOR, '')
+
+  // 节点字体大小 (12-20, step 2)
+  const nodeFontSize = useLocalStorage(StorageKey.FLOW_NODE_FONT_SIZE, 14)
+
   // 更新连接线粗细
   const setEdgeStrokeWidth = (width: number) => {
     edgeStrokeWidth.value = Math.max(1, Math.min(5, width))
@@ -71,6 +80,21 @@ export function useFlowStyles() {
     nodeBorderWidth.value = Math.max(1, Math.min(5, width))
   }
 
+  // 设置节点圆角
+  const setNodeBorderRadius = (radius: number) => {
+    nodeBorderRadius.value = Math.max(0, Math.min(16, radius))
+  }
+
+  // 设置节点背景色
+  const setNodeBgColor = (color: string) => {
+    nodeBgColor.value = color
+  }
+
+  // 设置节点字体大小
+  const setNodeFontSize = (size: number) => {
+    nodeFontSize.value = Math.max(12, Math.min(20, size))
+  }
+
   return {
     // 状态
     edgeStrokeWidth,
@@ -81,6 +105,9 @@ export function useFlowStyles() {
     edgePathType,
     edgeColor,
     nodeBorderWidth,
+    nodeBorderRadius,
+    nodeBgColor,
+    nodeFontSize,
 
     // 方法
     setEdgeStrokeWidth,
@@ -90,6 +117,9 @@ export function useFlowStyles() {
     setEdgeStrokeType,
     setEdgePathType,
     setEdgeColor,
-    setNodeBorderWidth
+    setNodeBorderWidth,
+    setNodeBorderRadius,
+    setNodeBgColor,
+    setNodeFontSize
   }
 }

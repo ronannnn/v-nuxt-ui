@@ -77,6 +77,9 @@ const {
   edgePathType,
   edgeColor,
   nodeBorderWidth,
+  nodeBorderRadius,
+  nodeBgColor,
+  nodeFontSize,
   setEdgeStrokeWidth,
   toggleEdgeMarkerStart,
   toggleEdgeMarkerEnd,
@@ -84,7 +87,10 @@ const {
   setEdgeStrokeType,
   setEdgePathType,
   setEdgeColor,
-  setNodeBorderWidth
+  setNodeBorderWidth,
+  setNodeBorderRadius,
+  setNodeBgColor,
+  setNodeFontSize
 } = flowStyles
 
 // VueFlow 实例
@@ -126,6 +132,9 @@ watchEffect(() => {
     onEdit: () => handleEditNode(nodeId),
     onDelete: () => deleteNode(nodeId),
     borderWidth: nodeBorderWidth.value,
+    borderRadius: nodeBorderRadius.value,
+    bgColor: nodeBgColor.value,
+    fontSize: nodeFontSize.value,
     onResizeStart: (event: MouseEvent, edge: ResizeEdge) => {
       const node = props.modelValue?.nodes?.find(n => String(n.id) === nodeId)
       if (node) {
@@ -285,6 +294,12 @@ const isValidConnection = () => true
         :edge-color="edgeColor"
         :on-edge-color-change="setEdgeColor"
         :on-node-border-width-change="setNodeBorderWidth"
+        :node-border-radius="nodeBorderRadius"
+        :node-bg-color="nodeBgColor"
+        :node-font-size="nodeFontSize"
+        :on-node-border-radius-change="setNodeBorderRadius"
+        :on-node-bg-color-change="setNodeBgColor"
+        :on-node-font-size-change="setNodeFontSize"
       />
     </Panel>
 
