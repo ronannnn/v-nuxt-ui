@@ -8,7 +8,16 @@ import type { EdgeProps } from '@vue-flow/core'
 
 const props = defineProps<EdgeProps>()
 
-const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeAnimated, edgeStrokeType, effectiveEdgeColor, effectiveEdgeLabelColor } = useFlowStyles()
+const {
+  edgeMarkerStart,
+  edgeMarkerEnd,
+  edgePathType,
+  edgeAnimated,
+  edgeStrokeType,
+  effectiveEdgeColor,
+  effectiveEdgeLabelColor,
+  effectiveNodeBorderColor
+} = useFlowStyles()
 
 const path = computed(() => {
   switch (edgePathType.value) {
@@ -146,6 +155,7 @@ const cancelEditing = () => {
 }
 
 const labelColorStyle = computed(() => effectiveEdgeLabelColor.value ? { color: effectiveEdgeLabelColor.value } : {})
+const labelBorderColorStyle = computed(() => effectiveNodeBorderColor.value ? { borderColor: effectiveNodeBorderColor.value } : {})
 </script>
 
 <template>
@@ -206,8 +216,8 @@ const labelColorStyle = computed(() => effectiveEdgeLabelColor.value ? { color: 
         v-if="editingLabel"
         ref="inputRef"
         v-model="tempLabel"
-        class="bg-background border border-default rounded px-2 py-1 text-xs outline-none"
-        :style="{ minWidth: '40px', width: 'auto', ...labelColorStyle }"
+        class="bg-default border border-default rounded px-2 py-1 text-xs outline-none"
+        :style="{ minWidth: '16px', ...labelColorStyle }"
         @keydown.enter="saveLabel"
         @keydown.escape="cancelEditing"
         @blur="saveLabel"
@@ -215,8 +225,11 @@ const labelColorStyle = computed(() => effectiveEdgeLabelColor.value ? { color: 
       <!-- Display mode: show label or invisible placeholder for no-label edges -->
       <div
         v-else-if="label"
-        class="bg-background border border-default rounded px-2 py-1 text-xs shadow-sm"
-        :style="labelColorStyle"
+        class="bg-default border border-default rounded px-2 py-1 text-xs shadow-sm"
+        :style="{
+          ...labelColorStyle,
+          ...labelBorderColorStyle
+        }"
       >
         {{ label }}
       </div>
