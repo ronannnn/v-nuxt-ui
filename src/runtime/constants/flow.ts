@@ -103,11 +103,12 @@ export const FLOW_EDGE_PATH_TYPES: FlowEdgePathOption[] = [
 
 /**
  * 颜色选项（用于 CircleColor 选色器）
+ * color 字段统一存储 Tailwind 颜色**名称**（如 'blue'），空字符串 = 主题默认色
  */
 export interface FlowColorOption {
-  /** CSS color value (var(--color-xxx-shade) 格式)，空字符串 = 使用主题默认色 */
+  /** Tailwind 颜色名，空字符串 = 主题默认色 */
   color: string
-  /** Tailwind 颜色名（用于 CircleColor 组件的色块显示），default 项为空字符串 */
+  /** 同 color，传给 CircleColor 的 chip prop */
   chip: string
 }
 
@@ -118,48 +119,36 @@ const FLOW_COLOR_NAMES = [
   'fuchsia', 'pink', 'rose'
 ] as const
 
-/** 构造颜色选项数组的工厂函数 */
-function makeColorOptions(shade: number): FlowColorOption[] {
-  return [
-    { color: '', chip: '' },
-    ...FLOW_COLOR_NAMES.map(name => ({
-      color: `var(--color-${name}-${shade})`,
-      chip: name
-    }))
-  ]
-}
-
-// ---- 按色阶去重：同色阶共享同一数组实例 ----
-const FLOW_COLORS_50  = makeColorOptions(50)
-const FLOW_COLORS_500 = makeColorOptions(500)
-const FLOW_COLORS_600 = makeColorOptions(600)
-
-/** 节点背景颜色预设（50 色阶，浅色背景） */
-export const FLOW_NODE_COLORS: FlowColorOption[]        = FLOW_COLORS_50
-/** 连接线颜色预设（500 色阶） */
-export const FLOW_EDGE_COLORS: FlowColorOption[]        = FLOW_COLORS_500
-/** 节点边框颜色预设（500 色阶，与连接线一致） */
-export const FLOW_NODE_BORDER_COLORS: FlowColorOption[] = FLOW_COLORS_500
-/** 连接点颜色预设（500 色阶） */
-export const FLOW_HANDLE_COLORS: FlowColorOption[]      = FLOW_COLORS_500
-/** 字体/标签颜色预设（600 色阶，深色保证可读性） */
-export const FLOW_FONT_COLORS: FlowColorOption[]        = FLOW_COLORS_600
-
-/**
- * 统一颜色模式选项
- * color 字段存储颜色**名称**（如 'blue'），由 resolveUnifiedColor 在运行时转为 CSS var
- */
-export const FLOW_UNIFIED_COLORS: FlowColorOption[] = [
+/** 所有颜色选项（default + 17色），存的都是颜色名，不含 shade */
+export const FLOW_COLORS: FlowColorOption[] = [
   { color: '', chip: '' },
-  ...FLOW_COLOR_NAMES.map(n => ({ color: n, chip: n }))
+  ...FLOW_COLOR_NAMES.map(name => ({ color: name, chip: name }))
 ]
 
 /**
- * 根据统一颜色名称和色阶生成 CSS var
+ * Light / Dark 模式下各用途的色阶映射
+ *
+ * | 用途         | light | dark |
+ * |-------------|-------|------|
+ * | bg (节点背景) |  50   | 950  |
+ * | border/edge/handle | 500 | 400 |
+ * | font/label  | 600   | 400  |
+ */
+export const FLOW_SHADE_MAP = {
+  bg: { light: 50, dark: 950 },
+  border: { light: 500, dark: 400 },
+  font: { light: 600, dark: 400 }
+} as const
+
+export type FlowColorRole = keyof typeof FLOW_SHADE_MAP
+
+/**
+ * 根据颜色名、用途角色和 dark/light 模式生成 CSS var
  * 空名称返回空字符串（= 使用主题默认色）
  */
-export function resolveUnifiedColor(name: string, shade: number): string {
+export function resolveFlowColor(name: string, role: FlowColorRole, isDark: boolean): string {
   if (!name) return ''
+  const shade = FLOW_SHADE_MAP[role][isDark ? 'dark' : 'light']
   return `var(--color-${name}-${shade})`
 }
 

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import {
-  FLOW_EDGE_COLORS, FLOW_NODE_COLORS, FLOW_NODE_BORDER_COLORS, FLOW_FONT_COLORS,
+  FLOW_COLORS,
   FLOW_WIDTH_ITEMS, FLOW_STROKE_TYPE_ITEMS, FLOW_PATH_TYPE_ITEMS, FLOW_ARROW_TYPE_ITEMS,
-  FLOW_BORDER_RADIUS_ITEMS, FLOW_FONT_SIZE_ITEMS, FLOW_HANDLE_SIZE_ITEMS, FLOW_HANDLE_COLORS,
-  FLOW_PATH_PREVIEW, FLOW_ARROW_PREVIEW_START, FLOW_ARROW_PREVIEW_END,
-  FLOW_UNIFIED_COLORS
+  FLOW_BORDER_RADIUS_ITEMS, FLOW_FONT_SIZE_ITEMS, FLOW_HANDLE_SIZE_ITEMS,
+  FLOW_PATH_PREVIEW, FLOW_ARROW_PREVIEW_START, FLOW_ARROW_PREVIEW_END
 } from '#v/constants'
 import type { FlowEdgeStrokeType, FlowEdgePathType, FlowArrowType } from '#v/constants'
 import type { FlowColorMode } from '#v/composables/flow/useFlowStyles'
@@ -129,7 +128,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                 <FlowToolbarItemWrapper label="统一颜色">
                   <div class="grid grid-cols-9 gap-2">
                     <CircleColor
-                      v-for="opt in FLOW_UNIFIED_COLORS"
+                      v-for="opt in FLOW_COLORS"
                       :key="opt.color"
                       :chip="opt.chip"
                       :shade="500"
@@ -178,7 +177,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                 <FlowToolbarItemWrapper label="边框颜色">
                   <div class="grid grid-cols-9 gap-2">
                     <CircleColor
-                      v-for="opt in FLOW_NODE_BORDER_COLORS"
+                      v-for="opt in FLOW_COLORS"
                       :key="opt.color"
                       :chip="opt.chip"
                       :shade="500"
@@ -197,7 +196,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                 <FlowToolbarItemWrapper label="背景色">
                   <div class="grid grid-cols-9 gap-2">
                     <CircleColor
-                      v-for="opt in FLOW_NODE_COLORS"
+                      v-for="opt in FLOW_COLORS"
                       :key="opt.color"
                       :chip="opt.chip"
                       :shade="50"
@@ -231,7 +230,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                 <FlowToolbarItemWrapper label="字体颜色">
                   <div class="grid grid-cols-9 gap-2">
                     <CircleColor
-                      v-for="opt in FLOW_FONT_COLORS"
+                      v-for="opt in FLOW_COLORS"
                       :key="opt.color"
                       :chip="opt.chip"
                       :shade="600"
@@ -276,7 +275,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                 <FlowToolbarItemWrapper label="连接点颜色">
                   <div class="grid grid-cols-9 gap-2">
                     <CircleColor
-                      v-for="opt in FLOW_HANDLE_COLORS"
+                      v-for="opt in FLOW_COLORS"
                       :key="opt.color"
                       :chip="opt.chip"
                       :shade="500"
@@ -537,7 +536,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                 <FlowToolbarItemWrapper label="连接线颜色">
                   <div class="grid grid-cols-9 gap-2">
                     <CircleColor
-                      v-for="opt in FLOW_EDGE_COLORS"
+                      v-for="opt in FLOW_COLORS"
                       :key="opt.color"
                       :chip="opt.chip"
                       :shade="500"
@@ -556,7 +555,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                 <FlowToolbarItemWrapper label="标签颜色">
                   <div class="grid grid-cols-9 gap-2">
                     <CircleColor
-                      v-for="opt in FLOW_FONT_COLORS"
+                      v-for="opt in FLOW_COLORS"
                       :key="opt.color"
                       :chip="opt.chip"
                       :shade="600"

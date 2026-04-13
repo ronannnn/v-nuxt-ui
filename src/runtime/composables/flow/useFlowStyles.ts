@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue'
 import type { WritableComputedRef } from 'vue'
 import { StorageKey } from '#v/types'
-import { useLocalStorage } from '@vueuse/core'
+import { useLocalStorage, useColorMode } from '@vueuse/core'
 import type { FlowEdgeStrokeType, FlowEdgePathType, FlowArrowType } from '#v/constants'
-import { resolveUnifiedColor } from '#v/constants'
+import { resolveFlowColor } from '#v/constants'
 
 /** 连接线样式存储结构 */
 export interface FlowEdgeStylesState {
@@ -122,13 +122,9 @@ export function useFlowStyles() {
   const unifiedColor = useField(colorModeStore, 'colorName')
   const isUnifiedMode = computed(() => colorMode.value === 'unified')
 
-  // 统一模式下按色阶派生的 CSS var（空名称 → 空字符串 → 主题默认色）
-  const unifiedBorderColor = computed(() => resolveUnifiedColor(unifiedColor.value, 500))
-  const unifiedBgColor = computed(() => resolveUnifiedColor(unifiedColor.value, 50))
-  const unifiedFontColor = computed(() => resolveUnifiedColor(unifiedColor.value, 600))
-  const unifiedHandleColor = computed(() => resolveUnifiedColor(unifiedColor.value, 500))
-  const unifiedEdgeColor = computed(() => resolveUnifiedColor(unifiedColor.value, 500))
-  const unifiedEdgeLabelColor = computed(() => resolveUnifiedColor(unifiedColor.value, 600))
+  // ---- dark / light 感知 ----
+  const colorModeRef = useColorMode()
+  const isDark = computed(() => colorModeRef.value === 'dark')
 
   // 连接线（原始自定义值）
   const edgeStrokeWidth = useField(edgeStore, 'strokeWidth')
@@ -166,13 +162,13 @@ export function useFlowStyles() {
     }
   })
 
-  // ---- 有效颜色（统一模式优先，否则回退到自定义值） ----
-  const effectiveNodeBorderColor = computed(() => isUnifiedMode.value ? unifiedBorderColor.value : nodeBorderColor.value)
-  const effectiveNodeBgColor = computed(() => isUnifiedMode.value ? unifiedBgColor.value : nodeBgColor.value)
-  const effectiveNodeFontColor = computed(() => isUnifiedMode.value ? unifiedFontColor.value : nodeFontColor.value)
-  const effectiveNodeHandleColor = computed(() => isUnifiedMode.value ? unifiedHandleColor.value : nodeHandleColor.value)
-  const effectiveEdgeColor = computed(() => isUnifiedMode.value ? unifiedEdgeColor.value : edgeColor.value)
-  const effectiveEdgeLabelColor = computed(() => isUnifiedMode.value ? unifiedEdgeLabelColor.value : edgeLabelColor.value)
+  // ---- 有效颜色（统一模式优先，否则回退到自定义值；均通过 resolveFlowColor 动态适配 dark 模式） ----
+  const effectiveNodeBorderColor = computed(() => resolveFlowColor(isUnifiedMode.value ? unifiedColor.value : nodeBorderColor.value, 'border', isDark.value))
+  const effectiveNodeBgColor = computed(() => resolveFlowColor(isUnifiedMode.value ? unifiedColor.value : nodeBgColor.value, 'bg', isDark.value))
+  const effectiveNodeFontColor = computed(() => resolveFlowColor(isUnifiedMode.value ? unifiedColor.value : nodeFontColor.value, 'font', isDark.value))
+  const effectiveNodeHandleColor = computed(() => resolveFlowColor(isUnifiedMode.value ? unifiedColor.value : nodeHandleColor.value, 'border', isDark.value))
+  const effectiveEdgeColor = computed(() => resolveFlowColor(isUnifiedMode.value ? unifiedColor.value : edgeColor.value, 'border', isDark.value))
+  const effectiveEdgeLabelColor = computed(() => resolveFlowColor(isUnifiedMode.value ? unifiedColor.value : edgeLabelColor.value, 'font', isDark.value))
 
   return {
     // 颜色模式
