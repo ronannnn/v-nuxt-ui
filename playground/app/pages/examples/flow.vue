@@ -5,6 +5,9 @@ definePageMeta({
   layout: 'examples'
 })
 
+// Mock API
+const flowApi = useFlowMockApi()
+
 // 示例初始数据
 const flowData = ref<Flow>({
   id: 1,
@@ -45,6 +48,7 @@ const handleEditNode = (node: FlowNode) => {
     <div class="flex-1 w-full border border-default rounded-lg overflow-hidden">
       <ProFlowEditor
         v-model="flowData"
+        :api="flowApi"
         @edit-node="handleEditNode"
       />
     </div>

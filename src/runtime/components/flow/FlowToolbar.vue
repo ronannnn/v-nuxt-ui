@@ -16,6 +16,8 @@ const settingsOpen = ref(false)
 
 defineProps<{
   onAddNode?: () => void
+  /** 是否有 API 操作正在进行，用于禁用交互 */
+  loading?: boolean
   edgeStrokeWidth?: number
   edgeStrokeType?: FlowEdgeStrokeType
   edgePathType?: FlowEdgePathType
@@ -80,6 +82,8 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
       icon="i-lucide-circle-plus"
       size="sm"
       variant="subtle"
+      :disabled="loading"
+      :loading="loading"
       @click="onAddNode?.()"
     />
 

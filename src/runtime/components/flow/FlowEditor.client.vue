@@ -2,7 +2,7 @@
 import { ref, computed, provide, watchEffect, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, useVueFlow, Panel } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
-import type { Flow, FlowNode as FlowNodeType, FlowMousePosition, UseFlowResizeDimensions } from '#v/types'
+import type { Flow, FlowNode as FlowNodeType, FlowMousePosition, FlowApi, UseFlowResizeDimensions } from '#v/types'
 import { FLOW_MOUSE_POSITION_KEY, FLOW_EDGE_STROKE_TYPES } from '#v/constants'
 import FlowNode from './FlowNode.client.vue'
 import FlowEdge from './FlowEdge.client.vue'
@@ -14,6 +14,8 @@ import { useFlow, useFlowResize, useFlowStyles } from '#v/composables'
 const props = withDefaults(defineProps<{
   /** Flow 数据模型 (v-model) */
   modelValue?: Flow
+  /** CRUD API 回调，节点/边增删改时调用 */
+  api?: FlowApi
   /** 是否显示背景网格 */
   showBackground?: boolean
   /** 是否显示工具栏 */
@@ -28,6 +30,7 @@ const props = withDefaults(defineProps<{
   defaultZoom?: number
 }>(), {
   modelValue: () => ({ id: 0, nodes: [], links: [] }),
+  api: undefined,
   showBackground: true,
   showToolbar: true,
   showStats: true,
@@ -50,16 +53,19 @@ const handleUpdateModel = (model: Flow) => {
 
 const flowLogic = useFlow({
   flow: computed(() => props.modelValue),
-  onUpdateModel: computed(() => handleUpdateModel)
+  onUpdateModel: computed(() => handleUpdateModel),
+  api: computed(() => props.api)
 })
 
 const {
   nodes,
   edges,
   GRID_SIZE,
+  loading,
   deleteNode,
   deleteEdge,
   createEdge,
+  reconnectEdge,
   updateNodePosition,
   updateNodeDimensions,
   createNode,
@@ -98,8 +104,8 @@ const {
 const { onConnect, onNodeDragStop, onEdgeUpdate, getSelectedNodes, getSelectedEdges, getViewport } = useVueFlow()
 
 // Resize 功能
-const handleResizeEnd = (nodeId: string, dimensions: UseFlowResizeDimensions) => {
-  updateNodeDimensions(nodeId, dimensions)
+const handleResizeEnd = async (nodeId: string, dimensions: UseFlowResizeDimensions) => {
+  await updateNodeDimensions(nodeId, dimensions)
 }
 
 const resizeLogic = useFlowResize({
@@ -228,9 +234,8 @@ onConnect(async (params) => {
 
 // Edge reconnect：拖拽边端点到新 handle 时触发（onEdgeUpdate 提供 connection）
 onEdgeUpdate(({ edge, connection }) => {
-  deleteEdge(edge.id)
   if (connection.source && connection.target) {
-    createEdge(connection)
+    reconnectEdge(edge.id, connection)
   }
 })
 
@@ -289,6 +294,7 @@ const isValidConnection = () => true
     <Panel v-if="showToolbar" position="bottom-center">
       <FlowToolbar
         :on-add-node="createNode"
+        :loading="loading"
         :edge-stroke-width="edgeStrokeWidth"
         :edge-stroke-type="edgeStrokeType"
         :edge-path-type="edgePathType"
@@ -330,7 +336,17 @@ const isValidConnection = () => true
     </Panel>
 
     <Panel v-if="showStats" position="top-right">
-      <FlowStats :node-count="nodes.length" :edge-count="edges.length" />
+      <div class="flex items-center gap-2">
+        <Transition name="fade">
+          <UIcon
+            v-if="loading"
+            name="i-lucide-loader-2"
+            class="text-primary animate-spin"
+            size="18"
+          />
+        </Transition>
+        <FlowStats :node-count="nodes.length" :edge-count="edges.length" />
+      </div>
     </Panel>
 
     <!-- 透传额外的 Panel 插槽 -->
@@ -342,4 +358,13 @@ const isValidConnection = () => true
 /* Vue Flow 基础样式 */
 @import '@vue-flow/core/dist/style.css';
 @import '@vue-flow/core/dist/theme-default.css';
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
