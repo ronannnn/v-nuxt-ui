@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import {
   FLOW_EDGE_COLORS, FLOW_NODE_COLORS, FLOW_NODE_BORDER_COLORS, FLOW_FONT_COLORS,
   FLOW_WIDTH_ITEMS, FLOW_STROKE_TYPE_ITEMS, FLOW_PATH_TYPE_ITEMS, FLOW_ARROW_TYPE_ITEMS,
-  FLOW_BORDER_RADIUS_ITEMS, FLOW_FONT_SIZE_ITEMS, FLOW_HANDLE_SIZE_ITEMS,
+  FLOW_BORDER_RADIUS_ITEMS, FLOW_FONT_SIZE_ITEMS, FLOW_HANDLE_SIZE_ITEMS, FLOW_HANDLE_COLORS,
   FLOW_PATH_PREVIEW, FLOW_ARROW_PREVIEW_START, FLOW_ARROW_PREVIEW_END
 } from '#v/constants'
 import type { FlowEdgeStrokeType, FlowEdgePathType, FlowArrowType } from '#v/constants'
@@ -30,6 +30,7 @@ defineProps<{
   nodeFontColor?: string
   nodeFontSize?: number
   nodeHandleSize?: number
+  nodeHandleColor?: string
   onEdgeStrokeWidthChange: (width: number) => void
   onEdgeStrokeTypeChange?: (type: FlowEdgeStrokeType) => void
   onEdgePathTypeChange?: (type: FlowEdgePathType) => void
@@ -45,6 +46,7 @@ defineProps<{
   onNodeFontColorChange?: (color: string) => void
   onNodeFontSizeChange?: (size: number) => void
   onNodeHandleSizeChange?: (size: number) => void
+  onNodeHandleColorChange?: (color: string) => void
 }>()
 
 const tabItems: TabsItem[] = [
@@ -191,31 +193,6 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
 
               <USeparator class="py-2" />
 
-              <!-- 圆角 -->
-              <FlowToolbarItemWrapper label="圆角">
-                <USelect
-                  :model-value="nodeBorderRadius"
-                  :items="FLOW_BORDER_RADIUS_ITEMS"
-                  :size="itemSize"
-                  trailing-icon=""
-                  @update:model-value="(v: number) => onNodeBorderRadiusChange?.(v)"
-                >
-                  <template #leading="{ modelValue }">
-                    <div
-                      v-if="modelValue != null"
-                      class="w-4 h-3 border-[1.5px] border-current"
-                      :style="{ borderRadius: `${modelValue}px` }"
-                    />
-                  </template>
-                  <template #item-leading="{ item }">
-                    <div
-                      class="w-4 h-3 border-[1.5px] border-current"
-                      :style="{ borderRadius: `${(item as any).value}px` }"
-                    />
-                  </template>
-                </USelect>
-              </FlowToolbarItemWrapper>
-
               <!-- 连接点大小 -->
               <FlowToolbarItemWrapper label="连接点大小">
                 <USelect
@@ -237,6 +214,48 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                     <div
                       class="rounded-full bg-current"
                       :style="{ width: `${(item as any).value}px`, height: `${(item as any).value}px` }"
+                    />
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 连接点颜色 -->
+              <FlowToolbarItemWrapper label="连接点颜色">
+                <div class="grid grid-cols-9 gap-2">
+                  <CircleColor
+                    v-for="opt in FLOW_HANDLE_COLORS"
+                    :key="opt.color"
+                    :chip="opt.chip"
+                    :shade="500"
+                    :selected="nodeHandleColor === opt.color"
+                    :title="opt.chip || 'default'"
+                    @click="onNodeHandleColorChange?.(opt.color)"
+                  />
+                </div>
+              </FlowToolbarItemWrapper>
+
+              <USeparator class="py-2" />
+
+              <!-- 圆角 -->
+              <FlowToolbarItemWrapper label="圆角">
+                <USelect
+                  :model-value="nodeBorderRadius"
+                  :items="FLOW_BORDER_RADIUS_ITEMS"
+                  :size="itemSize"
+                  trailing-icon=""
+                  @update:model-value="(v: number) => onNodeBorderRadiusChange?.(v)"
+                >
+                  <template #leading="{ modelValue }">
+                    <div
+                      v-if="modelValue != null"
+                      class="w-4 h-3 border-[1.5px] border-current"
+                      :style="{ borderRadius: `${modelValue}px` }"
+                    />
+                  </template>
+                  <template #item-leading="{ item }">
+                    <div
+                      class="w-4 h-3 border-[1.5px] border-current"
+                      :style="{ borderRadius: `${(item as any).value}px` }"
                     />
                   </template>
                 </USelect>

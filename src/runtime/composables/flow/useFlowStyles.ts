@@ -25,6 +25,7 @@ export interface FlowNodeStylesState {
   fontColor: string
   fontSize: number
   handleSize: number
+  handleColor: string
 }
 
 const EDGE_DEFAULTS: FlowEdgeStylesState = {
@@ -45,7 +46,8 @@ const NODE_DEFAULTS: FlowNodeStylesState = {
   bgColor: '',
   fontColor: '',
   fontSize: 14,
-  handleSize: 6
+  handleSize: 6,
+  handleColor: ''
 }
 
 /** 从对象型 localStorage 中派生单个字段的可写 computed */
@@ -111,12 +113,20 @@ export function useFlowStyles() {
   const nodeFontColor = useField(nodeStore, 'fontColor')
   const nodeFontSize = useField(nodeStore, 'fontSize')
   const _nodeHandleSize = useField(nodeStore, 'handleSize')
+  const _nodeHandleColor = useField(nodeStore, 'handleColor')
 
   // 包装 handleSize，set 时触发预览
   const nodeHandleSize = computed({
     get: () => _nodeHandleSize.value,
     set: (val: number) => {
       _nodeHandleSize.value = val
+      triggerHandleSizePreview()
+    }
+  })
+  const nodeHandleColor = computed({
+    get: () => _nodeHandleColor.value,
+    set: (val: string) => {
+      _nodeHandleColor.value = val
       triggerHandleSizePreview()
     }
   })
@@ -136,6 +146,7 @@ export function useFlowStyles() {
     nodeBgColor,
     nodeFontColor,
     nodeFontSize,
-    nodeHandleSize
+    nodeHandleSize,
+    nodeHandleColor
   }
 }

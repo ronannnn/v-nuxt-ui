@@ -147,6 +147,11 @@ export const FLOW_NODE_BORDER_COLORS: FlowColorOption[] = makeColorOptions(500)
 export const FLOW_FONT_COLORS: FlowColorOption[] = makeColorOptions(600)
 
 /**
+ * 连接点颜色预设（Tailwind 500 色阶）
+ */
+export const FLOW_HANDLE_COLORS: FlowColorOption[] = makeColorOptions(500)
+
+/**
  * 箭头类型
  */
 export type FlowArrowType = 'none' | 'arrow' | 'diamond' | 'diamond-open' | 'circle' | 'circle-open'

@@ -82,7 +82,8 @@ const {
   nodeBgColor,
   nodeFontColor,
   nodeFontSize,
-  nodeHandleSize
+  nodeHandleSize,
+  nodeHandleColor
 } = useFlowStyles()
 
 // VueFlow 实例
@@ -130,6 +131,7 @@ watchEffect(() => {
     fontColor: nodeFontColor.value,
     fontSize: nodeFontSize.value,
     handleSize: nodeHandleSize.value,
+    handleColor: nodeHandleColor.value,
     onResizeStart: (event: MouseEvent, edge: ResizeEdge) => {
       const node = props.modelValue?.nodes?.find(n => String(n.id) === nodeId)
       if (node) {
@@ -294,6 +296,7 @@ const isValidConnection = () => true
         :node-font-color="nodeFontColor"
         :node-font-size="nodeFontSize"
         :node-handle-size="nodeHandleSize"
+        :node-handle-color="nodeHandleColor"
         :on-edge-stroke-width-change="(v) => edgeStrokeWidth = v"
         :on-edge-stroke-type-change="(v) => edgeStrokeType = v"
         :on-edge-path-type-change="(v) => edgePathType = v"
@@ -309,6 +312,7 @@ const isValidConnection = () => true
         :on-node-font-color-change="(v) => nodeFontColor = v"
         :on-node-font-size-change="(v) => nodeFontSize = v"
         :on-node-handle-size-change="(v) => nodeHandleSize = v"
+        :on-node-handle-color-change="(v) => nodeHandleColor = v"
       />
     </Panel>
 

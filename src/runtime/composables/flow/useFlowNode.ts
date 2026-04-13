@@ -79,6 +79,7 @@ export function useFlowNode(options: UseFlowNodeOptions) {
   const handleStyle = (handle: FlowHandle) => {
     const bw = data.value.borderWidth ?? 2
     const handleSize = data.value.handleSize ?? 6
+    const handleColor = data.value.handleColor ?? ''
     // absolutely positioned 子元素的坐标原点是 padding box 边缘（border 内侧）
     // 需要向外偏移 bw/2 才能让 handle 居中在 border 线上
     const offset = -(bw / 2)
@@ -90,7 +91,8 @@ export function useFlowNode(options: UseFlowNodeOptions) {
       width: `${handleSize}px`,
       height: `${handleSize}px`,
       zIndex: 20,
-      borderRadius: '50%'
+      borderRadius: '50%',
+      ...(handleColor ? { backgroundColor: handleColor } : {})
     }
 
     // 覆盖 VueFlow 默认的 top/bottom/left/right，使其对齐 border 中心线
