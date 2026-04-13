@@ -79,6 +79,7 @@ const itemSize = 'sm'
       title="样式设置"
       side="right"
       inset
+      :overlay="false"
     >
       <template #body>
         <UTabs
