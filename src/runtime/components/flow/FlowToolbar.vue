@@ -16,6 +16,7 @@ defineProps<{
   nodeBorderRadius?: number
   nodeBgColor?: string
   nodeFontSize?: number
+  nodeHandleSize?: number
   onEdgeStrokeWidthChange?: (width: number) => void
   onEdgeStrokeTypeChange?: (type: FlowEdgeStrokeType) => void
   onEdgePathTypeChange?: (type: FlowEdgePathType) => void
@@ -27,6 +28,7 @@ defineProps<{
   onNodeBorderRadiusChange?: (radius: number) => void
   onNodeBgColorChange?: (color: string) => void
   onNodeFontSizeChange?: (size: number) => void
+  onNodeHandleSizeChange?: (size: number) => void
 }>()
 </script>
 
@@ -94,7 +96,10 @@ defineProps<{
               <template #leading>
                 <svg width="20" height="10" class="text-current">
                   <line
-                    x1="0" y1="5" x2="20" y2="5"
+                    x1="0"
+                    y1="5"
+                    x2="20"
+                    y2="5"
                     stroke="currentColor"
                     stroke-width="2"
                     :stroke-dasharray="opt.dasharray || 'none'"
@@ -120,17 +125,59 @@ defineProps<{
               @click="onEdgePathTypeChange?.(opt.type)"
             >
               <template #leading>
-                <svg v-if="opt.type === 'smoothstep'" width="20" height="14" class="text-current">
-                  <path d="M 0 12 L 6 12 Q 10 12 10 7 Q 10 2 14 2 L 20 2" fill="none" stroke="currentColor" stroke-width="2" />
+                <svg
+                  v-if="opt.type === 'smoothstep'"
+                  width="20"
+                  height="14"
+                  class="text-current"
+                >
+                  <path
+                    d="M 0 12 L 6 12 Q 10 12 10 7 Q 10 2 14 2 L 20 2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
                 </svg>
-                <svg v-else-if="opt.type === 'bezier'" width="20" height="14" class="text-current">
-                  <path d="M 0 12 C 10 12, 10 2, 20 2" fill="none" stroke="currentColor" stroke-width="2" />
+                <svg
+                  v-else-if="opt.type === 'bezier'"
+                  width="20"
+                  height="14"
+                  class="text-current"
+                >
+                  <path
+                    d="M 0 12 C 10 12, 10 2, 20 2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
                 </svg>
-                <svg v-else-if="opt.type === 'step'" width="20" height="14" class="text-current">
-                  <path d="M 0 12 L 10 12 L 10 2 L 20 2" fill="none" stroke="currentColor" stroke-width="2" />
+                <svg
+                  v-else-if="opt.type === 'step'"
+                  width="20"
+                  height="14"
+                  class="text-current"
+                >
+                  <path
+                    d="M 0 12 L 10 12 L 10 2 L 20 2"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
                 </svg>
-                <svg v-else-if="opt.type === 'straight'" width="20" height="14" class="text-current">
-                  <line x1="0" y1="12" x2="20" y2="2" stroke="currentColor" stroke-width="2" />
+                <svg
+                  v-else-if="opt.type === 'straight'"
+                  width="20"
+                  height="14"
+                  class="text-current"
+                >
+                  <line
+                    x1="0"
+                    y1="12"
+                    x2="20"
+                    y2="2"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
                 </svg>
               </template>
             </ButtonTheme>
@@ -221,7 +268,9 @@ defineProps<{
         </fieldset>
 
         <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">节点圆角</legend>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
+            节点圆角
+          </legend>
           <div class="grid grid-cols-5 gap-2 -mx-2">
             <ButtonTheme
               v-for="radius in [0, 4, 8, 12, 16]"
@@ -242,7 +291,9 @@ defineProps<{
         </fieldset>
 
         <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">节点背景色</legend>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
+            节点背景色
+          </legend>
           <div class="flex gap-2 -mx-2 px-2">
             <button
               v-for="opt in FLOW_NODE_COLORS"
@@ -259,7 +310,9 @@ defineProps<{
         </fieldset>
 
         <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">节点字号</legend>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
+            节点字号
+          </legend>
           <div class="grid grid-cols-5 gap-2 -mx-2">
             <ButtonTheme
               v-for="size in [12, 14, 16, 18, 20]"
@@ -271,6 +324,29 @@ defineProps<{
             >
               <template #leading>
                 <span class="font-medium" :style="{ fontSize: `${Math.max(size - 4, 10)}px` }">A</span>
+              </template>
+            </ButtonTheme>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-[11px] leading-none font-semibold mb-2">
+            连接点大小
+          </legend>
+          <div class="grid grid-cols-4 gap-2 -mx-2">
+            <ButtonTheme
+              v-for="size in [4, 6, 8, 10]"
+              :key="size"
+              :label="size.toString()"
+              :selected="nodeHandleSize === size"
+              class="justify-center min-w-10"
+              @click="onNodeHandleSizeChange?.(size)"
+            >
+              <template #leading>
+                <div
+                  class="rounded-full bg-current"
+                  :style="{ width: `${size}px`, height: `${size}px` }"
+                />
               </template>
             </ButtonTheme>
           </div>

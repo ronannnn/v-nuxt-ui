@@ -7,17 +7,18 @@ definePageMeta({
 
 // 示例初始数据
 const flowData = ref<Flow>({
+  id: 1,
   nodes: [
-    { id: 1, name: '开始', x: 100, y: 100, width: 120, height: 40 },
-    { id: 2, name: '处理', x: 360, y: 100, width: 120, height: 40 },
-    { id: 3, name: '审核', x: 360, y: 260, width: 120, height: 40 },
-    { id: 4, name: '结束', x: 620, y: 180, width: 120, height: 40 }
+    { id: 1, name: '开始', positionX: 100, positionY: 100, width: 120, height: 40 },
+    { id: 2, name: '处理', positionX: 360, positionY: 100, width: 120, height: 40 },
+    { id: 3, name: '审核', positionX: 360, positionY: 260, width: 120, height: 40 },
+    { id: 4, name: '结束', positionX: 620, positionY: 180, width: 120, height: 40 }
   ],
-  edges: [
-    { id: 'e1-2', source: '1', target: '2', sourceHandle: 'r2', targetHandle: 'l2' },
-    { id: 'e2-3', source: '2', target: '3', sourceHandle: 'b2', targetHandle: 't2' },
-    { id: 'e3-4', source: '3', target: '4', sourceHandle: 'r2', targetHandle: 'l2', label: '通过' },
-    { id: 'e2-4', source: '2', target: '4', sourceHandle: 'r2', targetHandle: 'l1' }
+  links: [
+    { id: 1, parentId: 1, childId: 2, parentHandlePos: 'r2', childHandlePos: 'l2' },
+    { id: 2, parentId: 2, childId: 3, parentHandlePos: 'b2', childHandlePos: 't2' },
+    { id: 3, parentId: 3, childId: 4, parentHandlePos: 'r2', childHandlePos: 'l2', label: '通过' },
+    { id: 4, parentId: 2, childId: 4, parentHandlePos: 'r2', childHandlePos: 'l1' }
   ]
 })
 

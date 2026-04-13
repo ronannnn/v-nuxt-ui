@@ -2,6 +2,13 @@ import { Position } from '@vue-flow/core'
 import type { InjectionKey, Ref } from 'vue'
 import type { FlowMousePosition } from '#v/types'
 
+export const GRID_SIZE = 20
+
+/**
+ * Resize 边/角类型
+ */
+export type ResizeEdge = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+
 export type HandlePosition
   = | 'tl' | 'tr' | 'bl' | 'br' // 4 corners
     | 't1' | 't2' | 't3' // top edge
@@ -56,22 +63,8 @@ export const FLOW_HANDLES: FlowHandle[] = [
  */
 export const FLOW_HANDLE_TIER_THRESHOLDS = {
   small: { maxWidth: 80, maxHeight: 40 },
-  medium: { maxWidth: 160, maxHeight: 80 },
+  medium: { maxWidth: 120, maxHeight: 80 }
 } as const
-
-/**
- * Small 层级：每边中心各 1 个 = 4 个
- */
-export const FLOW_HANDLES_SMALL: FlowHandle[] = FLOW_HANDLES.filter(h =>
-  ['t2', 'r2', 'b2', 'l2'].includes(h.id)
-)
-
-/**
- * Medium 层级：4 中心 + 4 角 = 8 个
- */
-export const FLOW_HANDLES_MEDIUM: FlowHandle[] = FLOW_HANDLES.filter(h =>
-  ['t2', 'r2', 'b2', 'l2', 'tl', 'tr', 'bl', 'br'].includes(h.id)
-)
 
 /**
  * 连接线线型
@@ -88,7 +81,7 @@ export const FLOW_EDGE_STROKE_TYPES: FlowEdgeStrokeOption[] = [
   { type: 'solid', label: '实线', dasharray: '' },
   { type: 'dashed', label: '虚线', dasharray: '8 4' },
   { type: 'dotted', label: '点线', dasharray: '2 4' },
-  { type: 'dashdot', label: '点划线', dasharray: '8 4 2 4' },
+  { type: 'dashdot', label: '点划线', dasharray: '8 4 2 4' }
 ]
 
 /**
@@ -105,7 +98,7 @@ export const FLOW_EDGE_PATH_TYPES: FlowEdgePathOption[] = [
   { type: 'smoothstep', label: '平滑' },
   { type: 'bezier', label: '曲线' },
   { type: 'step', label: '直角' },
-  { type: 'straight', label: '直线' },
+  { type: 'straight', label: '直线' }
 ]
 
 /**
@@ -124,7 +117,7 @@ export const FLOW_EDGE_COLORS: FlowEdgeColorOption[] = [
   { color: '#22c55e', label: '绿' },
   { color: '#3b82f6', label: '蓝' },
   { color: '#8b5cf6', label: '紫' },
-  { color: '#6b7280', label: '灰' },
+  { color: '#6b7280', label: '灰' }
 ]
 
 /**
@@ -138,5 +131,33 @@ export const FLOW_NODE_COLORS: FlowEdgeColorOption[] = [
   { color: '#f0fdf4', label: '绿' },
   { color: '#eff6ff', label: '蓝' },
   { color: '#f5f3ff', label: '紫' },
-  { color: '#f9fafb', label: '灰' },
+  { color: '#f9fafb', label: '灰' }
+]
+
+/**
+ * 节点鼠标接近阈值（px）
+ */
+export const FLOW_NODE_PROXIMITY_THRESHOLD = 50
+
+/**
+ * Resize handle 配置
+ */
+export interface FlowResizeHandleConfig {
+  edge: ResizeEdge
+  class: string
+  cursor: string
+  zIndex: number
+}
+
+export const FLOW_RESIZE_HANDLES: FlowResizeHandleConfig[] = [
+  // 4 边 (z-index: 5)
+  { edge: 'top', class: 'top-[-4px] left-[12px] right-[12px] h-[12px]', cursor: 'ns-resize', zIndex: 5 },
+  { edge: 'bottom', class: 'bottom-[-4px] left-[12px] right-[12px] h-[12px]', cursor: 'ns-resize', zIndex: 5 },
+  { edge: 'left', class: 'left-[-4px] top-[12px] bottom-[12px] w-[12px]', cursor: 'ew-resize', zIndex: 5 },
+  { edge: 'right', class: 'right-[-4px] top-[12px] bottom-[12px] w-[12px]', cursor: 'ew-resize', zIndex: 5 },
+  // 4 角 (z-index: 6, 优先于边)
+  { edge: 'top-left', class: 'top-[-4px] left-[-4px] w-[12px] h-[12px]', cursor: 'nwse-resize', zIndex: 6 },
+  { edge: 'top-right', class: 'top-[-4px] right-[-4px] w-[12px] h-[12px]', cursor: 'nesw-resize', zIndex: 6 },
+  { edge: 'bottom-left', class: 'bottom-[-4px] left-[-4px] w-[12px] h-[12px]', cursor: 'nesw-resize', zIndex: 6 },
+  { edge: 'bottom-right', class: 'bottom-[-4px] right-[-4px] w-[12px] h-[12px]', cursor: 'nwse-resize', zIndex: 6 }
 ]

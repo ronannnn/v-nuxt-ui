@@ -40,6 +40,9 @@ export function useFlowStyles() {
   // 节点字体大小 (12-20, step 2)
   const nodeFontSize = useLocalStorage(StorageKey.FLOW_NODE_FONT_SIZE, 14)
 
+  // 节点连接点大小 (4-10, step 2)
+  const nodeHandleSize = useLocalStorage(StorageKey.FLOW_NODE_HANDLE_SIZE, 6)
+
   // 更新连接线粗细
   const setEdgeStrokeWidth = (width: number) => {
     edgeStrokeWidth.value = Math.max(1, Math.min(5, width))
@@ -95,6 +98,11 @@ export function useFlowStyles() {
     nodeFontSize.value = Math.max(12, Math.min(20, size))
   }
 
+  // 设置节点连接点大小
+  const setNodeHandleSize = (size: number) => {
+    nodeHandleSize.value = Math.max(4, Math.min(10, size))
+  }
+
   return {
     // 状态
     edgeStrokeWidth,
@@ -108,6 +116,7 @@ export function useFlowStyles() {
     nodeBorderRadius,
     nodeBgColor,
     nodeFontSize,
+    nodeHandleSize,
 
     // 方法
     setEdgeStrokeWidth,
@@ -120,6 +129,7 @@ export function useFlowStyles() {
     setNodeBorderWidth,
     setNodeBorderRadius,
     setNodeBgColor,
-    setNodeFontSize
+    setNodeFontSize,
+    setNodeHandleSize
   }
 }

@@ -1,7 +1,8 @@
 import { shallowRef, watch } from 'vue'
 import type { Node, Edge, Connection } from '@vue-flow/core'
 import type { ComputedRef, ShallowRef } from 'vue'
-import type { Flow, FlowNode, UseFlowResizeDimensions } from '#v/types'
+import type { Flow, FlowNode, FlowNodeLink, UseFlowResizeDimensions } from '#v/types'
+import { GRID_SIZE } from '#v/constants'
 
 export interface UseFlowOptions {
   flow: ComputedRef<Flow | undefined>
@@ -24,8 +25,6 @@ export interface UseFlowReturn {
   syncEdges: (createHandlers: (edgeId: string) => Record<string, any>) => void
 }
 
-const GRID_SIZE = 20
-
 /**
  * Flow 业务逻辑 Composable
  * 管理节点和边的 CRUD 操作，并同步到外部数据模型
@@ -41,7 +40,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
   const toVueFlowNode = (node: FlowNode): Node => ({
     id: String(node.id),
     type: 'custom',
-    position: { x: node.x ?? 0, y: node.y ?? 0 },
+    position: { x: node.positionX ?? 0, y: node.positionY ?? 0 },
     data: {
       ...node,
       id: node.id,
@@ -51,15 +50,15 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     }
   })
 
-  // 将 FlowEdge 转换为 VueFlow Edge
-  const toVueFlowEdge = (edge: import('#v/types').FlowEdge): Edge => ({
-    id: String(edge.id),
+  // 将 FlowNodeLink 转换为 VueFlow Edge
+  const toVueFlowEdge = (link: FlowNodeLink): Edge => ({
+    id: String(link.id),
     type: 'custom',
-    source: String(edge.source),
-    target: String(edge.target),
-    sourceHandle: edge.sourceHandle,
-    targetHandle: edge.targetHandle,
-    label: edge.label
+    source: String(link.parentId),
+    target: String(link.childId),
+    sourceHandle: link.parentHandlePos ?? undefined,
+    targetHandle: link.childHandlePos ?? undefined,
+    label: link.label
   })
 
   // 从 Flow 数据初始化
@@ -68,7 +67,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     (newFlow) => {
       if (!newFlow) return
       nodes.value = (newFlow.nodes ?? []).map(toVueFlowNode)
-      edges.value = (newFlow.edges ?? []).map(toVueFlowEdge)
+      edges.value = (newFlow.links ?? []).map(toVueFlowEdge)
     },
     { immediate: true }
   )
@@ -78,22 +77,24 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     if (!onUpdateModel?.value) return
 
     const updatedFlow: Flow = {
+      id: flow.value?.id ?? 0,
+      ...flow.value,
       nodes: nodes.value.map(n => ({
-        id: n.data.id ?? n.id,
+        id: n.data.id ?? Number(n.id),
         name: n.data.name ?? '',
-        x: n.position.x,
-        y: n.position.y,
+        positionX: n.position.x,
+        positionY: n.position.y,
         width: n.data.width,
         height: n.data.height
-      })),
-      edges: edges.value.map(e => ({
-        id: e.id,
-        source: e.source,
-        target: e.target,
-        sourceHandle: e.sourceHandle,
-        targetHandle: e.targetHandle,
+      } as FlowNode)),
+      links: edges.value.map(e => ({
+        id: Number(e.id) || undefined,
+        parentId: Number(e.source),
+        childId: Number(e.target),
+        parentHandlePos: e.sourceHandle ?? undefined,
+        childHandlePos: e.targetHandle ?? undefined,
         label: typeof e.label === 'string' ? e.label : undefined
-      }))
+      } as FlowNodeLink))
     }
     onUpdateModel.value(updatedFlow)
   }

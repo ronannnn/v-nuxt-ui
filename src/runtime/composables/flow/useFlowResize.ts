@@ -2,8 +2,9 @@ import { ref } from 'vue'
 import type { ShallowRef } from 'vue'
 import type { Node } from '@vue-flow/core'
 import type { FlowNode, UseFlowResizeDimensions } from '#v/types'
+import type { ResizeEdge } from '#v/constants'
 
-export type ResizeEdge = 'top' | 'right' | 'bottom' | 'left' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+export type { ResizeEdge }
 
 interface UseFlowResizeOptions {
   gridSize: number
@@ -41,8 +42,8 @@ export function useFlowResize(options: UseFlowResizeOptions) {
     resizeStartY.value = event.clientY
     resizeStartWidth.value = node.width ?? 120
     resizeStartHeight.value = node.height ?? 40
-    resizeStartNodeX.value = node.x ?? 0
-    resizeStartNodeY.value = node.y ?? 0
+    resizeStartNodeX.value = node.positionX ?? 0
+    resizeStartNodeY.value = node.positionY ?? 0
 
     document.body.style.userSelect = 'none'
   }

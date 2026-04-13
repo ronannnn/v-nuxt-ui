@@ -54,7 +54,6 @@ const saveLabel = () => {
   if (!editingLabel.value) return
   editingLabel.value = false
   const newLabel = tempLabel.value.trim()
-  // @ts-expect-error data is dynamic
   props.data?.onUpdateLabel?.(newLabel)
 }
 
@@ -125,7 +124,7 @@ const cancelEditing = () => {
         @keydown.enter="saveLabel"
         @keydown.escape="cancelEditing"
         @blur="saveLabel"
-      />
+      >
       <!-- Display mode: show label or invisible placeholder for no-label edges -->
       <div
         v-else-if="label"

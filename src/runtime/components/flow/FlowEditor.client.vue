@@ -2,13 +2,13 @@
 import { ref, computed, provide, watchEffect, onMounted, onBeforeUnmount } from 'vue'
 import { VueFlow, useVueFlow, Panel, MarkerType } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
-import type { Flow, FlowMousePosition, UseFlowResizeDimensions, FlowNode as FlowNodeType } from '#v/types'
+import type { Flow, FlowNode as FlowNodeType, FlowMousePosition, UseFlowResizeDimensions } from '#v/types'
 import { FLOW_MOUSE_POSITION_KEY, FLOW_EDGE_STROKE_TYPES } from '#v/constants'
 import FlowNode from './FlowNode.client.vue'
 import FlowEdge from './FlowEdge.client.vue'
 import FlowToolbar from './FlowToolbar.vue'
 import FlowStats from './FlowStats.vue'
-import type { ResizeEdge } from '#v/composables'
+import type { ResizeEdge } from '#v/constants'
 import { useFlow, useFlowResize, useFlowStyles } from '#v/composables'
 
 const props = withDefaults(defineProps<{
@@ -27,7 +27,7 @@ const props = withDefaults(defineProps<{
   /** 默认缩放 */
   defaultZoom?: number
 }>(), {
-  modelValue: () => ({ nodes: [], edges: [] }),
+  modelValue: () => ({ id: 0, nodes: [], links: [] }),
   showBackground: true,
   showToolbar: true,
   showStats: true,
@@ -80,6 +80,7 @@ const {
   nodeBorderRadius,
   nodeBgColor,
   nodeFontSize,
+  nodeHandleSize,
   setEdgeStrokeWidth,
   toggleEdgeMarkerStart,
   toggleEdgeMarkerEnd,
@@ -90,7 +91,8 @@ const {
   setNodeBorderWidth,
   setNodeBorderRadius,
   setNodeBgColor,
-  setNodeFontSize
+  setNodeFontSize,
+  setNodeHandleSize
 } = flowStyles
 
 // VueFlow 实例
@@ -135,6 +137,7 @@ watchEffect(() => {
     borderRadius: nodeBorderRadius.value,
     bgColor: nodeBgColor.value,
     fontSize: nodeFontSize.value,
+    handleSize: nodeHandleSize.value,
     onResizeStart: (event: MouseEvent, edge: ResizeEdge) => {
       const node = props.modelValue?.nodes?.find(n => String(n.id) === nodeId)
       if (node) {
@@ -301,9 +304,11 @@ const isValidConnection = () => true
         :node-border-radius="nodeBorderRadius"
         :node-bg-color="nodeBgColor"
         :node-font-size="nodeFontSize"
+        :node-handle-size="nodeHandleSize"
         :on-node-border-radius-change="setNodeBorderRadius"
         :on-node-bg-color-change="setNodeBgColor"
         :on-node-font-size-change="setNodeFontSize"
+        :on-node-handle-size-change="setNodeHandleSize"
       />
     </Panel>
 
