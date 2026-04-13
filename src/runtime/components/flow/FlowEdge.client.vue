@@ -54,34 +54,34 @@ interface MarkerDef {
 
 const MARKER_DEFS: Record<Exclude<FlowArrowType, 'none'>, { end: MarkerDef, start: MarkerDef }> = {
   'arrow': {
-    // end: tip at x=10, tail at x=-4; refX=10 → tip touches path endpoint, tail extends behind (away from node)
-    end: { viewBox: '-4 -4 14 18', refX: 10, refY: 5, shape: 'path', d: 'M -4 -4 L 10 5 L -4 14 z', filled: true },
-    // start: tip at x=0, tail at x=14; refX=14 → tail anchors at path endpoint (node border), tip extends outward
-    start: { viewBox: '0 -4 14 18', refX: 14, refY: 5, shape: 'path', d: 'M 14 -4 L 0 5 L 14 14 z', filled: true }
+    // end: tip at (10,5); refX=8 → line ends 2px inside triangle, stroke fully covered by fill
+    end: { viewBox: '-1 -1 12 12', refX: 8, refY: 5, shape: 'path', d: 'M 0 0 L 10 5 L 0 10 z', filled: true },
+    // start: tip at (0,5); refX=2 → line ends 2px inside triangle, stroke fully covered by fill
+    start: { viewBox: '-1 -1 12 12', refX: 2, refY: 5, shape: 'path', d: 'M 10 0 L 0 5 L 10 10 z', filled: true }
   },
   'arrow-open': {
-    end: { viewBox: '-4 -4 14 18', refX: 10, refY: 5, shape: 'path', d: 'M -4 -4 L 10 5 L -4 14 z', filled: false },
-    start: { viewBox: '0 -4 14 18', refX: 14, refY: 5, shape: 'path', d: 'M 14 -4 L 0 5 L 14 14 z', filled: false }
+    end: { viewBox: '-1 -1 12 12', refX: 8, refY: 5, shape: 'path', d: 'M 0 0 L 10 5 L 0 10', filled: false },
+    start: { viewBox: '-1 -1 12 12', refX: 2, refY: 5, shape: 'path', d: 'M 10 0 L 0 5 L 10 10', filled: false }
   },
   'diamond': {
-    // end: rightmost point at x=12, refX=12 → right tip touches path endpoint
-    end: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: true },
-    // start: leftmost point at x=0, rightmost at x=12; refX=12 → right side anchors at node, diamond extends outward
-    start: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: true }
+    // end: rightmost at x=12; refX=10 → line ends 2px inside diamond
+    end: { viewBox: '-2 -2 16 12', refX: 10, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: true },
+    // start: leftmost at x=0; refX=2 → line ends 2px inside diamond
+    start: { viewBox: '-2 -2 16 12', refX: 2, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: true }
   },
   'diamond-open': {
-    end: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: false },
-    start: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: false }
+    end: { viewBox: '-2 -2 16 12', refX: 10, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: false },
+    start: { viewBox: '-2 -2 16 12', refX: 2, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: false }
   },
   'circle': {
-    // end: circle spans x=0..8, refX=8 → right edge of circle touches path endpoint
-    end: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: true },
-    // start: refX=8 → right edge anchors at node border, circle extends outward
-    start: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: true }
+    // end: right edge at x=8; refX=6 → line ends 2px inside circle
+    end: { viewBox: '-2 -2 12 12', refX: 6, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: true },
+    // start: left edge at x=0; refX=2 → line ends 2px inside circle
+    start: { viewBox: '-2 -2 12 12', refX: 2, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: true }
   },
   'circle-open': {
-    end: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: false },
-    start: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: false }
+    end: { viewBox: '-2 -2 12 12', refX: 6, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: false },
+    start: { viewBox: '-2 -2 12 12', refX: 2, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: false }
   }
 }
 
@@ -157,8 +157,8 @@ const labelColorStyle = computed(() => edgeLabelColor.value ? { color: edgeLabel
     <defs>
       <marker
         v-for="m in markersToRender"
-        :key="m.id"
         :id="m.id"
+        :key="m.id"
         :viewBox="m.def.viewBox"
         :refX="m.def.refX"
         :refY="m.def.refY"
