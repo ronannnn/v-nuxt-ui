@@ -1,35 +1,58 @@
 <script setup lang="ts">
-import ButtonTheme from '#v/components/button/Theme.vue'
-import { FLOW_EDGE_STROKE_TYPES, FLOW_EDGE_PATH_TYPES, FLOW_EDGE_COLORS, FLOW_NODE_COLORS } from '#v/constants'
-import type { FlowEdgeStrokeType, FlowEdgePathType } from '#v/constants'
+import { ref } from 'vue'
+import {
+  FLOW_EDGE_COLORS, FLOW_NODE_COLORS, FLOW_NODE_BORDER_COLORS, FLOW_FONT_COLORS,
+  FLOW_WIDTH_ITEMS, FLOW_STROKE_TYPE_ITEMS, FLOW_PATH_TYPE_ITEMS, FLOW_ARROW_TYPE_ITEMS,
+  FLOW_BORDER_RADIUS_ITEMS, FLOW_FONT_SIZE_ITEMS, FLOW_HANDLE_SIZE_ITEMS,
+  FLOW_PATH_PREVIEW, FLOW_ARROW_PREVIEW_START, FLOW_ARROW_PREVIEW_END
+} from '#v/constants'
+import type { FlowEdgeStrokeType, FlowEdgePathType, FlowArrowType } from '#v/constants'
+import type { TabsItem } from '@nuxt/ui'
+import FlowToolbarItemWrapper from './FlowToolbarItemWrapper.vue'
+import CircleColor from '#v/components/button/CircleColor.vue'
+
+const settingsOpen = ref(false)
 
 defineProps<{
   onAddNode?: () => void
   edgeStrokeWidth?: number
   edgeStrokeType?: FlowEdgeStrokeType
   edgePathType?: FlowEdgePathType
-  edgeMarkerStart?: boolean
-  edgeMarkerEnd?: boolean
+  edgeMarkerStart?: FlowArrowType
+  edgeMarkerEnd?: FlowArrowType
   edgeAnimated?: boolean
   edgeColor?: string
+  edgeLabelColor?: string
   nodeBorderWidth?: number
   nodeBorderRadius?: number
+  nodeBorderColor?: string
   nodeBgColor?: string
+  nodeFontColor?: string
   nodeFontSize?: number
   nodeHandleSize?: number
-  onEdgeStrokeWidthChange?: (width: number) => void
+  onEdgeStrokeWidthChange: (width: number) => void
   onEdgeStrokeTypeChange?: (type: FlowEdgeStrokeType) => void
   onEdgePathTypeChange?: (type: FlowEdgePathType) => void
-  onToggleEdgeMarkerStart?: () => void
-  onToggleEdgeMarkerEnd?: () => void
+  onEdgeMarkerStartChange?: (type: FlowArrowType) => void
+  onEdgeMarkerEndChange?: (type: FlowArrowType) => void
   onToggleEdgeAnimated?: () => void
   onEdgeColorChange?: (color: string) => void
+  onEdgeLabelColorChange?: (color: string) => void
   onNodeBorderWidthChange?: (width: number) => void
   onNodeBorderRadiusChange?: (radius: number) => void
+  onNodeBorderColorChange?: (color: string) => void
   onNodeBgColorChange?: (color: string) => void
+  onNodeFontColorChange?: (color: string) => void
   onNodeFontSizeChange?: (size: number) => void
   onNodeHandleSizeChange?: (size: number) => void
 }>()
+
+const tabItems: TabsItem[] = [
+  { label: '节点设置', value: 'node', slot: 'node' },
+  { label: '连接线设置', value: 'edge', slot: 'edge' }
+]
+
+const itemSize = 'sm'
 </script>
 
 <template>
@@ -44,314 +67,302 @@ defineProps<{
     />
 
     <!-- 样式设置 -->
-    <UPopover :content="{ side: 'top' }" :ui="{ content: 'px-6 py-4 flex flex-col gap-4' }">
-      <UButton
-        label="设置"
-        icon="i-lucide-settings"
-        size="sm"
-        variant="subtle"
-      />
-      <template #content>
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            连接线粗细
-          </legend>
+    <UButton
+      icon="i-lucide-settings"
+      size="sm"
+      variant="subtle"
+      @click="settingsOpen = true"
+    />
 
-          <div class="grid grid-cols-5 gap-2 -mx-2">
-            <ButtonTheme
-              v-for="width in [1, 2, 3, 4, 5]"
-              :key="width"
-              :label="width.toString()"
-              :selected="edgeStrokeWidth === width"
-              class="justify-center min-w-10"
-              @click="onEdgeStrokeWidthChange?.(width)"
-            >
-              <template #leading>
-                <div class="flex flex-col gap-px">
-                  <div
-                    v-for="i in width"
-                    :key="i"
-                    class="w-4 h-0.5 bg-current rounded-full"
+    <USlideover v-model:open="settingsOpen" title="样式设置" side="right">
+      <template #body>
+        <UTabs
+          :items="tabItems"
+          size="xs"
+          default-value="node"
+          :ui="{
+            content: 'pt-2'
+          }"
+        >
+          <template #node>
+            <div class="flex flex-col gap-4">
+              <!-- 边框粗细 -->
+              <FlowToolbarItemWrapper label="边框粗细">
+                <USelect
+                  :model-value="nodeBorderWidth"
+                  :items="FLOW_WIDTH_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: number) => onNodeBorderWidthChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <div class="flex flex-col gap-px">
+                      <div
+                        v-for="i in (item as any).value"
+                        :key="i"
+                        class="w-4 h-0.5 bg-current rounded-full"
+                      />
+                    </div>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 圆角 -->
+              <FlowToolbarItemWrapper label="圆角">
+                <USelect
+                  :model-value="nodeBorderRadius"
+                  :items="FLOW_BORDER_RADIUS_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: number) => onNodeBorderRadiusChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <div
+                      class="w-4 h-3 border-2 border-current"
+                      :style="{ borderRadius: `${(item as any).value}px` }"
+                    />
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 边框颜色 -->
+              <FlowToolbarItemWrapper label="边框颜色">
+                <div class="grid grid-cols-9 gap-2">
+                  <CircleColor
+                    v-for="opt in FLOW_NODE_BORDER_COLORS"
+                    :key="opt.color"
+                    :chip="opt.chip"
+                    :shade="500"
+                    :selected="nodeBorderColor === opt.color"
+                    :title="opt.chip || 'default'"
+                    @click="onNodeBorderColorChange?.(opt.color)"
                   />
                 </div>
-              </template>
-            </ButtonTheme>
-          </div>
-        </fieldset>
+              </FlowToolbarItemWrapper>
 
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            连接线类型
-          </legend>
-
-          <div class="grid grid-cols-4 gap-2 -mx-2">
-            <ButtonTheme
-              v-for="opt in FLOW_EDGE_STROKE_TYPES"
-              :key="opt.type"
-              :label="opt.label"
-              :selected="edgeStrokeType === opt.type"
-              class="justify-center min-w-10"
-              @click="onEdgeStrokeTypeChange?.(opt.type)"
-            >
-              <template #leading>
-                <svg width="20" height="10" class="text-current">
-                  <line
-                    x1="0"
-                    y1="5"
-                    x2="20"
-                    y2="5"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    :stroke-dasharray="opt.dasharray || 'none'"
-                  />
-                </svg>
-              </template>
-            </ButtonTheme>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            连接线路径
-          </legend>
-
-          <div class="grid grid-cols-4 gap-2 -mx-2">
-            <ButtonTheme
-              v-for="opt in FLOW_EDGE_PATH_TYPES"
-              :key="opt.type"
-              :label="opt.label"
-              :selected="edgePathType === opt.type"
-              class="justify-center min-w-10"
-              @click="onEdgePathTypeChange?.(opt.type)"
-            >
-              <template #leading>
-                <svg
-                  v-if="opt.type === 'smoothstep'"
-                  width="20"
-                  height="14"
-                  class="text-current"
-                >
-                  <path
-                    d="M 0 12 L 6 12 Q 10 12 10 7 Q 10 2 14 2 L 20 2"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  />
-                </svg>
-                <svg
-                  v-else-if="opt.type === 'bezier'"
-                  width="20"
-                  height="14"
-                  class="text-current"
-                >
-                  <path
-                    d="M 0 12 C 10 12, 10 2, 20 2"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  />
-                </svg>
-                <svg
-                  v-else-if="opt.type === 'step'"
-                  width="20"
-                  height="14"
-                  class="text-current"
-                >
-                  <path
-                    d="M 0 12 L 10 12 L 10 2 L 20 2"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  />
-                </svg>
-                <svg
-                  v-else-if="opt.type === 'straight'"
-                  width="20"
-                  height="14"
-                  class="text-current"
-                >
-                  <line
-                    x1="0"
-                    y1="12"
-                    x2="20"
-                    y2="2"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  />
-                </svg>
-              </template>
-            </ButtonTheme>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            连接线箭头
-          </legend>
-
-          <div class="grid grid-cols-2 gap-2 -mx-2">
-            <ButtonTheme
-              label="起点"
-              :icon="edgeMarkerStart ? 'i-lucide-arrow-left' : 'i-lucide-minus'"
-              :selected="edgeMarkerStart"
-              @click="onToggleEdgeMarkerStart?.()"
-            />
-            <ButtonTheme
-              label="终点"
-              :icon="edgeMarkerEnd ? 'i-lucide-arrow-right' : 'i-lucide-minus'"
-              :selected="edgeMarkerEnd"
-              @click="onToggleEdgeMarkerEnd?.()"
-            />
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            连接线动画
-          </legend>
-
-          <div class="grid grid-cols-2 gap-2 -mx-2">
-            <ButtonTheme
-              label="流动"
-              icon="i-lucide-activity"
-              :selected="edgeAnimated"
-              @click="onToggleEdgeAnimated?.()"
-            />
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            连接线颜色
-          </legend>
-
-          <div class="flex gap-2 -mx-2 px-2">
-            <button
-              v-for="opt in FLOW_EDGE_COLORS"
-              :key="opt.color"
-              class="w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center"
-              :class="edgeColor === opt.color ? 'border-primary ring-2 ring-primary/30 scale-110' : 'border-default hover:scale-105'"
-              :style="opt.color ? { backgroundColor: opt.color } : {}"
-              :title="opt.label"
-              @click="onEdgeColorChange?.(opt.color)"
-            >
-              <span v-if="!opt.color" class="text-[10px] text-muted">A</span>
-            </button>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            节点边框粗细
-          </legend>
-
-          <div class="grid grid-cols-5 gap-2 -mx-2">
-            <ButtonTheme
-              v-for="width in [1, 2, 3, 4, 5]"
-              :key="width"
-              :label="width.toString()"
-              :selected="nodeBorderWidth === width"
-              class="justify-center"
-              @click="onNodeBorderWidthChange?.(width)"
-            >
-              <template #leading>
-                <div class="flex flex-col gap-px">
-                  <div
-                    v-for="i in width"
-                    :key="i"
-                    class="w-4 h-0.5 bg-current rounded-full"
+              <!-- 背景色 -->
+              <FlowToolbarItemWrapper label="背景色">
+                <div class="grid grid-cols-9 gap-2">
+                  <CircleColor
+                    v-for="opt in FLOW_NODE_COLORS"
+                    :key="opt.color"
+                    :chip="opt.chip"
+                    :shade="50"
+                    :selected="nodeBgColor === opt.color"
+                    :title="opt.chip || 'default'"
+                    @click="onNodeBgColorChange?.(opt.color)"
                   />
                 </div>
-              </template>
-            </ButtonTheme>
-          </div>
-        </fieldset>
+              </FlowToolbarItemWrapper>
 
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            节点圆角
-          </legend>
-          <div class="grid grid-cols-5 gap-2 -mx-2">
-            <ButtonTheme
-              v-for="radius in [0, 4, 8, 12, 16]"
-              :key="radius"
-              :label="radius.toString()"
-              :selected="nodeBorderRadius === radius"
-              class="justify-center min-w-10"
-              @click="onNodeBorderRadiusChange?.(radius)"
-            >
-              <template #leading>
-                <div
-                  class="w-4 h-3 border-2 border-current"
-                  :style="{ borderRadius: `${radius}px` }"
-                />
-              </template>
-            </ButtonTheme>
-          </div>
-        </fieldset>
+              <!-- 字体颜色 -->
+              <FlowToolbarItemWrapper label="字体颜色">
+                <div class="grid grid-cols-9 gap-2">
+                  <CircleColor
+                    v-for="opt in FLOW_FONT_COLORS"
+                    :key="opt.color"
+                    :chip="opt.chip"
+                    :shade="600"
+                    :selected="nodeFontColor === opt.color"
+                    :title="opt.chip || 'default'"
+                    @click="onNodeFontColorChange?.(opt.color)"
+                  />
+                </div>
+              </FlowToolbarItemWrapper>
 
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            节点背景色
-          </legend>
-          <div class="flex gap-2 -mx-2 px-2">
-            <button
-              v-for="opt in FLOW_NODE_COLORS"
-              :key="opt.color"
-              class="w-6 h-6 rounded-full border-2 transition-all flex items-center justify-center"
-              :class="nodeBgColor === opt.color ? 'border-primary ring-2 ring-primary/30 scale-110' : 'border-default hover:scale-105'"
-              :style="opt.color ? { backgroundColor: opt.color } : {}"
-              :title="opt.label"
-              @click="onNodeBgColorChange?.(opt.color)"
-            >
-              <span v-if="!opt.color" class="text-[10px] text-muted">A</span>
-            </button>
-          </div>
-        </fieldset>
+              <!-- 字号 -->
+              <FlowToolbarItemWrapper label="字号">
+                <USelect
+                  :model-value="nodeFontSize"
+                  :items="FLOW_FONT_SIZE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: number) => onNodeFontSizeChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <span class="font-medium shrink-0" :style="{ fontSize: `${Math.max((item as any).value - 4, 10)}px` }">A</span>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
 
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            节点字号
-          </legend>
-          <div class="grid grid-cols-5 gap-2 -mx-2">
-            <ButtonTheme
-              v-for="size in [12, 14, 16, 18, 20]"
-              :key="size"
-              :label="size.toString()"
-              :selected="nodeFontSize === size"
-              class="justify-center min-w-10"
-              @click="onNodeFontSizeChange?.(size)"
-            >
-              <template #leading>
-                <span class="font-medium" :style="{ fontSize: `${Math.max(size - 4, 10)}px` }">A</span>
-              </template>
-            </ButtonTheme>
-          </div>
-        </fieldset>
+              <!-- 连接点大小 -->
+              <FlowToolbarItemWrapper label="连接点大小">
+                <USelect
+                  :model-value="nodeHandleSize"
+                  :items="FLOW_HANDLE_SIZE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: number) => onNodeHandleSizeChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <div
+                      class="rounded-full bg-current shrink-0"
+                      :style="{ width: `${(item as any).value}px`, height: `${(item as any).value}px` }"
+                    />
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+            </div>
+          </template>
 
-        <fieldset>
-          <legend class="text-[11px] leading-none font-semibold mb-2">
-            连接点大小
-          </legend>
-          <div class="grid grid-cols-4 gap-2 -mx-2">
-            <ButtonTheme
-              v-for="size in [4, 6, 8, 10]"
-              :key="size"
-              :label="size.toString()"
-              :selected="nodeHandleSize === size"
-              class="justify-center min-w-10"
-              @click="onNodeHandleSizeChange?.(size)"
-            >
-              <template #leading>
-                <div
-                  class="rounded-full bg-current"
-                  :style="{ width: `${size}px`, height: `${size}px` }"
-                />
-              </template>
-            </ButtonTheme>
-          </div>
-        </fieldset>
+          <template #edge>
+            <div class="flex flex-col gap-4">
+              <!-- 粗细 -->
+              <FlowToolbarItemWrapper label="粗细">
+                <USelect
+                  :model-value="edgeStrokeWidth"
+                  :items="FLOW_WIDTH_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: number) => onEdgeStrokeWidthChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <div class="flex flex-col gap-px">
+                      <div
+                        v-for="i in (item as any).value"
+                        :key="i"
+                        class="w-4 h-0.5 bg-current rounded-full"
+                      />
+                    </div>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 线型 -->
+              <FlowToolbarItemWrapper label="线型">
+                <USelect
+                  :model-value="edgeStrokeType"
+                  :items="FLOW_STROKE_TYPE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: FlowEdgeStrokeType) => onEdgeStrokeTypeChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <svg width="20" height="10" class="shrink-0">
+                      <line
+                        x1="0"
+                        y1="5"
+                        x2="20"
+                        y2="5"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        :stroke-dasharray="(item as any).dasharray || 'none'"
+                      />
+                    </svg>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 路径 -->
+              <FlowToolbarItemWrapper label="路径">
+                <USelect
+                  :model-value="edgePathType"
+                  :items="FLOW_PATH_TYPE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: FlowEdgePathType) => onEdgePathTypeChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <svg width="20" height="14" class="shrink-0">
+                      <template v-if="FLOW_PATH_PREVIEW[(item as any).value as FlowEdgePathType]?.shape === 'path'">
+                        <path
+                          :d="FLOW_PATH_PREVIEW[(item as any).value as FlowEdgePathType].d"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        />
+                      </template>
+                      <template v-else>
+                        <line
+                          v-bind="{ x1: FLOW_PATH_PREVIEW[(item as any).value as FlowEdgePathType].x1, y1: FLOW_PATH_PREVIEW[(item as any).value as FlowEdgePathType].y1, x2: FLOW_PATH_PREVIEW[(item as any).value as FlowEdgePathType].x2, y2: FLOW_PATH_PREVIEW[(item as any).value as FlowEdgePathType].y2 }"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        />
+                      </template>
+                    </svg>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 起点箭头 -->
+              <FlowToolbarItemWrapper label="起点箭头">
+                <USelect
+                  :model-value="edgeMarkerStart"
+                  :items="FLOW_ARROW_TYPE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: FlowArrowType) => onEdgeMarkerStartChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <svg width="20" height="10" class="shrink-0">
+                      <component
+                        :is="el.tag"
+                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_START[(item as any).value as FlowArrowType]"
+                        :key="idx"
+                        v-bind="el.attrs"
+                      />
+                    </svg>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 终点箭头 -->
+              <FlowToolbarItemWrapper label="终点箭头">
+                <USelect
+                  :model-value="edgeMarkerEnd"
+                  :items="FLOW_ARROW_TYPE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: FlowArrowType) => onEdgeMarkerEndChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <svg width="20" height="10" class="shrink-0">
+                      <component
+                        :is="el.tag"
+                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_END[(item as any).value as FlowArrowType]"
+                        :key="idx"
+                        v-bind="el.attrs"
+                      />
+                    </svg>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 动画 -->
+              <FlowToolbarItemWrapper label="流动动画">
+                <div class="flex items-center h-7">
+                  <USwitch
+                    :model-value="edgeAnimated"
+                    size="lg"
+                    @update:model-value="onToggleEdgeAnimated?.()"
+                  />
+                </div>
+              </FlowToolbarItemWrapper>
+
+              <!-- 连接线颜色 -->
+              <FlowToolbarItemWrapper label="颜色">
+                <div class="grid grid-cols-9 gap-2">
+                  <CircleColor
+                    v-for="opt in FLOW_EDGE_COLORS"
+                    :key="opt.color"
+                    :chip="opt.chip"
+                    :shade="500"
+                    :selected="edgeColor === opt.color"
+                    :title="opt.chip || 'default'"
+                    @click="onEdgeColorChange?.(opt.color)"
+                  />
+                </div>
+              </FlowToolbarItemWrapper>
+
+              <!-- 标签颜色 -->
+              <FlowToolbarItemWrapper label="标签颜色">
+                <div class="grid grid-cols-9 gap-2">
+                  <CircleColor
+                    v-for="opt in FLOW_FONT_COLORS"
+                    :key="opt.color"
+                    :chip="opt.chip"
+                    :shade="600"
+                    :selected="edgeLabelColor === opt.color"
+                    :title="opt.chip || 'default'"
+                    @click="onEdgeLabelColorChange?.(opt.color)"
+                  />
+                </div>
+              </FlowToolbarItemWrapper>
+            </div>
+          </template>
+        </UTabs>
       </template>
-    </UPopover>
+    </USlideover>
   </div>
 </template>

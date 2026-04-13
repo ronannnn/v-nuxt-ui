@@ -50,6 +50,12 @@ export default defineAppConfig({
         }
       }
     },
+    select: {
+      slots: {
+        content: 'min-w-fit',
+        item: 'items-center'
+      }
+    },
     selectMenu: {
       slots: {
         trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200'

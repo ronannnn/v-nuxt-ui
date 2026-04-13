@@ -35,6 +35,7 @@ const {
       borderColor: borderColor,
       borderRadius: data.borderRadius !== undefined ? `${data.borderRadius}px` : '6px',
       ...(data.bgColor ? { backgroundColor: data.bgColor } : {}),
+      ...(data.fontColor ? { color: data.fontColor } : {}),
       fontSize: data.fontSize ? `${data.fontSize}px` : '14px'
     }"
     @mouseenter="isHoveredLocal = true"

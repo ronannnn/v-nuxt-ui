@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { useFlowStyles } from '#v/composables/flow/useFlowStyles'
+import { FLOW_EDGE_STROKE_TYPES } from '#v/constants'
+import type { FlowArrowType } from '#v/constants'
 import { EdgeLabelRenderer, getSmoothStepPath, getBezierPath, getStraightPath, BaseEdge } from '@vue-flow/core'
 import type { EdgeProps } from '@vue-flow/core'
 
 const props = defineProps<EdgeProps>()
 
-const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeColor } = useFlowStyles()
+const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeColor, edgeLabelColor, edgeAnimated, edgeStrokeType } = useFlowStyles()
 
 const path = computed(() => {
   switch (edgePathType.value) {
@@ -22,18 +24,105 @@ const path = computed(() => {
   }
 })
 
-const customMarkerEnd = computed(() => edgeMarkerEnd.value ? `url(#custom-arrow-end-${props.id})` : undefined)
-const customMarkerStart = computed(() => edgeMarkerStart.value ? `url(#custom-arrow-start-${props.id})` : undefined)
+/** 根据箭头类型和方向生成 marker URL */
+function markerUrl(type: FlowArrowType, direction: 'start' | 'end'): string | undefined {
+  if (type === 'none') return undefined
+  return `url(#marker-${type}-${direction}-${props.id})`
+}
+
+const customMarkerEnd = computed(() => markerUrl(edgeMarkerEnd.value, 'end'))
+const customMarkerStart = computed(() => markerUrl(edgeMarkerStart.value, 'start'))
 
 const strokeColor = computed(() => {
   if (props.selected) return 'var(--ui-primary)'
   return edgeColor.value || 'var(--ui-text-dimmed)'
 })
 
-const edgeStyle = computed(() => ({
-  ...props.style,
-  stroke: strokeColor.value
-}))
+/** Marker 配置表：每种箭头类型对应的 SVG 属性 */
+interface MarkerDef {
+  viewBox: string
+  refX: number
+  refY: number
+  /** SVG path/shape 的 d 属性或元素类型 */
+  shape: 'path' | 'circle'
+  d?: string
+  cx?: number
+  cy?: number
+  r?: number
+  filled: boolean
+}
+
+const MARKER_DEFS: Record<Exclude<FlowArrowType, 'none'>, { end: MarkerDef, start: MarkerDef }> = {
+  'arrow': {
+    // end: tip at x=10, tail at x=-4; refX=10 → tip touches path endpoint, tail extends behind (away from node)
+    end: { viewBox: '-4 -4 14 18', refX: 10, refY: 5, shape: 'path', d: 'M -4 -4 L 10 5 L -4 14 z', filled: true },
+    // start: tip at x=0, tail at x=14; refX=14 → tail anchors at path endpoint (node border), tip extends outward
+    start: { viewBox: '0 -4 14 18', refX: 14, refY: 5, shape: 'path', d: 'M 14 -4 L 0 5 L 14 14 z', filled: true }
+  },
+  'arrow-open': {
+    end: { viewBox: '-4 -4 14 18', refX: 10, refY: 5, shape: 'path', d: 'M -4 -4 L 10 5 L -4 14 z', filled: false },
+    start: { viewBox: '0 -4 14 18', refX: 14, refY: 5, shape: 'path', d: 'M 14 -4 L 0 5 L 14 14 z', filled: false }
+  },
+  'diamond': {
+    // end: rightmost point at x=12, refX=12 → right tip touches path endpoint
+    end: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: true },
+    // start: leftmost point at x=0, rightmost at x=12; refX=12 → right side anchors at node, diamond extends outward
+    start: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: true }
+  },
+  'diamond-open': {
+    end: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: false },
+    start: { viewBox: '-2 -2 16 12', refX: 12, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: false }
+  },
+  'circle': {
+    // end: circle spans x=0..8, refX=8 → right edge of circle touches path endpoint
+    end: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: true },
+    // start: refX=8 → right edge anchors at node border, circle extends outward
+    start: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: true }
+  },
+  'circle-open': {
+    end: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: false },
+    start: { viewBox: '-2 -2 12 12', refX: 8, refY: 4, shape: 'circle', cx: 4, cy: 4, r: 4, filled: false }
+  }
+}
+
+/** 需要渲染的 marker 列表 */
+const markersToRender = computed(() => {
+  const markers: Array<{ id: string, def: MarkerDef }> = []
+  const startType = edgeMarkerStart.value
+  const endType = edgeMarkerEnd.value
+
+  if (startType !== 'none') {
+    const defs = MARKER_DEFS[startType]
+    markers.push({ id: `marker-${startType}-start-${props.id}`, def: defs.start })
+  }
+  if (endType !== 'none') {
+    const defs = MARKER_DEFS[endType]
+    markers.push({ id: `marker-${endType}-end-${props.id}`, def: defs.end })
+  }
+  return markers
+})
+
+const edgeStyle = computed(() => {
+  const base: Record<string, any> = {
+    ...props.style,
+    stroke: strokeColor.value
+  }
+
+  if (edgeAnimated.value) {
+    const strokeOpt = FLOW_EDGE_STROKE_TYPES.find(t => t.type === edgeStrokeType.value)
+    const dasharray = strokeOpt?.dasharray || ''
+    // solid 用 '8 4' 做流动效果，非实线用原有 dasharray
+    const animDash = dasharray || '8 4'
+    const total = animDash.split(/\s+/).reduce((sum, n) => sum + Number(n), 0)
+
+    base.strokeDasharray = animDash
+    // 使用 CSS 自定义属性传递 dashoffset 值给 keyframes
+    base['--flow-dash-len'] = `${total}`
+    base.animation = `flow-dash ${Math.max(total * 0.05, 0.3)}s linear infinite`
+  }
+
+  return base
+})
 
 // Label editing state
 const editingLabel = ref(false)
@@ -59,37 +148,40 @@ const saveLabel = () => {
 const cancelEditing = () => {
   editingLabel.value = false
 }
+
+const labelColorStyle = computed(() => edgeLabelColor.value ? { color: edgeLabelColor.value } : {})
 </script>
 
 <template>
   <svg style="position: absolute; width: 0; height: 0">
     <defs>
       <marker
-        :id="`custom-arrow-end-${id}`"
-        viewBox="-4 -4 14 18"
-        refX="7"
-        refY="5"
-        markerWidth="5"
-        markerHeight="5"
-        orient="auto-start-reverse"
-      >
-        <path
-          d="M -4 -4 L 10 5 L -4 14 z"
-          :fill="strokeColor"
-        />
-      </marker>
-      <marker
-        :id="`custom-arrow-start-${id}`"
-        viewBox="0 -4 14 18"
-        refX="3"
-        refY="5"
-        markerWidth="5"
-        markerHeight="5"
+        v-for="m in markersToRender"
+        :key="m.id"
+        :id="m.id"
+        :viewBox="m.def.viewBox"
+        :refX="m.def.refX"
+        :refY="m.def.refY"
+        markerWidth="12"
+        markerHeight="12"
+        markerUnits="userSpaceOnUse"
         orient="auto"
       >
         <path
-          d="M 14 -4 L 0 5 L 14 14 z"
-          :fill="strokeColor"
+          v-if="m.def.shape === 'path'"
+          :d="m.def.d"
+          :fill="m.def.filled ? strokeColor : 'var(--ui-bg)'"
+          :stroke="strokeColor"
+          :stroke-width="m.def.filled ? 0 : 1.5"
+        />
+        <circle
+          v-else-if="m.def.shape === 'circle'"
+          :cx="m.def.cx"
+          :cy="m.def.cy"
+          :r="m.def.r"
+          :fill="m.def.filled ? strokeColor : 'var(--ui-bg)'"
+          :stroke="strokeColor"
+          :stroke-width="m.def.filled ? 0 : 1.5"
         />
       </marker>
     </defs>
@@ -119,7 +211,7 @@ const cancelEditing = () => {
         ref="inputRef"
         v-model="tempLabel"
         class="bg-background border border-default rounded px-2 py-1 text-xs outline-none"
-        style="min-width: 40px; width: auto;"
+        :style="{ minWidth: '40px', width: 'auto', ...labelColorStyle }"
         @keydown.enter="saveLabel"
         @keydown.escape="cancelEditing"
         @blur="saveLabel"
@@ -128,6 +220,7 @@ const cancelEditing = () => {
       <div
         v-else-if="label"
         class="bg-background border border-default rounded px-2 py-1 text-xs shadow-sm"
+        :style="labelColorStyle"
       >
         {{ label }}
       </div>
@@ -139,3 +232,11 @@ const cancelEditing = () => {
     </div>
   </EdgeLabelRenderer>
 </template>
+
+<style>
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: calc(var(--flow-dash-len) * -1px);
+  }
+}
+</style>

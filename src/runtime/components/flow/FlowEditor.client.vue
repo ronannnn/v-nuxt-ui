@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, provide, watchEffect, onMounted, onBeforeUnmount } from 'vue'
-import { VueFlow, useVueFlow, Panel, MarkerType } from '@vue-flow/core'
+import { VueFlow, useVueFlow, Panel } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import type { Flow, FlowNode as FlowNodeType, FlowMousePosition, UseFlowResizeDimensions } from '#v/types'
 import { FLOW_MOUSE_POSITION_KEY, FLOW_EDGE_STROKE_TYPES } from '#v/constants'
@@ -75,9 +75,12 @@ const {
   edgeStrokeType,
   edgePathType,
   edgeColor,
+  edgeLabelColor,
   nodeBorderWidth,
   nodeBorderRadius,
+  nodeBorderColor,
   nodeBgColor,
+  nodeFontColor,
   nodeFontSize,
   nodeHandleSize
 } = useFlowStyles()
@@ -122,7 +125,9 @@ watchEffect(() => {
     onDelete: () => deleteNode(nodeId),
     borderWidth: nodeBorderWidth.value,
     borderRadius: nodeBorderRadius.value,
+    borderColor: nodeBorderColor.value,
     bgColor: nodeBgColor.value,
+    fontColor: nodeFontColor.value,
     fontSize: nodeFontSize.value,
     handleSize: nodeHandleSize.value,
     onResizeStart: (event: MouseEvent, edge: ResizeEdge) => {
@@ -143,9 +148,10 @@ watchEffect(() => {
       ...(dasharray ? { strokeDasharray: dasharray } : {}),
       ...(edgeColor.value ? { stroke: edgeColor.value } : {})
     }
-    edge.markerStart = edgeMarkerStart.value ? MarkerType.Arrow : undefined
-    edge.markerEnd = edgeMarkerEnd.value ? MarkerType.Arrow : undefined
-    edge.animated = edgeAnimated.value
+    // Markers are handled by FlowEdge custom SVG markers
+    edge.markerStart = undefined
+    edge.markerEnd = undefined
+    edge.animated = false
   })
 })
 
@@ -227,9 +233,10 @@ const defaultEdgeOptions = computed(() => {
       ...(dasharray ? { strokeDasharray: dasharray } : {}),
       ...(edgeColor.value ? { stroke: edgeColor.value } : {})
     },
-    markerStart: edgeMarkerStart.value ? MarkerType.Arrow : undefined,
-    markerEnd: edgeMarkerEnd.value ? MarkerType.Arrow : undefined,
-    animated: edgeAnimated.value
+    // Markers are handled by FlowEdge custom SVG markers
+    markerStart: undefined,
+    markerEnd: undefined,
+    animated: false
   }
 })
 
@@ -279,21 +286,27 @@ const isValidConnection = () => true
         :edge-marker-end="edgeMarkerEnd"
         :edge-animated="edgeAnimated"
         :edge-color="edgeColor"
+        :edge-label-color="edgeLabelColor"
         :node-border-width="nodeBorderWidth"
         :node-border-radius="nodeBorderRadius"
+        :node-border-color="nodeBorderColor"
         :node-bg-color="nodeBgColor"
+        :node-font-color="nodeFontColor"
         :node-font-size="nodeFontSize"
         :node-handle-size="nodeHandleSize"
         :on-edge-stroke-width-change="(v) => edgeStrokeWidth = v"
         :on-edge-stroke-type-change="(v) => edgeStrokeType = v"
         :on-edge-path-type-change="(v) => edgePathType = v"
-        :on-toggle-edge-marker-start="() => edgeMarkerStart = !edgeMarkerStart"
-        :on-toggle-edge-marker-end="() => edgeMarkerEnd = !edgeMarkerEnd"
+        :on-edge-marker-start-change="(v) => edgeMarkerStart = v"
+        :on-edge-marker-end-change="(v) => edgeMarkerEnd = v"
         :on-toggle-edge-animated="() => edgeAnimated = !edgeAnimated"
         :on-edge-color-change="(v) => edgeColor = v"
+        :on-edge-label-color-change="(v) => edgeLabelColor = v"
         :on-node-border-width-change="(v) => nodeBorderWidth = v"
         :on-node-border-radius-change="(v) => nodeBorderRadius = v"
+        :on-node-border-color-change="(v) => nodeBorderColor = v"
         :on-node-bg-color-change="(v) => nodeBgColor = v"
+        :on-node-font-color-change="(v) => nodeFontColor = v"
         :on-node-font-size-change="(v) => nodeFontSize = v"
         :on-node-handle-size-change="(v) => nodeHandleSize = v"
       />

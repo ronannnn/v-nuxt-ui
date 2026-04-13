@@ -4,8 +4,6 @@ import type { Node } from '@vue-flow/core'
 import type { FlowNode, UseFlowResizeDimensions } from '#v/types'
 import type { ResizeEdge } from '#v/constants'
 
-export type { ResizeEdge }
-
 interface UseFlowResizeOptions {
   gridSize: number
   nodes: ShallowRef<Node[]>

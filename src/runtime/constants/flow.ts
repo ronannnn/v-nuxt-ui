@@ -104,35 +104,221 @@ export const FLOW_EDGE_PATH_TYPES: FlowEdgePathOption[] = [
 /**
  * 连接线颜色预设
  */
-export interface FlowEdgeColorOption {
-  color: string // CSS color value, empty string = theme default
+export interface FlowColorOption {
+  /** CSS color value (var(--color-xxx) 格式)，empty string = theme default */
+  color: string
+  /** Tailwind 颜色名（用于 CircleColor 组件的色块显示），default 项为空字符串 */
+  chip: string
+}
+
+/** 标准 Tailwind v4 primary 颜色名列表（17色，与 useTheme.primaryColors 一致） */
+const FLOW_COLOR_NAMES = [
+  'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald',
+  'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple',
+  'fuchsia', 'pink', 'rose'
+] as const
+
+/** 构造颜色选项数组的工厂函数 */
+function makeColorOptions(shade: number): FlowColorOption[] {
+  return [
+    { color: '', chip: '' },
+    ...FLOW_COLOR_NAMES.map(name => ({
+      color: `var(--color-${name}-${shade})`,
+      chip: name
+    }))
+  ]
+}
+
+export const FLOW_EDGE_COLORS: FlowColorOption[] = makeColorOptions(500)
+
+/**
+ * 节点背景颜色预设（Tailwind 50 色阶，浅色背景）
+ */
+export const FLOW_NODE_COLORS: FlowColorOption[] = makeColorOptions(50)
+
+/**
+ * 节点边框颜色预设（Tailwind 500 色阶，与连接线颜色一致）
+ */
+export const FLOW_NODE_BORDER_COLORS: FlowColorOption[] = makeColorOptions(500)
+
+/**
+ * 节点/边字体颜色预设（Tailwind 600 色阶，深色保证可读性）
+ */
+export const FLOW_FONT_COLORS: FlowColorOption[] = makeColorOptions(600)
+
+/**
+ * 箭头类型
+ */
+export type FlowArrowType = 'none' | 'arrow' | 'arrow-open' | 'diamond' | 'diamond-open' | 'circle' | 'circle-open'
+
+export interface FlowArrowOption {
+  type: FlowArrowType
   label: string
 }
 
-export const FLOW_EDGE_COLORS: FlowEdgeColorOption[] = [
-  { color: '', label: '默认' },
-  { color: '#ef4444', label: '红' },
-  { color: '#f97316', label: '橙' },
-  { color: '#eab308', label: '黄' },
-  { color: '#22c55e', label: '绿' },
-  { color: '#3b82f6', label: '蓝' },
-  { color: '#8b5cf6', label: '紫' },
-  { color: '#6b7280', label: '灰' }
+export const FLOW_ARROW_TYPES: FlowArrowOption[] = [
+  { type: 'none', label: '无' },
+  { type: 'arrow', label: '三角实心' },
+  { type: 'arrow-open', label: '三角空心' },
+  { type: 'diamond', label: '菱形实心' },
+  { type: 'diamond-open', label: '菱形空心' },
+  { type: 'circle', label: '圆形实心' },
+  { type: 'circle-open', label: '圆形空心' }
 ]
 
-/**
- * 节点背景颜色预设（复用连接线颜色）
- */
-export const FLOW_NODE_COLORS: FlowEdgeColorOption[] = [
-  { color: '', label: '默认' },
-  { color: '#fef2f2', label: '红' },
-  { color: '#fff7ed', label: '橙' },
-  { color: '#fefce8', label: '黄' },
-  { color: '#f0fdf4', label: '绿' },
-  { color: '#eff6ff', label: '蓝' },
-  { color: '#f5f3ff', label: '紫' },
-  { color: '#f9fafb', label: '灰' }
+// ============================================================
+// USelect items（直接用于 USelect :items 绑定，value 字段兼容）
+// ============================================================
+
+/** 粗细选项（连接线/边框通用） */
+export const FLOW_WIDTH_ITEMS: { label: string, value: number }[] = [
+  { label: '1', value: 1 },
+  { label: '2', value: 2 },
+  { label: '3', value: 3 },
+  { label: '4', value: 4 },
+  { label: '5', value: 5 }
 ]
+
+/** 线型选项（带 dasharray 供 SVG 预览用） */
+export const FLOW_STROKE_TYPE_ITEMS = FLOW_EDGE_STROKE_TYPES.map(o => ({
+  label: o.label,
+  value: o.type as FlowEdgeStrokeType,
+  dasharray: o.dasharray
+}))
+
+/** 路径类型选项 */
+export const FLOW_PATH_TYPE_ITEMS = FLOW_EDGE_PATH_TYPES.map(o => ({
+  label: o.label,
+  value: o.type as FlowEdgePathType
+}))
+
+/** 箭头类型选项 */
+export const FLOW_ARROW_TYPE_ITEMS = FLOW_ARROW_TYPES.map(o => ({
+  label: o.label,
+  value: o.type as FlowArrowType
+}))
+
+/** 圆角选项 */
+export const FLOW_BORDER_RADIUS_ITEMS: { label: string, value: number }[] = [
+  { label: '0', value: 0 },
+  { label: '2', value: 2 },
+  { label: '4', value: 4 },
+  { label: '6', value: 6 },
+  { label: '8', value: 8 }
+]
+
+/** 字号选项 */
+export const FLOW_FONT_SIZE_ITEMS: { label: string, value: number }[] = [
+  { label: 'xs (12)', value: 12 },
+  { label: 'sm (14)', value: 14 },
+  { label: 'base (16)', value: 16 },
+  { label: 'lg (18)', value: 18 },
+  { label: 'xl (20)', value: 20 }
+]
+
+/** 连接点大小选项 */
+export const FLOW_HANDLE_SIZE_ITEMS: { label: string, value: number }[] = [
+  { label: '4', value: 4 },
+  { label: '6', value: 6 },
+  { label: '8', value: 8 },
+  { label: '10', value: 10 }
+]
+
+// ============================================================
+// 路径预览 SVG 数据（用于 USelect #item-leading）
+// ============================================================
+
+export interface FlowPathPreview {
+  /** 'path' 用 <path d=...>，'line' 用 <line> */
+  shape: 'path' | 'line'
+  d?: string
+  x1?: number
+  y1?: number
+  x2?: number
+  y2?: number
+}
+
+export const FLOW_PATH_PREVIEW: Record<FlowEdgePathType, FlowPathPreview> = {
+  smoothstep: { shape: 'path', d: 'M 0 12 L 6 12 Q 10 12 10 7 Q 10 2 14 2 L 20 2' },
+  bezier: { shape: 'path', d: 'M 0 12 C 10 12, 10 2, 20 2' },
+  step: { shape: 'path', d: 'M 0 12 L 10 12 L 10 2 L 20 2' },
+  straight: { shape: 'line', x1: 0, y1: 12, x2: 20, y2: 2 }
+}
+
+// ============================================================
+// 箭头预览 SVG 数据（用于 USelect #item-leading）
+// ============================================================
+
+export interface FlowArrowSvgElement {
+  tag: 'line' | 'polygon' | 'circle'
+  attrs: Record<string, string | number>
+}
+
+/**
+ * 起点箭头预览：箭头图形在左侧，尾线在右侧
+ */
+export const FLOW_ARROW_PREVIEW_START: Record<FlowArrowType, FlowArrowSvgElement[]> = {
+  'none': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ],
+  'arrow': [
+    { tag: 'polygon', attrs: { points: '10,1 2,5 10,9', fill: 'currentColor' } },
+    { tag: 'line', attrs: { 'x1': 8, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ],
+  'arrow-open': [
+    { tag: 'polygon', attrs: { 'points': '10,1 2,5 10,9', 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } },
+    { tag: 'line', attrs: { 'x1': 8, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ],
+  'diamond': [
+    { tag: 'polygon', attrs: { points: '2,5 7,1 12,5 7,9', fill: 'currentColor' } },
+    { tag: 'line', attrs: { 'x1': 12, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ],
+  'diamond-open': [
+    { tag: 'polygon', attrs: { 'points': '2,5 7,1 12,5 7,9', 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } },
+    { tag: 'line', attrs: { 'x1': 12, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ],
+  'circle': [
+    { tag: 'circle', attrs: { cx: 6, cy: 5, r: 4, fill: 'currentColor' } },
+    { tag: 'line', attrs: { 'x1': 10, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ],
+  'circle-open': [
+    { tag: 'circle', attrs: { 'cx': 6, 'cy': 5, 'r': 3.5, 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } },
+    { tag: 'line', attrs: { 'x1': 10, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ]
+}
+
+/**
+ * 终点箭头预览：尾线在左侧，箭头图形在右侧
+ */
+export const FLOW_ARROW_PREVIEW_END: Record<FlowArrowType, FlowArrowSvgElement[]> = {
+  'none': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
+  ],
+  'arrow': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 12, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
+    { tag: 'polygon', attrs: { points: '10,1 18,5 10,9', fill: 'currentColor' } }
+  ],
+  'arrow-open': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 12, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
+    { tag: 'polygon', attrs: { 'points': '10,1 18,5 10,9', 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } }
+  ],
+  'diamond': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 8, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
+    { tag: 'polygon', attrs: { points: '8,5 13,1 18,5 13,9', fill: 'currentColor' } }
+  ],
+  'diamond-open': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 8, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
+    { tag: 'polygon', attrs: { 'points': '8,5 13,1 18,5 13,9', 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } }
+  ],
+  'circle': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 10, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
+    { tag: 'circle', attrs: { cx: 14, cy: 5, r: 4, fill: 'currentColor' } }
+  ],
+  'circle-open': [
+    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 10, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
+    { tag: 'circle', attrs: { 'cx': 14, 'cy': 5, 'r': 3.5, 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } }
+  ]
+}
 
 /**
  * 节点鼠标接近阈值（px）

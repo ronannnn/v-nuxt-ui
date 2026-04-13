@@ -7,6 +7,7 @@ import {
   FLOW_NODE_PROXIMITY_THRESHOLD
 } from '#v/constants'
 import type { FlowHandle } from '#v/constants'
+import { handleSizePreview } from './useFlowStyles'
 
 interface UseFlowNodeOptions {
   /** 节点 data (reactive) */
@@ -25,9 +26,12 @@ export function useFlowNode(options: UseFlowNodeOptions) {
   const localMousePosition = ref({ x: 0, y: 0 })
   const mousePosition = computed(() => injectedMousePosition?.value ?? localMousePosition.value)
 
-  const borderColor = computed(() =>
-    selected.value ? 'var(--ui-primary)' : 'var(--ui-border-default)'
-  )
+  const borderColor = computed(() => {
+    if (selected.value) return 'var(--ui-primary)'
+    // 使用用户设置的边框颜色，若为空则用默认边框色
+    if (data.value.borderColor) return data.value.borderColor
+    return 'var(--ui-border-default)'
+  })
 
   const isNearby = computed(() => {
     if (!nodeRef.value) return false
@@ -43,7 +47,7 @@ export function useFlowNode(options: UseFlowNodeOptions) {
     return distance <= FLOW_NODE_PROXIMITY_THRESHOLD
   })
 
-  const showHandles = computed(() => isHoveredLocal.value || isNearby.value)
+  const showHandles = computed(() => isHoveredLocal.value || isNearby.value || handleSizePreview.value)
 
   // 根据节点宽高独立判断各轴 handle 层级
   // tier: 0 = small (仅中心), 1 = medium (+ 角), 2 = full (+ 25%/75%)
