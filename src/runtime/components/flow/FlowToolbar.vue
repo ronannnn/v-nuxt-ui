@@ -103,6 +103,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="nodeBorderWidth"
                   :items="FLOW_WIDTH_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: number) => onNodeBorderWidthChange?.(v)"
                 >
                   <template #item-leading="{ item }">
@@ -164,13 +165,11 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="nodeFontSize"
                   :items="FLOW_FONT_SIZE_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: number) => onNodeFontSizeChange?.(v)"
                 >
                   <template #item-leading="{ item }">
                     <span :class="(item as any).twClass">A</span>
-                  </template>
-                  <template #item-label="{ item }">
-                    <span :class="(item as any).twClass">{{ item.label }}</span>
                   </template>
                 </USelect>
               </FlowToolbarItemWrapper>
@@ -198,6 +197,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="nodeBorderRadius"
                   :items="FLOW_BORDER_RADIUS_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: number) => onNodeBorderRadiusChange?.(v)"
                 >
                   <template #leading="{ modelValue }">
@@ -222,9 +222,11 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="nodeHandleSize"
                   :items="FLOW_HANDLE_SIZE_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
+                  class="min-h-7"
                   @update:model-value="(v: number) => onNodeHandleSizeChange?.(v)"
                 >
-                  <template #leading="{ modelValue }">
+                  <template #default="{ modelValue }">
                     <div
                       v-if="modelValue"
                       class="rounded-full bg-current"
@@ -250,6 +252,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="edgeMarkerStart"
                   :items="FLOW_ARROW_TYPE_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: FlowArrowType) => onEdgeMarkerStartChange?.(v)"
                 >
                   <template #leading="{ modelValue }">
@@ -286,6 +289,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="edgeMarkerEnd"
                   :items="FLOW_ARROW_TYPE_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: FlowArrowType) => onEdgeMarkerEndChange?.(v)"
                 >
                   <template #leading="{ modelValue }">
@@ -324,6 +328,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="edgeStrokeWidth"
                   :items="FLOW_WIDTH_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: number) => onEdgeStrokeWidthChange?.(v)"
                 >
                   <template #leading="{ modelValue }">
@@ -351,6 +356,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="edgeStrokeType"
                   :items="FLOW_STROKE_TYPE_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: FlowEdgeStrokeType) => onEdgeStrokeTypeChange?.(v)"
                 >
                   <template #leading="{ modelValue }">
@@ -393,6 +399,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :model-value="edgePathType"
                   :items="FLOW_PATH_TYPE_ITEMS"
                   :size="itemSize"
+                  trailing-icon=""
                   @update:model-value="(v: FlowEdgePathType) => onEdgePathTypeChange?.(v)"
                 >
                   <template #leading="{ modelValue }">
