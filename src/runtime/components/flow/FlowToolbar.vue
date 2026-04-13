@@ -87,7 +87,7 @@ const itemSize = 'sm'
           size="xs"
           default-value="node"
           :ui="{
-            content: 'pt-2'
+            content: 'pt-3'
           }"
         >
           <template #node>
@@ -112,23 +112,6 @@ const itemSize = 'sm'
                 </USelect>
               </FlowToolbarItemWrapper>
 
-              <!-- 圆角 -->
-              <FlowToolbarItemWrapper label="圆角">
-                <USelect
-                  :model-value="nodeBorderRadius"
-                  :items="FLOW_BORDER_RADIUS_ITEMS"
-                  :size="itemSize"
-                  @update:model-value="(v: number) => onNodeBorderRadiusChange?.(v)"
-                >
-                  <template #item-leading="{ item }">
-                    <div
-                      class="w-4 h-3 border-2 border-current"
-                      :style="{ borderRadius: `${(item as any).value}px` }"
-                    />
-                  </template>
-                </USelect>
-              </FlowToolbarItemWrapper>
-
               <!-- 边框颜色 -->
               <FlowToolbarItemWrapper label="边框颜色">
                 <div class="grid grid-cols-9 gap-2">
@@ -144,6 +127,8 @@ const itemSize = 'sm'
                 </div>
               </FlowToolbarItemWrapper>
 
+              <USeparator class="py-2" />
+
               <!-- 背景色 -->
               <FlowToolbarItemWrapper label="背景色">
                 <div class="grid grid-cols-9 gap-2">
@@ -157,6 +142,22 @@ const itemSize = 'sm'
                     @click="onNodeBgColorChange?.(opt.color)"
                   />
                 </div>
+              </FlowToolbarItemWrapper>
+
+              <USeparator class="py-2" />
+
+              <!-- 字号 -->
+              <FlowToolbarItemWrapper label="字号">
+                <USelect
+                  :model-value="nodeFontSize"
+                  :items="FLOW_FONT_SIZE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: number) => onNodeFontSizeChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <span class="font-medium shrink-0" :style="{ fontSize: `${Math.max((item as any).value - 4, 10)}px` }">A</span>
+                  </template>
+                </USelect>
               </FlowToolbarItemWrapper>
 
               <!-- 字体颜色 -->
@@ -174,16 +175,21 @@ const itemSize = 'sm'
                 </div>
               </FlowToolbarItemWrapper>
 
-              <!-- 字号 -->
-              <FlowToolbarItemWrapper label="字号">
+              <USeparator class="py-2" />
+
+              <!-- 圆角 -->
+              <FlowToolbarItemWrapper label="圆角">
                 <USelect
-                  :model-value="nodeFontSize"
-                  :items="FLOW_FONT_SIZE_ITEMS"
+                  :model-value="nodeBorderRadius"
+                  :items="FLOW_BORDER_RADIUS_ITEMS"
                   :size="itemSize"
-                  @update:model-value="(v: number) => onNodeFontSizeChange?.(v)"
+                  @update:model-value="(v: number) => onNodeBorderRadiusChange?.(v)"
                 >
                   <template #item-leading="{ item }">
-                    <span class="font-medium shrink-0" :style="{ fontSize: `${Math.max((item as any).value - 4, 10)}px` }">A</span>
+                    <div
+                      class="w-4 h-3 border-2 border-current"
+                      :style="{ borderRadius: `${(item as any).value}px` }"
+                    />
                   </template>
                 </USelect>
               </FlowToolbarItemWrapper>
@@ -209,6 +215,50 @@ const itemSize = 'sm'
 
           <template #edge>
             <div class="flex flex-col gap-4">
+              <!-- 起点箭头 -->
+              <FlowToolbarItemWrapper label="起点箭头">
+                <USelect
+                  :model-value="edgeMarkerStart"
+                  :items="FLOW_ARROW_TYPE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: FlowArrowType) => onEdgeMarkerStartChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <svg width="20" height="10" class="shrink-0">
+                      <component
+                        :is="el.tag"
+                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_START[(item as any).value as FlowArrowType]"
+                        :key="idx"
+                        v-bind="el.attrs"
+                      />
+                    </svg>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <!-- 终点箭头 -->
+              <FlowToolbarItemWrapper label="终点箭头">
+                <USelect
+                  :model-value="edgeMarkerEnd"
+                  :items="FLOW_ARROW_TYPE_ITEMS"
+                  :size="itemSize"
+                  @update:model-value="(v: FlowArrowType) => onEdgeMarkerEndChange?.(v)"
+                >
+                  <template #item-leading="{ item }">
+                    <svg width="20" height="10" class="shrink-0">
+                      <component
+                        :is="el.tag"
+                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_END[(item as any).value as FlowArrowType]"
+                        :key="idx"
+                        v-bind="el.attrs"
+                      />
+                    </svg>
+                  </template>
+                </USelect>
+              </FlowToolbarItemWrapper>
+
+              <USeparator class="py-2" />
+
               <!-- 粗细 -->
               <FlowToolbarItemWrapper label="粗细">
                 <USelect
@@ -283,48 +333,6 @@ const itemSize = 'sm'
                 </USelect>
               </FlowToolbarItemWrapper>
 
-              <!-- 起点箭头 -->
-              <FlowToolbarItemWrapper label="起点箭头">
-                <USelect
-                  :model-value="edgeMarkerStart"
-                  :items="FLOW_ARROW_TYPE_ITEMS"
-                  :size="itemSize"
-                  @update:model-value="(v: FlowArrowType) => onEdgeMarkerStartChange?.(v)"
-                >
-                  <template #item-leading="{ item }">
-                    <svg width="20" height="10" class="shrink-0">
-                      <component
-                        :is="el.tag"
-                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_START[(item as any).value as FlowArrowType]"
-                        :key="idx"
-                        v-bind="el.attrs"
-                      />
-                    </svg>
-                  </template>
-                </USelect>
-              </FlowToolbarItemWrapper>
-
-              <!-- 终点箭头 -->
-              <FlowToolbarItemWrapper label="终点箭头">
-                <USelect
-                  :model-value="edgeMarkerEnd"
-                  :items="FLOW_ARROW_TYPE_ITEMS"
-                  :size="itemSize"
-                  @update:model-value="(v: FlowArrowType) => onEdgeMarkerEndChange?.(v)"
-                >
-                  <template #item-leading="{ item }">
-                    <svg width="20" height="10" class="shrink-0">
-                      <component
-                        :is="el.tag"
-                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_END[(item as any).value as FlowArrowType]"
-                        :key="idx"
-                        v-bind="el.attrs"
-                      />
-                    </svg>
-                  </template>
-                </USelect>
-              </FlowToolbarItemWrapper>
-
               <!-- 动画 -->
               <FlowToolbarItemWrapper label="流动动画">
                 <div class="flex items-center h-7">
@@ -337,7 +345,7 @@ const itemSize = 'sm'
               </FlowToolbarItemWrapper>
 
               <!-- 连接线颜色 -->
-              <FlowToolbarItemWrapper label="颜色">
+              <FlowToolbarItemWrapper label="连接线颜色">
                 <div class="grid grid-cols-9 gap-2">
                   <CircleColor
                     v-for="opt in FLOW_EDGE_COLORS"
@@ -350,6 +358,8 @@ const itemSize = 'sm'
                   />
                 </div>
               </FlowToolbarItemWrapper>
+
+              <USeparator class="py-2" />
 
               <!-- 标签颜色 -->
               <FlowToolbarItemWrapper label="标签颜色">

@@ -33,7 +33,7 @@ const isDefault = computed(() => !props.chip && !props.colorOverride)
 
 <template>
   <button
-    class="w-4 h-4 rounded-full transition-all flex items-center justify-center shrink-0"
+    class="w-3 h-3 rounded-full transition-all flex items-center justify-center shrink-0"
     :class="[
       selected
         ? 'ring-2 ring-primary ring-offset-2 ring-offset-[var(--ui-bg)] scale-110'
@@ -46,8 +46,8 @@ const isDefault = computed(() => !props.chip && !props.colorOverride)
     <!-- 默认色（无色块）：显示斜杠禁止图标 -->
     <template v-if="isDefault">
       <span class="relative w-full h-full flex items-center justify-center">
-        <span class="absolute w-4 h-4 rounded-full border-2 border-muted" />
-        <span class="absolute w-[1px] h-4 bg-muted rotate-45" />
+        <span class="absolute w-3 h-3 rounded-full border-2 border-muted" />
+        <span class="absolute w-[1px] h-3 bg-muted rotate-45" />
       </span>
     </template>
   </button>
