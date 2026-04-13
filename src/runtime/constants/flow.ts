@@ -149,7 +149,7 @@ export const FLOW_FONT_COLORS: FlowColorOption[] = makeColorOptions(600)
 /**
  * 箭头类型
  */
-export type FlowArrowType = 'none' | 'arrow' | 'arrow-open' | 'diamond' | 'diamond-open' | 'circle' | 'circle-open'
+export type FlowArrowType = 'none' | 'arrow' | 'diamond' | 'diamond-open' | 'circle' | 'circle-open'
 
 export interface FlowArrowOption {
   type: FlowArrowType
@@ -159,7 +159,6 @@ export interface FlowArrowOption {
 export const FLOW_ARROW_TYPES: FlowArrowOption[] = [
   { type: 'none', label: '无' },
   { type: 'arrow', label: '三角实心' },
-  { type: 'arrow-open', label: '三角空心' },
   { type: 'diamond', label: '菱形实心' },
   { type: 'diamond-open', label: '菱形空心' },
   { type: 'circle', label: '圆形实心' },
@@ -208,12 +207,12 @@ export const FLOW_BORDER_RADIUS_ITEMS: { label: string, value: number }[] = [
 ]
 
 /** 字号选项 */
-export const FLOW_FONT_SIZE_ITEMS: { label: string, value: number }[] = [
-  { label: 'xs (12)', value: 12 },
-  { label: 'sm (14)', value: 14 },
-  { label: 'base (16)', value: 16 },
-  { label: 'lg (18)', value: 18 },
-  { label: 'xl (20)', value: 20 }
+export const FLOW_FONT_SIZE_ITEMS: { label: string, value: number, twClass: string }[] = [
+  { label: 'xs', value: 12, twClass: 'text-xs' },
+  { label: 'sm', value: 14, twClass: 'text-sm' },
+  { label: 'base', value: 16, twClass: 'text-base' },
+  { label: 'lg', value: 18, twClass: 'text-lg' },
+  { label: 'xl', value: 20, twClass: 'text-xl' }
 ]
 
 /** 连接点大小选项 */
@@ -265,10 +264,6 @@ export const FLOW_ARROW_PREVIEW_START: Record<FlowArrowType, FlowArrowSvgElement
     { tag: 'polygon', attrs: { points: '10,1 2,5 10,9', fill: 'currentColor' } },
     { tag: 'line', attrs: { 'x1': 8, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
   ],
-  'arrow-open': [
-    { tag: 'polygon', attrs: { 'points': '10,1 2,5 10,9', 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } },
-    { tag: 'line', attrs: { 'x1': 8, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
-  ],
   'diamond': [
     { tag: 'polygon', attrs: { points: '2,5 7,1 12,5 7,9', fill: 'currentColor' } },
     { tag: 'line', attrs: { 'x1': 12, 'y1': 5, 'x2': 20, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } }
@@ -297,10 +292,6 @@ export const FLOW_ARROW_PREVIEW_END: Record<FlowArrowType, FlowArrowSvgElement[]
   'arrow': [
     { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 12, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
     { tag: 'polygon', attrs: { points: '10,1 18,5 10,9', fill: 'currentColor' } }
-  ],
-  'arrow-open': [
-    { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 12, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },
-    { tag: 'polygon', attrs: { 'points': '10,1 18,5 10,9', 'fill': 'none', 'stroke': 'currentColor', 'stroke-width': 1.5 } }
   ],
   'diamond': [
     { tag: 'line', attrs: { 'x1': 0, 'y1': 5, 'x2': 8, 'y2': 5, 'stroke': 'currentColor', 'stroke-width': 2 } },

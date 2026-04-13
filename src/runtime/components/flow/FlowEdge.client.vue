@@ -59,10 +59,6 @@ const MARKER_DEFS: Record<Exclude<FlowArrowType, 'none'>, { end: MarkerDef, star
     // start: tip at (0,5); refX=2 → line ends 2px inside triangle, stroke fully covered by fill
     start: { viewBox: '-1 -1 12 12', refX: 2, refY: 5, shape: 'path', d: 'M 10 0 L 0 5 L 10 10 z', filled: true }
   },
-  'arrow-open': {
-    end: { viewBox: '-1 -1 12 12', refX: 8, refY: 5, shape: 'path', d: 'M 0 0 L 10 5 L 0 10', filled: false },
-    start: { viewBox: '-1 -1 12 12', refX: 2, refY: 5, shape: 'path', d: 'M 10 0 L 0 5 L 10 10', filled: false }
-  },
   'diamond': {
     // end: rightmost at x=12; refX=10 → line ends 2px inside diamond
     end: { viewBox: '-2 -2 16 12', refX: 10, refY: 4, shape: 'path', d: 'M 0 4 L 6 0 L 12 4 L 6 8 z', filled: true },

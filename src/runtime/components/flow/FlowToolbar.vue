@@ -53,6 +53,11 @@ const tabItems: TabsItem[] = [
 ]
 
 const itemSize = 'sm'
+
+// helpers: look up item data by selected value for #leading slot
+function getStrokeDasharray(value: FlowEdgeStrokeType) {
+  return FLOW_STROKE_TYPE_ITEMS.find(i => i.value === value)?.dasharray || 'none'
+}
 </script>
 
 <template>
@@ -101,13 +106,20 @@ const itemSize = 'sm'
                   @update:model-value="(v: number) => onNodeBorderWidthChange?.(v)"
                 >
                   <template #item-leading="{ item }">
-                    <div class="flex flex-col gap-px">
-                      <div
-                        v-for="i in (item as any).value"
-                        :key="i"
-                        class="w-4 h-0.5 bg-current rounded-full"
-                      />
-                    </div>
+                    <div
+                      class="w-4 bg-current rounded-full"
+                      :style="{
+                        height: `${item.value}px`
+                      }"
+                    />
+                  </template>
+                  <template #leading="{ modelValue }">
+                    <div
+                      class="w-4 bg-current rounded-full"
+                      :style="{
+                        height: `${modelValue}px`
+                      }"
+                    />
                   </template>
                 </USelect>
               </FlowToolbarItemWrapper>
@@ -155,7 +167,10 @@ const itemSize = 'sm'
                   @update:model-value="(v: number) => onNodeFontSizeChange?.(v)"
                 >
                   <template #item-leading="{ item }">
-                    <span class="font-medium shrink-0" :style="{ fontSize: `${Math.max((item as any).value - 4, 10)}px` }">A</span>
+                    <span :class="(item as any).twClass">A</span>
+                  </template>
+                  <template #item-label="{ item }">
+                    <span :class="(item as any).twClass">{{ item.label }}</span>
                   </template>
                 </USelect>
               </FlowToolbarItemWrapper>
@@ -185,9 +200,16 @@ const itemSize = 'sm'
                   :size="itemSize"
                   @update:model-value="(v: number) => onNodeBorderRadiusChange?.(v)"
                 >
+                  <template #leading="{ modelValue }">
+                    <div
+                      v-if="modelValue != null"
+                      class="w-4 h-3 border-[1.5px] border-current"
+                      :style="{ borderRadius: `${modelValue}px` }"
+                    />
+                  </template>
                   <template #item-leading="{ item }">
                     <div
-                      class="w-4 h-3 border-2 border-current"
+                      class="w-4 h-3 border-[1.5px] border-current"
                       :style="{ borderRadius: `${(item as any).value}px` }"
                     />
                   </template>
@@ -202,9 +224,16 @@ const itemSize = 'sm'
                   :size="itemSize"
                   @update:model-value="(v: number) => onNodeHandleSizeChange?.(v)"
                 >
+                  <template #leading="{ modelValue }">
+                    <div
+                      v-if="modelValue"
+                      class="rounded-full bg-current"
+                      :style="{ width: `${modelValue}px`, height: `${modelValue}px` }"
+                    />
+                  </template>
                   <template #item-leading="{ item }">
                     <div
-                      class="rounded-full bg-current shrink-0"
+                      class="rounded-full bg-current"
                       :style="{ width: `${(item as any).value}px`, height: `${(item as any).value}px` }"
                     />
                   </template>
@@ -223,6 +252,21 @@ const itemSize = 'sm'
                   :size="itemSize"
                   @update:model-value="(v: FlowArrowType) => onEdgeMarkerStartChange?.(v)"
                 >
+                  <template #leading="{ modelValue }">
+                    <svg
+                      v-if="modelValue"
+                      width="20"
+                      height="10"
+                      class="shrink-0"
+                    >
+                      <component
+                        :is="el.tag"
+                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_START[modelValue as FlowArrowType]"
+                        :key="idx"
+                        v-bind="el.attrs"
+                      />
+                    </svg>
+                  </template>
                   <template #item-leading="{ item }">
                     <svg width="20" height="10" class="shrink-0">
                       <component
@@ -244,6 +288,21 @@ const itemSize = 'sm'
                   :size="itemSize"
                   @update:model-value="(v: FlowArrowType) => onEdgeMarkerEndChange?.(v)"
                 >
+                  <template #leading="{ modelValue }">
+                    <svg
+                      v-if="modelValue"
+                      width="20"
+                      height="10"
+                      class="shrink-0"
+                    >
+                      <component
+                        :is="el.tag"
+                        v-for="(el, idx) in FLOW_ARROW_PREVIEW_END[modelValue as FlowArrowType]"
+                        :key="idx"
+                        v-bind="el.attrs"
+                      />
+                    </svg>
+                  </template>
                   <template #item-leading="{ item }">
                     <svg width="20" height="10" class="shrink-0">
                       <component
@@ -267,14 +326,21 @@ const itemSize = 'sm'
                   :size="itemSize"
                   @update:model-value="(v: number) => onEdgeStrokeWidthChange?.(v)"
                 >
+                  <template #leading="{ modelValue }">
+                    <div
+                      class="w-4 bg-current rounded-full"
+                      :style="{
+                        height: `${modelValue}px`
+                      }"
+                    />
+                  </template>
                   <template #item-leading="{ item }">
-                    <div class="flex flex-col gap-px">
-                      <div
-                        v-for="i in (item as any).value"
-                        :key="i"
-                        class="w-4 h-0.5 bg-current rounded-full"
-                      />
-                    </div>
+                    <div
+                      class="w-4 bg-current rounded-full"
+                      :style="{
+                        height: `${item.value}px`
+                      }"
+                    />
                   </template>
                 </USelect>
               </FlowToolbarItemWrapper>
@@ -287,6 +353,24 @@ const itemSize = 'sm'
                   :size="itemSize"
                   @update:model-value="(v: FlowEdgeStrokeType) => onEdgeStrokeTypeChange?.(v)"
                 >
+                  <template #leading="{ modelValue }">
+                    <svg
+                      v-if="modelValue"
+                      width="20"
+                      height="10"
+                      class="shrink-0"
+                    >
+                      <line
+                        x1="0"
+                        y1="5"
+                        x2="20"
+                        y2="5"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        :stroke-dasharray="getStrokeDasharray(modelValue as FlowEdgeStrokeType)"
+                      />
+                    </svg>
+                  </template>
                   <template #item-leading="{ item }">
                     <svg width="20" height="10" class="shrink-0">
                       <line
@@ -311,6 +395,30 @@ const itemSize = 'sm'
                   :size="itemSize"
                   @update:model-value="(v: FlowEdgePathType) => onEdgePathTypeChange?.(v)"
                 >
+                  <template #leading="{ modelValue }">
+                    <svg
+                      v-if="modelValue"
+                      width="20"
+                      height="14"
+                      class="shrink-0"
+                    >
+                      <template v-if="FLOW_PATH_PREVIEW[modelValue as FlowEdgePathType]?.shape === 'path'">
+                        <path
+                          :d="FLOW_PATH_PREVIEW[modelValue as FlowEdgePathType].d"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        />
+                      </template>
+                      <template v-else>
+                        <line
+                          v-bind="{ x1: FLOW_PATH_PREVIEW[modelValue as FlowEdgePathType].x1, y1: FLOW_PATH_PREVIEW[modelValue as FlowEdgePathType].y1, x2: FLOW_PATH_PREVIEW[modelValue as FlowEdgePathType].x2, y2: FLOW_PATH_PREVIEW[modelValue as FlowEdgePathType].y2 }"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        />
+                      </template>
+                    </svg>
+                  </template>
                   <template #item-leading="{ item }">
                     <svg width="20" height="14" class="shrink-0">
                       <template v-if="FLOW_PATH_PREVIEW[(item as any).value as FlowEdgePathType]?.shape === 'path'">
