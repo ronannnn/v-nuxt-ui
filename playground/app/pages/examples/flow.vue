@@ -31,9 +31,12 @@ const handleEditNode = (node: FlowNode) => {
 <template>
   <div class="p-4 w-full flex flex-col">
     <div class="mb-4">
-      <h1 class="text-xl font-semibold">
-        流程图编辑器
-      </h1>
+      <div class="flex items-center gap-1">
+        <ProLayoutButtonCollapse class="-ml-2" />
+        <h1 class="text-xl font-semibold">
+          流程图编辑器
+        </h1>
+      </div>
       <p class="text-sm text-muted mt-1">
         拖拽节点、连接节点、调整大小。点击底部工具栏添加节点或修改样式设置。选中节点/连接后按 Delete 删除。
       </p>
