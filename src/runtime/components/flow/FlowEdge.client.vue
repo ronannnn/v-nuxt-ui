@@ -6,8 +6,7 @@ import type { EdgeProps } from '@vue-flow/core'
 
 const props = defineProps<EdgeProps>()
 
-const flowStyles = useFlowStyles()
-const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeColor } = flowStyles
+const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeColor } = useFlowStyles()
 
 const path = computed(() => {
   switch (edgePathType.value) {

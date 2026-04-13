@@ -67,7 +67,6 @@ const {
 } = flowLogic
 
 // 样式设置
-const flowStyles = useFlowStyles()
 const {
   edgeStrokeWidth,
   edgeMarkerStart,
@@ -80,20 +79,8 @@ const {
   nodeBorderRadius,
   nodeBgColor,
   nodeFontSize,
-  nodeHandleSize,
-  setEdgeStrokeWidth,
-  toggleEdgeMarkerStart,
-  toggleEdgeMarkerEnd,
-  toggleEdgeAnimated,
-  setEdgeStrokeType,
-  setEdgePathType,
-  setEdgeColor,
-  setNodeBorderWidth,
-  setNodeBorderRadius,
-  setNodeBgColor,
-  setNodeFontSize,
-  setNodeHandleSize
-} = flowStyles
+  nodeHandleSize
+} = useFlowStyles()
 
 // VueFlow 实例
 const { onConnect, onNodeDragStop, onEdgeUpdate, getSelectedNodes, getSelectedEdges, getViewport } = useVueFlow()
@@ -291,24 +278,24 @@ const isValidConnection = () => true
         :edge-marker-start="edgeMarkerStart"
         :edge-marker-end="edgeMarkerEnd"
         :edge-animated="edgeAnimated"
-        :node-border-width="nodeBorderWidth"
-        :on-edge-stroke-width-change="setEdgeStrokeWidth"
-        :on-edge-stroke-type-change="setEdgeStrokeType"
-        :on-edge-path-type-change="setEdgePathType"
-        :on-toggle-edge-marker-start="toggleEdgeMarkerStart"
-        :on-toggle-edge-marker-end="toggleEdgeMarkerEnd"
-        :on-toggle-edge-animated="toggleEdgeAnimated"
         :edge-color="edgeColor"
-        :on-edge-color-change="setEdgeColor"
-        :on-node-border-width-change="setNodeBorderWidth"
+        :node-border-width="nodeBorderWidth"
         :node-border-radius="nodeBorderRadius"
         :node-bg-color="nodeBgColor"
         :node-font-size="nodeFontSize"
         :node-handle-size="nodeHandleSize"
-        :on-node-border-radius-change="setNodeBorderRadius"
-        :on-node-bg-color-change="setNodeBgColor"
-        :on-node-font-size-change="setNodeFontSize"
-        :on-node-handle-size-change="setNodeHandleSize"
+        :on-edge-stroke-width-change="(v) => edgeStrokeWidth = v"
+        :on-edge-stroke-type-change="(v) => edgeStrokeType = v"
+        :on-edge-path-type-change="(v) => edgePathType = v"
+        :on-toggle-edge-marker-start="() => edgeMarkerStart = !edgeMarkerStart"
+        :on-toggle-edge-marker-end="() => edgeMarkerEnd = !edgeMarkerEnd"
+        :on-toggle-edge-animated="() => edgeAnimated = !edgeAnimated"
+        :on-edge-color-change="(v) => edgeColor = v"
+        :on-node-border-width-change="(v) => nodeBorderWidth = v"
+        :on-node-border-radius-change="(v) => nodeBorderRadius = v"
+        :on-node-bg-color-change="(v) => nodeBgColor = v"
+        :on-node-font-size-change="(v) => nodeFontSize = v"
+        :on-node-handle-size-change="(v) => nodeHandleSize = v"
       />
     </Panel>
 
