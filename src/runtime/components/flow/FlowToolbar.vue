@@ -74,7 +74,12 @@ const itemSize = 'sm'
       @click="settingsOpen = true"
     />
 
-    <USlideover v-model:open="settingsOpen" title="样式设置" side="right">
+    <USlideover
+      v-model:open="settingsOpen"
+      title="样式设置"
+      side="right"
+      inset
+    >
       <template #body>
         <UTabs
           :items="tabItems"
