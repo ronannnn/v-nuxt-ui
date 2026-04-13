@@ -4,9 +4,11 @@ import {
   FLOW_EDGE_COLORS, FLOW_NODE_COLORS, FLOW_NODE_BORDER_COLORS, FLOW_FONT_COLORS,
   FLOW_WIDTH_ITEMS, FLOW_STROKE_TYPE_ITEMS, FLOW_PATH_TYPE_ITEMS, FLOW_ARROW_TYPE_ITEMS,
   FLOW_BORDER_RADIUS_ITEMS, FLOW_FONT_SIZE_ITEMS, FLOW_HANDLE_SIZE_ITEMS, FLOW_HANDLE_COLORS,
-  FLOW_PATH_PREVIEW, FLOW_ARROW_PREVIEW_START, FLOW_ARROW_PREVIEW_END
+  FLOW_PATH_PREVIEW, FLOW_ARROW_PREVIEW_START, FLOW_ARROW_PREVIEW_END,
+  FLOW_UNIFIED_COLORS
 } from '#v/constants'
 import type { FlowEdgeStrokeType, FlowEdgePathType, FlowArrowType } from '#v/constants'
+import type { FlowColorMode } from '#v/composables/flow/useFlowStyles'
 import type { TabsItem } from '@nuxt/ui'
 import FlowToolbarItemWrapper from './FlowToolbarItemWrapper.vue'
 import CircleColor from '#v/components/button/CircleColor.vue'
@@ -31,6 +33,12 @@ defineProps<{
   nodeFontSize?: number
   nodeHandleSize?: number
   nodeHandleColor?: string
+  /** 颜色模式 */
+  colorMode?: FlowColorMode
+  /** 统一颜色名称 */
+  unifiedColor?: string
+  /** 是否统一模式 */
+  isUnifiedMode?: boolean
   onEdgeStrokeWidthChange: (width: number) => void
   onEdgeStrokeTypeChange?: (type: FlowEdgeStrokeType) => void
   onEdgePathTypeChange?: (type: FlowEdgePathType) => void
@@ -47,9 +55,12 @@ defineProps<{
   onNodeFontSizeChange?: (size: number) => void
   onNodeHandleSizeChange?: (size: number) => void
   onNodeHandleColorChange?: (color: string) => void
+  onColorModeChange?: (mode: FlowColorMode) => void
+  onUnifiedColorChange?: (name: string) => void
 }>()
 
 const tabItems: TabsItem[] = [
+  { label: '颜色设置', value: 'color', slot: 'color' },
   { label: '节点设置', value: 'node', slot: 'node' },
   { label: '连接线设置', value: 'edge', slot: 'edge' }
 ]
@@ -92,11 +103,46 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
         <UTabs
           :items="tabItems"
           size="xs"
+          color="neutral"
           default-value="node"
           :ui="{
             content: 'pt-3'
           }"
         >
+          <template #color>
+            <div class="flex flex-col gap-4">
+              <!-- 模式切换 -->
+              <FlowToolbarItemWrapper label="颜色模式">
+                <UTabs
+                  :model-value="colorMode"
+                  :items="[
+                    { label: '统一', value: 'unified' },
+                    { label: '自定义', value: 'custom' }
+                  ]"
+                  size="xs"
+                  @update:model-value="newColorMode => onColorModeChange?.(newColorMode as FlowColorMode)"
+                />
+              </FlowToolbarItemWrapper>
+
+              <!-- 统一颜色选择 -->
+              <div :class="{ 'opacity-40 pointer-events-none': !isUnifiedMode }">
+                <FlowToolbarItemWrapper label="统一颜色">
+                  <div class="grid grid-cols-9 gap-2">
+                    <CircleColor
+                      v-for="opt in FLOW_UNIFIED_COLORS"
+                      :key="opt.color"
+                      :chip="opt.chip"
+                      :shade="500"
+                      :selected="unifiedColor === opt.color"
+                      :title="opt.chip || 'default'"
+                      @click="onUnifiedColorChange?.(opt.color)"
+                    />
+                  </div>
+                </FlowToolbarItemWrapper>
+              </div>
+            </div>
+          </template>
+
           <template #node>
             <div class="flex flex-col gap-4">
               <!-- 边框粗细 -->
@@ -128,36 +174,40 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
               </FlowToolbarItemWrapper>
 
               <!-- 边框颜色 -->
-              <FlowToolbarItemWrapper label="边框颜色">
-                <div class="grid grid-cols-9 gap-2">
-                  <CircleColor
-                    v-for="opt in FLOW_NODE_BORDER_COLORS"
-                    :key="opt.color"
-                    :chip="opt.chip"
-                    :shade="500"
-                    :selected="nodeBorderColor === opt.color"
-                    :title="opt.chip || 'default'"
-                    @click="onNodeBorderColorChange?.(opt.color)"
-                  />
-                </div>
-              </FlowToolbarItemWrapper>
+              <div :class="{ 'opacity-40 pointer-events-none': isUnifiedMode }">
+                <FlowToolbarItemWrapper label="边框颜色">
+                  <div class="grid grid-cols-9 gap-2">
+                    <CircleColor
+                      v-for="opt in FLOW_NODE_BORDER_COLORS"
+                      :key="opt.color"
+                      :chip="opt.chip"
+                      :shade="500"
+                      :selected="nodeBorderColor === opt.color"
+                      :title="opt.chip || 'default'"
+                      @click="onNodeBorderColorChange?.(opt.color)"
+                    />
+                  </div>
+                </FlowToolbarItemWrapper>
+              </div>
 
               <USeparator class="py-2" />
 
               <!-- 背景色 -->
-              <FlowToolbarItemWrapper label="背景色">
-                <div class="grid grid-cols-9 gap-2">
-                  <CircleColor
-                    v-for="opt in FLOW_NODE_COLORS"
-                    :key="opt.color"
-                    :chip="opt.chip"
-                    :shade="50"
-                    :selected="nodeBgColor === opt.color"
-                    :title="opt.chip || 'default'"
-                    @click="onNodeBgColorChange?.(opt.color)"
-                  />
-                </div>
-              </FlowToolbarItemWrapper>
+              <div :class="{ 'opacity-40 pointer-events-none': isUnifiedMode }">
+                <FlowToolbarItemWrapper label="背景色">
+                  <div class="grid grid-cols-9 gap-2">
+                    <CircleColor
+                      v-for="opt in FLOW_NODE_COLORS"
+                      :key="opt.color"
+                      :chip="opt.chip"
+                      :shade="50"
+                      :selected="nodeBgColor === opt.color"
+                      :title="opt.chip || 'default'"
+                      @click="onNodeBgColorChange?.(opt.color)"
+                    />
+                  </div>
+                </FlowToolbarItemWrapper>
+              </div>
 
               <USeparator class="py-2" />
 
@@ -177,19 +227,21 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
               </FlowToolbarItemWrapper>
 
               <!-- 字体颜色 -->
-              <FlowToolbarItemWrapper label="字体颜色">
-                <div class="grid grid-cols-9 gap-2">
-                  <CircleColor
-                    v-for="opt in FLOW_FONT_COLORS"
-                    :key="opt.color"
-                    :chip="opt.chip"
-                    :shade="600"
-                    :selected="nodeFontColor === opt.color"
-                    :title="opt.chip || 'default'"
-                    @click="onNodeFontColorChange?.(opt.color)"
-                  />
-                </div>
-              </FlowToolbarItemWrapper>
+              <div :class="{ 'opacity-40 pointer-events-none': isUnifiedMode }">
+                <FlowToolbarItemWrapper label="字体颜色">
+                  <div class="grid grid-cols-9 gap-2">
+                    <CircleColor
+                      v-for="opt in FLOW_FONT_COLORS"
+                      :key="opt.color"
+                      :chip="opt.chip"
+                      :shade="600"
+                      :selected="nodeFontColor === opt.color"
+                      :title="opt.chip || 'default'"
+                      @click="onNodeFontColorChange?.(opt.color)"
+                    />
+                  </div>
+                </FlowToolbarItemWrapper>
+              </div>
 
               <USeparator class="py-2" />
 
@@ -220,19 +272,21 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
               </FlowToolbarItemWrapper>
 
               <!-- 连接点颜色 -->
-              <FlowToolbarItemWrapper label="连接点颜色">
-                <div class="grid grid-cols-9 gap-2">
-                  <CircleColor
-                    v-for="opt in FLOW_HANDLE_COLORS"
-                    :key="opt.color"
-                    :chip="opt.chip"
-                    :shade="500"
-                    :selected="nodeHandleColor === opt.color"
-                    :title="opt.chip || 'default'"
-                    @click="onNodeHandleColorChange?.(opt.color)"
-                  />
-                </div>
-              </FlowToolbarItemWrapper>
+              <div :class="{ 'opacity-40 pointer-events-none': isUnifiedMode }">
+                <FlowToolbarItemWrapper label="连接点颜色">
+                  <div class="grid grid-cols-9 gap-2">
+                    <CircleColor
+                      v-for="opt in FLOW_HANDLE_COLORS"
+                      :key="opt.color"
+                      :chip="opt.chip"
+                      :shade="500"
+                      :selected="nodeHandleColor === opt.color"
+                      :title="opt.chip || 'default'"
+                      @click="onNodeHandleColorChange?.(opt.color)"
+                    />
+                  </div>
+                </FlowToolbarItemWrapper>
+              </div>
 
               <USeparator class="py-2" />
 
@@ -479,36 +533,40 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
               </FlowToolbarItemWrapper>
 
               <!-- 连接线颜色 -->
-              <FlowToolbarItemWrapper label="连接线颜色">
-                <div class="grid grid-cols-9 gap-2">
-                  <CircleColor
-                    v-for="opt in FLOW_EDGE_COLORS"
-                    :key="opt.color"
-                    :chip="opt.chip"
-                    :shade="500"
-                    :selected="edgeColor === opt.color"
-                    :title="opt.chip || 'default'"
-                    @click="onEdgeColorChange?.(opt.color)"
-                  />
-                </div>
-              </FlowToolbarItemWrapper>
+              <div :class="{ 'opacity-40 pointer-events-none': isUnifiedMode }">
+                <FlowToolbarItemWrapper label="连接线颜色">
+                  <div class="grid grid-cols-9 gap-2">
+                    <CircleColor
+                      v-for="opt in FLOW_EDGE_COLORS"
+                      :key="opt.color"
+                      :chip="opt.chip"
+                      :shade="500"
+                      :selected="edgeColor === opt.color"
+                      :title="opt.chip || 'default'"
+                      @click="onEdgeColorChange?.(opt.color)"
+                    />
+                  </div>
+                </FlowToolbarItemWrapper>
+              </div>
 
               <USeparator class="py-2" />
 
               <!-- 标签颜色 -->
-              <FlowToolbarItemWrapper label="标签颜色">
-                <div class="grid grid-cols-9 gap-2">
-                  <CircleColor
-                    v-for="opt in FLOW_FONT_COLORS"
-                    :key="opt.color"
-                    :chip="opt.chip"
-                    :shade="600"
-                    :selected="edgeLabelColor === opt.color"
-                    :title="opt.chip || 'default'"
-                    @click="onEdgeLabelColorChange?.(opt.color)"
-                  />
-                </div>
-              </FlowToolbarItemWrapper>
+              <div :class="{ 'opacity-40 pointer-events-none': isUnifiedMode }">
+                <FlowToolbarItemWrapper label="标签颜色">
+                  <div class="grid grid-cols-9 gap-2">
+                    <CircleColor
+                      v-for="opt in FLOW_FONT_COLORS"
+                      :key="opt.color"
+                      :chip="opt.chip"
+                      :shade="600"
+                      :selected="edgeLabelColor === opt.color"
+                      :title="opt.chip || 'default'"
+                      @click="onEdgeLabelColorChange?.(opt.color)"
+                    />
+                  </div>
+                </FlowToolbarItemWrapper>
+              </div>
             </div>
           </template>
         </UTabs>

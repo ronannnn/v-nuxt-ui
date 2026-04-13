@@ -83,7 +83,15 @@ const {
   nodeFontColor,
   nodeFontSize,
   nodeHandleSize,
-  nodeHandleColor
+  nodeHandleColor,
+  colorMode,
+  unifiedColor,
+  isUnifiedMode,
+  effectiveNodeBorderColor,
+  effectiveNodeBgColor,
+  effectiveNodeFontColor,
+  effectiveNodeHandleColor,
+  effectiveEdgeColor
 } = useFlowStyles()
 
 // VueFlow 实例
@@ -126,12 +134,12 @@ watchEffect(() => {
     onDelete: () => deleteNode(nodeId),
     borderWidth: nodeBorderWidth.value,
     borderRadius: nodeBorderRadius.value,
-    borderColor: nodeBorderColor.value,
-    bgColor: nodeBgColor.value,
-    fontColor: nodeFontColor.value,
+    borderColor: effectiveNodeBorderColor.value,
+    bgColor: effectiveNodeBgColor.value,
+    fontColor: effectiveNodeFontColor.value,
     fontSize: nodeFontSize.value,
     handleSize: nodeHandleSize.value,
-    handleColor: nodeHandleColor.value,
+    handleColor: effectiveNodeHandleColor.value,
     onResizeStart: (event: MouseEvent, edge: ResizeEdge) => {
       const node = props.modelValue?.nodes?.find(n => String(n.id) === nodeId)
       if (node) {
@@ -148,7 +156,7 @@ watchEffect(() => {
     edge.style = {
       strokeWidth: edgeStrokeWidth.value,
       ...(dasharray ? { strokeDasharray: dasharray } : {}),
-      ...(edgeColor.value ? { stroke: edgeColor.value } : {})
+      ...(effectiveEdgeColor.value ? { stroke: effectiveEdgeColor.value } : {})
     }
     // Markers are handled by FlowEdge custom SVG markers
     edge.markerStart = undefined
@@ -233,7 +241,7 @@ const defaultEdgeOptions = computed(() => {
     style: {
       strokeWidth: edgeStrokeWidth.value,
       ...(dasharray ? { strokeDasharray: dasharray } : {}),
-      ...(edgeColor.value ? { stroke: edgeColor.value } : {})
+      ...(effectiveEdgeColor.value ? { stroke: effectiveEdgeColor.value } : {})
     },
     // Markers are handled by FlowEdge custom SVG markers
     markerStart: undefined,
@@ -313,6 +321,11 @@ const isValidConnection = () => true
         :on-node-font-size-change="(v) => nodeFontSize = v"
         :on-node-handle-size-change="(v) => nodeHandleSize = v"
         :on-node-handle-color-change="(v) => nodeHandleColor = v"
+        :color-mode="colorMode"
+        :unified-color="unifiedColor"
+        :is-unified-mode="isUnifiedMode"
+        :on-color-mode-change="(v) => colorMode = v"
+        :on-unified-color-change="(v) => unifiedColor = v"
       />
     </Panel>
 

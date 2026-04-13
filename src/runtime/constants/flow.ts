@@ -102,10 +102,10 @@ export const FLOW_EDGE_PATH_TYPES: FlowEdgePathOption[] = [
 ]
 
 /**
- * 连接线颜色预设
+ * 颜色选项（用于 CircleColor 选色器）
  */
 export interface FlowColorOption {
-  /** CSS color value (var(--color-xxx) 格式)，empty string = theme default */
+  /** CSS color value (var(--color-xxx-shade) 格式)，空字符串 = 使用主题默认色 */
   color: string
   /** Tailwind 颜色名（用于 CircleColor 组件的色块显示），default 项为空字符串 */
   chip: string
@@ -129,27 +129,39 @@ function makeColorOptions(shade: number): FlowColorOption[] {
   ]
 }
 
-export const FLOW_EDGE_COLORS: FlowColorOption[] = makeColorOptions(500)
+// ---- 按色阶去重：同色阶共享同一数组实例 ----
+const FLOW_COLORS_50  = makeColorOptions(50)
+const FLOW_COLORS_500 = makeColorOptions(500)
+const FLOW_COLORS_600 = makeColorOptions(600)
+
+/** 节点背景颜色预设（50 色阶，浅色背景） */
+export const FLOW_NODE_COLORS: FlowColorOption[]        = FLOW_COLORS_50
+/** 连接线颜色预设（500 色阶） */
+export const FLOW_EDGE_COLORS: FlowColorOption[]        = FLOW_COLORS_500
+/** 节点边框颜色预设（500 色阶，与连接线一致） */
+export const FLOW_NODE_BORDER_COLORS: FlowColorOption[] = FLOW_COLORS_500
+/** 连接点颜色预设（500 色阶） */
+export const FLOW_HANDLE_COLORS: FlowColorOption[]      = FLOW_COLORS_500
+/** 字体/标签颜色预设（600 色阶，深色保证可读性） */
+export const FLOW_FONT_COLORS: FlowColorOption[]        = FLOW_COLORS_600
 
 /**
- * 节点背景颜色预设（Tailwind 50 色阶，浅色背景）
+ * 统一颜色模式选项
+ * color 字段存储颜色**名称**（如 'blue'），由 resolveUnifiedColor 在运行时转为 CSS var
  */
-export const FLOW_NODE_COLORS: FlowColorOption[] = makeColorOptions(50)
+export const FLOW_UNIFIED_COLORS: FlowColorOption[] = [
+  { color: '', chip: '' },
+  ...FLOW_COLOR_NAMES.map(n => ({ color: n, chip: n }))
+]
 
 /**
- * 节点边框颜色预设（Tailwind 500 色阶，与连接线颜色一致）
+ * 根据统一颜色名称和色阶生成 CSS var
+ * 空名称返回空字符串（= 使用主题默认色）
  */
-export const FLOW_NODE_BORDER_COLORS: FlowColorOption[] = makeColorOptions(500)
-
-/**
- * 节点/边字体颜色预设（Tailwind 600 色阶，深色保证可读性）
- */
-export const FLOW_FONT_COLORS: FlowColorOption[] = makeColorOptions(600)
-
-/**
- * 连接点颜色预设（Tailwind 500 色阶）
- */
-export const FLOW_HANDLE_COLORS: FlowColorOption[] = makeColorOptions(500)
+export function resolveUnifiedColor(name: string, shade: number): string {
+  if (!name) return ''
+  return `var(--color-${name}-${shade})`
+}
 
 /**
  * 箭头类型

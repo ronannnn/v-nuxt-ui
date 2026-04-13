@@ -3,6 +3,7 @@ import type { WritableComputedRef } from 'vue'
 import { StorageKey } from '#v/types'
 import { useLocalStorage } from '@vueuse/core'
 import type { FlowEdgeStrokeType, FlowEdgePathType, FlowArrowType } from '#v/constants'
+import { resolveUnifiedColor } from '#v/constants'
 
 /** 连接线样式存储结构 */
 export interface FlowEdgeStylesState {
@@ -28,6 +29,16 @@ export interface FlowNodeStylesState {
   handleColor: string
 }
 
+/** 颜色模式存储结构 */
+export type FlowColorMode = 'unified' | 'custom'
+
+export interface FlowColorModeState {
+  /** 统一 / 自定义 */
+  mode: FlowColorMode
+  /** 统一模式下选中的 Tailwind 颜色名（例如 'blue'），空字符串 = 默认 */
+  colorName: string
+}
+
 const EDGE_DEFAULTS: FlowEdgeStylesState = {
   strokeWidth: 2,
   markerStart: 'none',
@@ -48,6 +59,11 @@ const NODE_DEFAULTS: FlowNodeStylesState = {
   fontSize: 14,
   handleSize: 6,
   handleColor: ''
+}
+
+const COLOR_MODE_DEFAULTS: FlowColorModeState = {
+  mode: 'custom',
+  colorName: ''
 }
 
 /** 从对象型 localStorage 中派生单个字段的可写 computed */
@@ -95,7 +111,26 @@ export function useFlowStyles() {
     { mergeDefaults: true }
   )
 
-  // 连接线
+  const colorModeStore = useLocalStorage<FlowColorModeState>(
+    StorageKey.FLOW_COLOR_MODE,
+    { ...COLOR_MODE_DEFAULTS },
+    { mergeDefaults: true }
+  )
+
+  // ---- 颜色模式 ----
+  const colorMode = useField(colorModeStore, 'mode')
+  const unifiedColor = useField(colorModeStore, 'colorName')
+  const isUnifiedMode = computed(() => colorMode.value === 'unified')
+
+  // 统一模式下按色阶派生的 CSS var（空名称 → 空字符串 → 主题默认色）
+  const unifiedBorderColor = computed(() => resolveUnifiedColor(unifiedColor.value, 500))
+  const unifiedBgColor = computed(() => resolveUnifiedColor(unifiedColor.value, 50))
+  const unifiedFontColor = computed(() => resolveUnifiedColor(unifiedColor.value, 600))
+  const unifiedHandleColor = computed(() => resolveUnifiedColor(unifiedColor.value, 500))
+  const unifiedEdgeColor = computed(() => resolveUnifiedColor(unifiedColor.value, 500))
+  const unifiedEdgeLabelColor = computed(() => resolveUnifiedColor(unifiedColor.value, 600))
+
+  // 连接线（原始自定义值）
   const edgeStrokeWidth = useField(edgeStore, 'strokeWidth')
   const edgeMarkerStart = useField(edgeStore, 'markerStart')
   const edgeMarkerEnd = useField(edgeStore, 'markerEnd')
@@ -105,7 +140,7 @@ export function useFlowStyles() {
   const edgeColor = useField(edgeStore, 'color')
   const edgeLabelColor = useField(edgeStore, 'labelColor')
 
-  // 节点
+  // 节点（原始自定义值）
   const nodeBorderWidth = useField(nodeStore, 'borderWidth')
   const nodeBorderRadius = useField(nodeStore, 'borderRadius')
   const nodeBorderColor = useField(nodeStore, 'borderColor')
@@ -131,7 +166,21 @@ export function useFlowStyles() {
     }
   })
 
+  // ---- 有效颜色（统一模式优先，否则回退到自定义值） ----
+  const effectiveNodeBorderColor = computed(() => isUnifiedMode.value ? unifiedBorderColor.value : nodeBorderColor.value)
+  const effectiveNodeBgColor = computed(() => isUnifiedMode.value ? unifiedBgColor.value : nodeBgColor.value)
+  const effectiveNodeFontColor = computed(() => isUnifiedMode.value ? unifiedFontColor.value : nodeFontColor.value)
+  const effectiveNodeHandleColor = computed(() => isUnifiedMode.value ? unifiedHandleColor.value : nodeHandleColor.value)
+  const effectiveEdgeColor = computed(() => isUnifiedMode.value ? unifiedEdgeColor.value : edgeColor.value)
+  const effectiveEdgeLabelColor = computed(() => isUnifiedMode.value ? unifiedEdgeLabelColor.value : edgeLabelColor.value)
+
   return {
+    // 颜色模式
+    colorMode,
+    unifiedColor,
+    isUnifiedMode,
+
+    // 连接线（原始自定义值，用于 UI 绑定）
     edgeStrokeWidth,
     edgeMarkerStart,
     edgeMarkerEnd,
@@ -140,6 +189,8 @@ export function useFlowStyles() {
     edgePathType,
     edgeColor,
     edgeLabelColor,
+
+    // 节点（原始自定义值，用于 UI 绑定）
     nodeBorderWidth,
     nodeBorderRadius,
     nodeBorderColor,
@@ -147,6 +198,14 @@ export function useFlowStyles() {
     nodeFontColor,
     nodeFontSize,
     nodeHandleSize,
-    nodeHandleColor
+    nodeHandleColor,
+
+    // 有效颜色（统一 / 自定义 解析后，用于实际渲染）
+    effectiveNodeBorderColor,
+    effectiveNodeBgColor,
+    effectiveNodeFontColor,
+    effectiveNodeHandleColor,
+    effectiveEdgeColor,
+    effectiveEdgeLabelColor
   }
 }

@@ -8,7 +8,7 @@ import type { EdgeProps } from '@vue-flow/core'
 
 const props = defineProps<EdgeProps>()
 
-const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeColor, edgeLabelColor, edgeAnimated, edgeStrokeType } = useFlowStyles()
+const { edgeMarkerStart, edgeMarkerEnd, edgePathType, edgeAnimated, edgeStrokeType, effectiveEdgeColor, effectiveEdgeLabelColor } = useFlowStyles()
 
 const path = computed(() => {
   switch (edgePathType.value) {
@@ -35,7 +35,7 @@ const customMarkerStart = computed(() => markerUrl(edgeMarkerStart.value, 'start
 
 const strokeColor = computed(() => {
   if (props.selected) return 'var(--ui-primary)'
-  return edgeColor.value || 'var(--ui-text-dimmed)'
+  return effectiveEdgeColor.value || 'var(--ui-text-dimmed)'
 })
 
 /** Marker 配置表：每种箭头类型对应的 SVG 属性 */
@@ -145,7 +145,7 @@ const cancelEditing = () => {
   editingLabel.value = false
 }
 
-const labelColorStyle = computed(() => edgeLabelColor.value ? { color: edgeLabelColor.value } : {})
+const labelColorStyle = computed(() => effectiveEdgeLabelColor.value ? { color: effectiveEdgeLabelColor.value } : {})
 </script>
 
 <template>

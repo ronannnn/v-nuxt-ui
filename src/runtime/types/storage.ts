@@ -5,6 +5,7 @@ export enum StorageKey {
   LOGIN_TYPE = 'login_type',
   FLOW_EDGE_STYLES = 'flow_edge_styles',
   FLOW_NODE_STYLES = 'flow_node_styles',
+  FLOW_COLOR_MODE = 'flow_color_mode',
 
   // echarts
   ECHART_ROTATE_X_AXIS_LABEL = 'echart_rotate_x_axis_label'
