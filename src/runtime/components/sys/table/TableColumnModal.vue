@@ -1,124 +1,47 @@
 <script setup lang="ts">
-import type { TableColumn, Table } from '#v/types'
-import { useTableColumnApi } from '#v/composables/api'
-import { ref } from 'vue'
-import { useToast } from '@nuxt/ui/composables'
+import * as z from 'zod'
+import type { VFormFieldProps, TableColumn } from '#v/types'
+import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
+import { useFormValues } from '#v/composables'
+import { computed, toRef } from 'vue'
 
 const props = defineProps<{
-  table: Table
-  column?: {
-    id: number
-    columnKey: string
-    label: string
-    order: number
-    width: number
-    fixed: 'left' | 'right' | ''
-    visible: boolean
-  }
+  column: TableColumn
+  onSaveColumn: (col: TableColumn) => void
 }>()
 
 const emit = defineEmits<{
   close: [boolean]
-  save: [Partial<TableColumn>]
 }>()
 
-const tableColumnApi = useTableColumnApi()
-const saving = ref(false)
+const { newValues } = useFormValues(toRef(props.column), { id: 0 })
 
-const formData = ref({
-  columnKey: props.column?.columnKey ?? '',
-  label: props.column?.label ?? '',
-  order: props.column?.order ?? 0,
-  width: props.column?.width ?? 100,
-  fixed: props.column?.fixed ?? ('' as '' | 'left' | 'right'),
-  visible: props.column?.visible ?? true
-})
+const fixedItems = [
+  { label: '不固定', value: '' },
+  { label: '左侧固定', value: 'left' },
+  { label: '右侧固定', value: 'right' }
+]
 
-async function handleSave() {
-  saving.value = true
-  try {
-    emit('save', {
-      id: props.column?.id,
-      columnKey: formData.value.columnKey,
-      label: formData.value.label,
-      order: formData.value.order,
-      width: formData.value.width,
-      fixed: formData.value.fixed,
-      visible: formData.value.visible
-    })
-    emit('close', true)
-  } catch (error) {
-    useToast().add({
-      title: '保存失败',
-      description: String(error),
-      color: 'error',
-      icon: 'i-lucide-x-circle'
-    })
-    emit('close', false)
-  } finally {
-    saving.value = false
-  }
-}
+const fields = computed<VFormFieldProps[]>(() => [
+  { name: 'columnKey', type: 'input', label: '列标识', colSpan: '12', zodType: z.string().min(1, '列标识不能为空') },
+  { name: 'label', type: 'input', label: '显示名', colSpan: '12', zodType: z.string().min(1, '显示名不能为空') },
+  { name: 'order', type: 'input-number', label: '顺序', colSpan: '8', zodType: z.number() },
+  { name: 'width', type: 'input-number', label: '宽度', colSpan: '8', zodType: z.number() },
+  { name: 'fixed', type: 'select', label: '固定', colSpan: '8', items: fixedItems, enableEmptyOption: false, zodType: z.string().optional() },
+  { name: 'visible', type: 'switch', label: '是否显示', colSpan: '24', zodType: z.boolean().optional() }
+])
 </script>
 
 <template>
-  <UModal
-    :title="`编辑列 - ${column?.columnKey ?? ''}`"
-    size="md"
-    :close="{ onClick: () => emit('close', false) }"
-  >
-    <div class="p-4 space-y-4">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="text-sm font-medium mb-1 block">列标识</label>
-          <UInput v-model="formData.columnKey" placeholder="columnKey" />
-        </div>
-        <div>
-          <label class="text-sm font-medium mb-1 block">显示名</label>
-          <UInput v-model="formData.label" placeholder="显示名" />
-        </div>
-      </div>
-      <div class="grid grid-cols-3 gap-4">
-        <div>
-          <label class="text-sm font-medium mb-1 block">顺序</label>
-          <UInputNumber v-model="formData.order" :min="0" class="w-full" />
-        </div>
-        <div>
-          <label class="text-sm font-medium mb-1 block">宽度</label>
-          <UInputNumber v-model="formData.width" :min="0" class="w-full" />
-        </div>
-        <div>
-          <label class="text-sm font-medium mb-1 block">固定</label>
-          <USelect
-            v-model="formData.fixed"
-            :items="[
-              { label: '不固定', value: '' },
-              { label: '左侧', value: 'left' },
-              { label: '右侧', value: 'right' }
-            ]"
-            class="w-full"
-          />
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <USwitch v-model="formData.visible" />
-        <span class="text-sm">{{ formData.visible ? '显示' : '隐藏' }}</span>
-      </div>
-    </div>
-    <template #footer>
-      <UButton
-        label="取消"
-        color="neutral"
-        variant="subtle"
-        @click="emit('close', false)"
-      />
-      <UButton
-        label="保存"
-        color="primary"
-        variant="solid"
-        :loading="saving"
-        @click="handleSave"
-      />
-    </template>
-  </UModal>
+  <FormCreateModalTemplate
+    title="列配置"
+    :on-close="ok => emit('close', ok)"
+    :fields="fields"
+    :model-value="newValues"
+    @update-model-value="newVal => newValues = { id: 0, ...newVal }"
+    @submit="async () => {
+      props.onSaveColumn(newValues as TableColumn)
+      emit('close', true)
+    }"
+  />
 </template>

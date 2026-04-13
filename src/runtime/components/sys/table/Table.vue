@@ -95,17 +95,6 @@ function getExpandVNode(row: Table) {
   ])
 }
 
-const extraRowActions = [
-  {
-    label: '编辑',
-    icon: 'i-lucide-edit',
-    fnWithModal: async (row: Table) => {
-      const result = await createModal.open({ model: { ...row } }).result
-      return result
-    }
-  }
-]
-
 watch(
   () => tablePageRef.value?.data,
   async (newData) => {
@@ -126,7 +115,6 @@ watch(
     :biz-columns="columns"
     :expandable="true"
     :expand-v-node="getExpandVNode"
-    :extra-row-actions="extraRowActions"
     @edit-row-from-modal="async (row: Table) => {
       const result = await createModal.open({ model: { ...row } }).result
       return result === true

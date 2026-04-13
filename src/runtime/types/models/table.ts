@@ -4,6 +4,7 @@ export interface Table extends BaseModel {
   tblName?: string
   label?: string
   labelI18nKey?: string
+  columns?: TableColumn[]
 }
 
 export interface TableColumn extends BaseModel {
