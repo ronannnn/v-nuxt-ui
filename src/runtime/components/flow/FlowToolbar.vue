@@ -66,6 +66,11 @@ const tabItems: TabsItem[] = [
   { label: '连接线设置', value: 'edge', slot: 'edge' }
 ]
 
+const colorModeTabItems: TabsItem[] = [
+  { label: '统一', value: 'unified' },
+  { label: '自定义', value: 'custom' }
+]
+
 const itemSize = 'sm'
 
 // helpers: look up item data by selected value for #leading slot
@@ -108,6 +113,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
           size="xs"
           color="neutral"
           default-value="node"
+          :unmount-on-hide="false"
           :ui="{
             content: 'pt-3'
           }"
@@ -118,10 +124,8 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
               <FlowToolbarItemWrapper label="颜色模式">
                 <UTabs
                   :model-value="colorMode"
-                  :items="[
-                    { label: '统一', value: 'unified' },
-                    { label: '自定义', value: 'custom' }
-                  ]"
+                  :items="colorModeTabItems"
+                  :content="false"
                   size="xs"
                   @update:model-value="newColorMode => onColorModeChange?.(newColorMode as FlowColorMode)"
                 />
