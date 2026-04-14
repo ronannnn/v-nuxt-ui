@@ -103,10 +103,10 @@ export const FLOW_EDGE_PATH_TYPES: FlowEdgePathOption[] = [
 
 /**
  * 颜色选项（用于 CircleColor 选色器）
- * color 字段统一存储 Tailwind 颜色**名称**（如 'blue'），空字符串 = 主题默认色
+ * color 字段统一存储 Tailwind 颜色**名称**（如 'blue' / 'primary'）
  */
 export interface FlowColorOption {
-  /** Tailwind 颜色名，空字符串 = 主题默认色 */
+  /** Tailwind 颜色名 */
   color: string
   /** 同 color，传给 CircleColor 的 chip prop */
   chip: string
@@ -119,9 +119,9 @@ const FLOW_COLOR_NAMES = [
   'fuchsia', 'pink', 'rose'
 ] as const
 
-/** 所有颜色选项（default + 17色），存的都是颜色名，不含 shade */
+/** 所有颜色选项（primary + 17色），存的都是颜色名，不含 shade */
 export const FLOW_COLORS: FlowColorOption[] = [
-  { color: '', chip: '' },
+  { color: 'primary', chip: 'primary' },
   ...FLOW_COLOR_NAMES.map(name => ({ color: name, chip: name }))
 ]
 
@@ -144,11 +144,14 @@ export type FlowColorRole = keyof typeof FLOW_SHADE_MAP
 
 /**
  * 根据颜色名、用途角色和 dark/light 模式生成 CSS var
- * 空名称返回空字符串（= 使用主题默认色）
+ * 空名称返回空字符串，供兼容旧数据时回退使用
  */
 export function resolveFlowColor(name: string, role: FlowColorRole, isDark: boolean): string {
   if (!name) return ''
   const shade = FLOW_SHADE_MAP[role][isDark ? 'dark' : 'light']
+  if (name === 'primary') {
+    return `var(--ui-color-${name}-${shade})`
+  }
   return `var(--color-${name}-${shade})`
 }
 
