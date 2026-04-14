@@ -45,6 +45,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
   // Loading 状态：追踪并发 API 请求数量
   const _pendingCount = ref(0)
   const loading = ref(false)
+  const pendingEdgeDeletes = new Map<string, Promise<void>>()
 
   /** 包装异步操作，自动管理 loading 状态 */
   const withLoading = async <T>(fn: () => Promise<T>): Promise<T> => {
@@ -58,6 +59,43 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
         _pendingCount.value = 0
         loading.value = false
       }
+    }
+  }
+
+  const getErrorMessage = (error: unknown) => {
+    return error instanceof Error ? error.message : String(error)
+  }
+
+  const deleteEdgeById = async (edgeId: string) => {
+    if (!edges.value.some(e => e.id === edgeId)) return
+
+    const existingDelete = pendingEdgeDeletes.get(edgeId)
+    if (existingDelete) {
+      await existingDelete
+      return
+    }
+
+    const deletePromise = (async () => {
+      if (api?.value?.deleteLink) {
+        const linkId = Number(edgeId)
+        if (!Number.isNaN(linkId)) {
+          try {
+            await api.value.deleteLink(linkId)
+          } catch (error) {
+            throw new Error(`删除连线 ${edgeId} 失败: ${getErrorMessage(error)}`)
+          }
+        }
+      }
+
+      edges.value = edges.value.filter(e => e.id !== edgeId)
+    })()
+
+    pendingEdgeDeletes.set(edgeId, deletePromise)
+
+    try {
+      await deletePromise
+    } finally {
+      pendingEdgeDeletes.delete(edgeId)
     }
   }
 
@@ -127,27 +165,27 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
   // 删除节点
   const deleteNode = async (nodeId: string) => {
     const doDelete = async () => {
-      // 调用 API 删除节点
-      if (api?.value?.deleteNode) {
-        await api.value.deleteNode(Number(nodeId))
+      const relatedEdgeIds = [...new Set(edges.value
+        .filter(e => e.source === nodeId || e.target === nodeId)
+        .map(e => e.id))]
+
+      try {
+        await Promise.all(relatedEdgeIds.map(edgeId => deleteEdgeById(edgeId)))
+      } catch (error) {
+        emitUpdate()
+        throw new Error(`删除节点 ${nodeId} 的关联连线失败: ${getErrorMessage(error)}`)
       }
-      // 找到需要删除的关联边，逐一调用 API
-      if (api?.value?.deleteLink) {
-        const relatedEdges = edges.value.filter(
-          e => e.source === nodeId || e.target === nodeId
-        )
-        for (const edge of relatedEdges) {
-          const linkId = Number(edge.id)
-          if (!Number.isNaN(linkId)) {
-            await api.value.deleteLink(linkId)
-          }
+
+      if (api?.value?.deleteNode) {
+        try {
+          await api.value.deleteNode(Number(nodeId))
+        } catch (error) {
+          emitUpdate()
+          throw new Error(`删除节点 ${nodeId} 失败: ${getErrorMessage(error)}`)
         }
       }
+
       nodes.value = nodes.value.filter(n => n.id !== nodeId)
-      // 同时删除相关的边
-      edges.value = edges.value.filter(
-        e => e.source !== nodeId && e.target !== nodeId
-      )
       emitUpdate()
     }
     if (api?.value) await withLoading(doDelete)
@@ -157,13 +195,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
   // 删除边
   const deleteEdge = async (edgeId: string) => {
     const doDelete = async () => {
-      if (api?.value?.deleteLink) {
-        const linkId = Number(edgeId)
-        if (!Number.isNaN(linkId)) {
-          await api.value.deleteLink(linkId)
-        }
-      }
-      edges.value = edges.value.filter(e => e.id !== edgeId)
+      await deleteEdgeById(edgeId)
       emitUpdate()
     }
     if (api?.value) await withLoading(doDelete)
