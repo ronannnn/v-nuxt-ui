@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import { Handle } from '@vue-flow/core'
 import { FLOW_RESIZE_HANDLES, GRID_SIZE } from '#v/constants'
 import { useFlowNode } from '#v/composables'
@@ -10,6 +11,7 @@ const props = defineProps<{
 }>()
 
 const {
+  nodeRef,
   isHoveredLocal,
   borderColor,
   activeHandles,
@@ -18,11 +20,15 @@ const {
   data: computed(() => props.data),
   selected: computed(() => props.selected ?? false)
 })
+
+const setNodeRef = (el: Element | ComponentPublicInstance | null) => {
+  nodeRef.value = el instanceof HTMLElement ? el : null
+}
 </script>
 
 <template>
   <div
-    ref="nodeRef"
+    :ref="setNodeRef"
     class="bg-background border relative flex"
     :style="{
       boxSizing: 'border-box',
