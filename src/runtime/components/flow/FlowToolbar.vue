@@ -106,6 +106,9 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
       side="right"
       inset
       :overlay="false"
+      :ui="{
+        content: 'w-fit'
+      }"
     >
       <template #body>
         <UTabs
