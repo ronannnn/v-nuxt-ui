@@ -52,8 +52,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     loading.value = true
     try {
       return await fn()
-    }
-    finally {
+    } finally {
       _pendingCount.value--
       if (_pendingCount.value <= 0) {
         _pendingCount.value = 0
@@ -178,15 +177,18 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
       let label: string | undefined
 
       if (api?.value?.createLink) {
-        const created = await api.value.createLink({
+        const { data } = await api.value.createLink({
+          id: 0,
           flowId: flow.value?.id,
           parentId: Number(params.source),
           childId: Number(params.target),
           parentHandlePos: params.sourceHandle ?? undefined,
           childHandlePos: params.targetHandle ?? undefined
         })
-        edgeId = String(created.id)
-        label = created.label
+        if (data.value.data) {
+          edgeId = String(data.value.data.id)
+          label = data.value.data.label
+        }
       }
 
       const newEdge: Edge = {
@@ -258,15 +260,18 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
         let label: string | undefined = typeof pendingEdge.label === 'string' ? pendingEdge.label : undefined
 
         if (api.value?.createLink) {
-          const created = await api.value.createLink({
+          const { data } = await api.value.createLink({
+            id: 0,
             flowId: flow.value?.id,
             parentId: Number(connection.source),
             childId: Number(connection.target),
             parentHandlePos: connection.sourceHandle ?? undefined,
             childHandlePos: connection.targetHandle ?? undefined
           })
-          finalId = String(created.id)
-          label = created.label
+          if (data.value.data) {
+            finalId = String(data.value.data.id)
+            label = data.value.data.label
+          }
         }
 
         // 3. 成功：用最终数据替换 pending 边，移除 opacity
@@ -282,8 +287,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
           edges.value = [...edges.value]
           emitUpdate()
         }
-      }
-      catch {
+      } catch {
         // 失败：rollback，恢复旧边
         edges.value = edges.value.filter(e => e.id !== tempId)
         if (oldEdgeBackup) {
@@ -400,7 +404,8 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
       let nodeHeight = 40
 
       if (api?.value?.createNode) {
-        const created = await api.value.createNode({
+        const { data } = await api.value.createNode({
+          id: 0,
           flowId: flow.value?.id,
           name: defaultName,
           positionX,
@@ -408,10 +413,12 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
           width: 120,
           height: 40
         })
-        nodeId = created.id
-        nodeName = created.name ?? defaultName
-        nodeWidth = created.width ?? 120
-        nodeHeight = created.height ?? 40
+        if (data.value.data) {
+          nodeId = data.value.data.id
+          nodeName = data.value.data.name ?? defaultName
+          nodeWidth = data.value.data.width ?? 120
+          nodeHeight = data.value.data.height ?? 40
+        }
       }
 
       const newNode: Node = {

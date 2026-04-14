@@ -573,6 +573,49 @@ export interface MockDepartment {
   version: number
 }
 
+export interface MockFlowNodeLink {
+  id: number
+  flowId: number
+  parentId?: number
+  parentHandlePos?: string
+  childId?: number
+  childHandlePos?: string
+  label?: string
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockFlowNode {
+  id: number
+  flowId: number
+  name?: string
+  positionX?: number
+  positionY?: number
+  width?: number
+  height?: number
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
+export interface MockFlow {
+  id: number
+  name?: string
+  description?: string
+  nodes?: MockFlowNode[]
+  links?: MockFlowNodeLink[]
+  createdAt: string
+  updatedAt: string
+  createdBy?: string
+  updatedBy?: string
+  version: number
+}
+
 const departments: MockDepartment[] = [
   { id: 1, name: '工程部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
   { id: 2, name: '产品部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
@@ -583,6 +626,31 @@ const departments: MockDepartment[] = [
   { id: 7, name: '运营部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 },
   { id: 8, name: '销售部', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z', version: 1 }
 ]
+
+const flowNodes: MockFlowNode[] = [
+  { id: 1001, flowId: 1, name: '发现风险', positionX: 80, positionY: 80, width: 180, height: 100, createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 1002, flowId: 1, name: '评估影响', positionX: 360, positionY: 80, width: 180, height: 100, createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 1003, flowId: 1, name: '制定方案', positionX: 640, positionY: 80, width: 180, height: 100, createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 1004, flowId: 2, name: '提交申请', positionX: 80, positionY: 120, width: 180, height: 100, createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 1005, flowId: 2, name: '部门审批', positionX: 360, positionY: 120, width: 180, height: 100, createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 1006, flowId: 2, name: '财务复核', positionX: 640, positionY: 120, width: 180, height: 100, createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 }
+]
+
+const flowLinks: MockFlowNodeLink[] = [
+  { id: 2001, flowId: 1, parentId: 1001, childId: 1002, parentHandlePos: 'r2', childHandlePos: 'l2', label: '进入评估', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 2002, flowId: 1, parentId: 1002, childId: 1003, parentHandlePos: 'r2', childHandlePos: 'l2', label: '输出方案', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 2003, flowId: 2, parentId: 1004, childId: 1005, parentHandlePos: 'r2', childHandlePos: 'l2', label: '主管审核', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 2004, flowId: 2, parentId: 1005, childId: 1006, parentHandlePos: 'r2', childHandlePos: 'l2', label: '进入复核', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 }
+]
+
+const flows: MockFlow[] = [
+  { id: 1, name: '风险预警流程', description: '用于演示风险识别到处置的主流程', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-12T10:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 2, name: '费用审批流程', description: '用于演示跨部门审批的标准流转', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-15T11:30:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 }
+]
+
+let nextFlowId = 3
+let nextFlowNodeId = 1007
+let nextFlowLinkId = 2005
 
 const users: MockUser[] = [
   { id: 1, nickname: '张三', username: 'zhangsan', email: 'zhangsan@example.com', gender: 1, departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: true, status: 'active', entryDate: '2022-03-15', telNo: '13800001111', tablePermissions: [1, 4], createdAt: '2022-03-15T08:00:00Z', updatedAt: '2025-01-10T10:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 5 },
@@ -673,6 +741,216 @@ export function deleteUsers(ids: number[]): void {
     const idx = users.findIndex(u => u.id === id)
     if (idx !== -1) users.splice(idx, 1)
   }
+}
+
+function attachFlowGraph(flow: MockFlow): MockFlow {
+  return {
+    ...flow,
+    nodes: flowNodes.filter(node => node.flowId === flow.id),
+    links: flowLinks.filter(link => link.flowId === flow.id)
+  }
+}
+
+export function getFlowById(id: number): MockFlow | undefined {
+  const flow = flows.find(item => item.id === id)
+  return flow ? attachFlowGraph(flow) : undefined
+}
+
+export function createFlow(data: Partial<MockFlow>): MockFlow {
+  const now = new Date().toISOString()
+  const flow: MockFlow = {
+    id: nextFlowId++,
+    name: data.name,
+    description: data.description,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  flows.push(flow)
+  return attachFlowGraph(flow)
+}
+
+export function updateFlow(data: Partial<MockFlow>): MockFlow | null {
+  const idx = flows.findIndex(item => item.id === data.id)
+  if (idx === -1) return null
+  const updated: MockFlow = {
+    ...flows[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: flows[idx]!.version + 1
+  }
+  delete (updated as Partial<MockFlow>).nodes
+  delete (updated as Partial<MockFlow>).links
+  flows[idx] = updated
+  return attachFlowGraph(updated)
+}
+
+export function deleteFlows(ids: number[]): void {
+  ids.forEach((id) => {
+    const flowIdx = flows.findIndex(item => item.id === id)
+    if (flowIdx !== -1) flows.splice(flowIdx, 1)
+
+    for (let i = flowNodes.length - 1; i >= 0; i--) {
+      if (flowNodes[i]!.flowId === id) flowNodes.splice(i, 1)
+    }
+
+    for (let i = flowLinks.length - 1; i >= 0; i--) {
+      if (flowLinks[i]!.flowId === id) flowLinks.splice(i, 1)
+    }
+  })
+}
+
+export function queryFlows(body: any) {
+  let filtered = flows.map(attachFlowGraph)
+
+  if (body.whereQuery?.items) {
+    for (const item of body.whereQuery.items) {
+      if (item.value === null || item.value === undefined || item.value === '') continue
+      const field = item.field as string
+      const opr = item.opr as string
+      const value = item.value
+
+      filtered = filtered.filter((flow) => {
+        const fieldValue = getNestedValue(flow, field)
+        switch (opr) {
+          case 'eq': return fieldValue === value
+          case 'ne': return fieldValue !== value
+          case 'like': return String(fieldValue ?? '').toLowerCase().includes(String(value).toLowerCase())
+          case 'start_like': return String(fieldValue ?? '').toLowerCase().startsWith(String(value).toLowerCase())
+          case 'in': return Array.isArray(value) ? value.includes(fieldValue) : fieldValue === value
+          case 'not_in': return Array.isArray(value) ? !value.includes(fieldValue) : fieldValue !== value
+          case 'gt': return (fieldValue as any) > value
+          case 'gte': return (fieldValue as any) >= value
+          case 'lt': return (fieldValue as any) < value
+          case 'lte': return (fieldValue as any) <= value
+          case 'is_null': return fieldValue === null || fieldValue === undefined
+          case 'is_not_null': return fieldValue !== null && fieldValue !== undefined
+          default: return true
+        }
+      })
+    }
+  }
+
+  if (body.orderQuery && body.orderQuery.length > 0) {
+    filtered.sort((a, b) => {
+      for (const order of body.orderQuery) {
+        const field = order.field as string
+        const aVal = getNestedValue(a, field)
+        const bVal = getNestedValue(b, field)
+        if (aVal === bVal) continue
+        const dir = order.order === 'desc' ? -1 : 1
+        if (aVal == null) return dir
+        if (bVal == null) return -dir
+        return aVal < bVal ? -dir : dir
+      }
+      return 0
+    })
+  }
+
+  const total = filtered.length
+  const pageNum = body.pagination?.pageNum || 1
+  const pageSize = body.pagination?.pageSize || 10
+
+  if (pageSize > 0) {
+    const start = (pageNum - 1) * pageSize
+    filtered = filtered.slice(start, start + pageSize)
+  }
+
+  return {
+    list: filtered,
+    total,
+    pageNum,
+    pageSize: pageSize || total
+  }
+}
+
+export function createFlowNode(data: Partial<MockFlowNode>): MockFlowNode {
+  const now = new Date().toISOString()
+  const node: MockFlowNode = {
+    id: nextFlowNodeId++,
+    flowId: data.flowId || 0,
+    name: data.name || `节点 ${nextFlowNodeId - 1}`,
+    positionX: data.positionX ?? 0,
+    positionY: data.positionY ?? 0,
+    width: data.width ?? 120,
+    height: data.height ?? 40,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  flowNodes.push(node)
+  return node
+}
+
+export function updateFlowNode(data: Partial<MockFlowNode>): MockFlowNode | null {
+  const idx = flowNodes.findIndex(item => item.id === data.id)
+  if (idx === -1) return null
+  const updated: MockFlowNode = {
+    ...flowNodes[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: flowNodes[idx]!.version + 1
+  }
+  flowNodes[idx] = updated
+  return updated
+}
+
+export function deleteFlowNodes(ids: number[]): void {
+  ids.forEach((id) => {
+    const idx = flowNodes.findIndex(item => item.id === id)
+    if (idx !== -1) flowNodes.splice(idx, 1)
+
+    for (let i = flowLinks.length - 1; i >= 0; i--) {
+      if (flowLinks[i]!.parentId === id || flowLinks[i]!.childId === id) flowLinks.splice(i, 1)
+    }
+  })
+}
+
+export function createFlowLink(data: Partial<MockFlowNodeLink>): MockFlowNodeLink {
+  const now = new Date().toISOString()
+  const link: MockFlowNodeLink = {
+    id: nextFlowLinkId++,
+    flowId: data.flowId || 0,
+    parentId: data.parentId,
+    parentHandlePos: data.parentHandlePos,
+    childId: data.childId,
+    childHandlePos: data.childHandlePos,
+    label: data.label,
+    createdAt: now,
+    updatedAt: now,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  }
+  flowLinks.push(link)
+  return link
+}
+
+export function updateFlowLink(data: Partial<MockFlowNodeLink>): MockFlowNodeLink | null {
+  const idx = flowLinks.findIndex(item => item.id === data.id)
+  if (idx === -1) return null
+  const updated: MockFlowNodeLink = {
+    ...flowLinks[idx]!,
+    ...data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: 'playground',
+    version: flowLinks[idx]!.version + 1
+  }
+  flowLinks[idx] = updated
+  return updated
+}
+
+export function deleteFlowLinks(ids: number[]): void {
+  ids.forEach((id) => {
+    const idx = flowLinks.findIndex(item => item.id === id)
+    if (idx !== -1) flowLinks.splice(idx, 1)
+  })
 }
 
 // Query engine for mock data

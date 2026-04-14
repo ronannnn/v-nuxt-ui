@@ -1,3 +1,4 @@
+import type { ApiGroup } from '../components'
 import type { BaseModel } from './base'
 
 export type Flow = {
@@ -52,15 +53,15 @@ export interface UseFlowResizeDimensions {
  */
 export interface FlowApi {
   /** 创建节点，返回创建后的节点（含服务端生成的 id 等字段） */
-  createNode?: (node: Partial<FlowNode>) => Promise<FlowNode>
+  createNode?: ApiGroup<FlowNode>['create']
   /** 更新节点（位置、尺寸、名称等） */
-  updateNode?: (node: FlowNode) => Promise<FlowNode>
+  updateNode?: ApiGroup<FlowNode>['update']
   /** 删除节点 */
-  deleteNode?: (nodeId: number) => Promise<void>
+  deleteNode?: ApiGroup<FlowNode>['deleteById']
   /** 创建边/连接，返回创建后的边 */
-  createLink?: (link: Partial<FlowNodeLink>) => Promise<FlowNodeLink>
+  createLink?: ApiGroup<FlowNodeLink>['create']
   /** 更新边（label 等） */
-  updateLink?: (link: FlowNodeLink) => Promise<FlowNodeLink>
+  updateLink?: ApiGroup<FlowNodeLink>['update']
   /** 删除边 */
-  deleteLink?: (linkId: number) => Promise<void>
+  deleteLink?: ApiGroup<FlowNodeLink>['deleteById']
 }
