@@ -183,9 +183,18 @@ const isDeleteKey = (event: KeyboardEvent) => {
   return event.key === 'Delete' || event.key === 'Backspace' || event.code === 'Backspace'
 }
 
+const isEditableTarget = (target: EventTarget | null) => {
+  const element = target instanceof HTMLElement ? target : null
+  if (!element) return false
+
+  const tagName = element.tagName
+  return element.isContentEditable || tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT'
+}
+
 // 键盘事件处理
 const handleKeyDown = async (event: KeyboardEvent) => {
   if (!isDeleteKey(event)) return
+  if (isEditableTarget(event.target)) return
 
   event.preventDefault()
   event.stopPropagation()
