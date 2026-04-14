@@ -576,10 +576,10 @@ export interface MockDepartment {
 export interface MockFlowEdge {
   id: number
   flowId: number
-  parentId?: number
-  parentHandlePos?: string
-  childId?: number
-  childHandlePos?: string
+  sourceNodeId?: number
+  sourceNodeHandlePos?: string
+  targetNodeId?: number
+  targetNodeHandlePos?: string
   label?: string
   createdAt: string
   updatedAt: string
@@ -637,10 +637,10 @@ const flowNodes: MockFlowNode[] = [
 ]
 
 const flowEdges: MockFlowEdge[] = [
-  { id: 2001, flowId: 1, parentId: 1001, childId: 1002, parentHandlePos: 'r2', childHandlePos: 'l2', label: '进入评估', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
-  { id: 2002, flowId: 1, parentId: 1002, childId: 1003, parentHandlePos: 'r2', childHandlePos: 'l2', label: '输出方案', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
-  { id: 2003, flowId: 2, parentId: 1004, childId: 1005, parentHandlePos: 'r2', childHandlePos: 'l2', label: '主管审核', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
-  { id: 2004, flowId: 2, parentId: 1005, childId: 1006, parentHandlePos: 'r2', childHandlePos: 'l2', label: '进入复核', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 }
+  { id: 2001, flowId: 1, sourceNodeId: 1001, targetNodeId: 1002, sourceNodeHandlePos: 'r2', targetNodeHandlePos: 'l2', label: '进入评估', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 2002, flowId: 1, sourceNodeId: 1002, targetNodeId: 1003, sourceNodeHandlePos: 'r2', targetNodeHandlePos: 'l2', label: '输出方案', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 2003, flowId: 2, sourceNodeId: 1004, targetNodeId: 1005, sourceNodeHandlePos: 'r2', targetNodeHandlePos: 'l2', label: '主管审核', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
+  { id: 2004, flowId: 2, sourceNodeId: 1005, targetNodeId: 1006, sourceNodeHandlePos: 'r2', targetNodeHandlePos: 'l2', label: '进入复核', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 }
 ]
 
 const flows: MockFlow[] = [
@@ -907,7 +907,7 @@ export function deleteFlowNodes(ids: number[]): void {
     if (idx !== -1) flowNodes.splice(idx, 1)
 
     for (let i = flowEdges.length - 1; i >= 0; i--) {
-      if (flowEdges[i]!.parentId === id || flowEdges[i]!.childId === id) flowEdges.splice(i, 1)
+      if (flowEdges[i]!.sourceNodeId === id || flowEdges[i]!.targetNodeId === id) flowEdges.splice(i, 1)
     }
   })
 }
@@ -917,10 +917,10 @@ export function createFlowEdge(data: Partial<MockFlowEdge>): MockFlowEdge {
   const edge: MockFlowEdge = {
     id: nextFlowEdgeId++,
     flowId: data.flowId || 0,
-    parentId: data.parentId,
-    parentHandlePos: data.parentHandlePos,
-    childId: data.childId,
-    childHandlePos: data.childHandlePos,
+    sourceNodeId: data.sourceNodeId,
+    sourceNodeHandlePos: data.sourceNodeHandlePos,
+    targetNodeId: data.targetNodeId,
+    targetNodeHandlePos: data.targetNodeHandlePos,
     label: data.label,
     createdAt: now,
     updatedAt: now,

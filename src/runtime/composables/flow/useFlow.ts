@@ -116,10 +116,10 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
   const toVueFlowEdge = (edge: FlowEdge): Edge => ({
     id: String(edge.id),
     type: 'custom',
-    source: String(edge.parentId),
-    target: String(edge.childId),
-    sourceHandle: edge.parentHandlePos ?? undefined,
-    targetHandle: edge.childHandlePos ?? undefined,
+    source: String(edge.sourceNodeId),
+    target: String(edge.targetNodeId),
+    sourceHandle: edge.sourceNodeHandlePos ?? undefined,
+    targetHandle: edge.targetNodeHandlePos ?? undefined,
     label: edge.label
   })
 
@@ -151,10 +151,10 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
       } as FlowNode)),
       edges: edges.value.map(e => ({
         id: Number(e.id) || undefined,
-        parentId: Number(e.source),
-        childId: Number(e.target),
-        parentHandlePos: e.sourceHandle ?? undefined,
-        childHandlePos: e.targetHandle ?? undefined,
+        sourceNodeId: Number(e.source),
+        targetNodeId: Number(e.target),
+        sourceNodeHandlePos: e.sourceHandle ?? undefined,
+        targetNodeHandlePos: e.targetHandle ?? undefined,
         label: typeof e.label === 'string' ? e.label : undefined
       } as FlowEdge))
     }
@@ -211,10 +211,10 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
         const { data } = await api.value.createEdge({
           id: 0,
           flowId: flow.value?.id,
-          parentId: Number(params.source),
-          childId: Number(params.target),
-          parentHandlePos: params.sourceHandle ?? undefined,
-          childHandlePos: params.targetHandle ?? undefined
+          sourceNodeId: Number(params.source),
+          targetNodeId: Number(params.target),
+          sourceNodeHandlePos: params.sourceHandle ?? undefined,
+          targetNodeHandlePos: params.targetHandle ?? undefined
         })
         if (data.value.data) {
           edgeId = String(data.value.data.id)
@@ -293,10 +293,10 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
           const { data } = await api.value.createEdge({
             id: 0,
             flowId: flow.value?.id,
-            parentId: Number(connection.source),
-            childId: Number(connection.target),
-            parentHandlePos: connection.sourceHandle ?? undefined,
-            childHandlePos: connection.targetHandle ?? undefined
+            sourceNodeId: Number(connection.source),
+            targetNodeId: Number(connection.target),
+            sourceNodeHandlePos: connection.sourceHandle ?? undefined,
+            targetNodeHandlePos: connection.targetHandle ?? undefined
           })
           if (data.value.data) {
             finalId = String(data.value.data.id)
@@ -383,10 +383,10 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
           if (!Number.isNaN(Number(edgeId))) {
             await api.value.updateEdge({
               id: Number(edgeId),
-              parentId: Number(edge.source),
-              childId: Number(edge.target),
-              parentHandlePos: edge.sourceHandle ?? undefined,
-              childHandlePos: edge.targetHandle ?? undefined,
+              sourceNodeId: Number(edge.source),
+              targetNodeId: Number(edge.target),
+              sourceNodeHandlePos: edge.sourceHandle ?? undefined,
+              targetNodeHandlePos: edge.targetHandle ?? undefined,
               label: label || undefined
             } as FlowEdge)
           }

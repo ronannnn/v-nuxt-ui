@@ -10,21 +10,25 @@ export type Flow = {
 
 export type FlowNode = {
   flowId?: number
+  flow?: Flow
   name?: string
   positionX?: number
   positionY?: number
   width?: number
   height?: number
-  parentEdges?: FlowEdge[]
-  childEdges?: FlowEdge[]
+  sourceEdges?: FlowEdge[]
+  targetEdges?: FlowEdge[]
 } & BaseModel
 
 export type FlowEdge = {
   flowId?: number
-  parentId?: number
-  parentHandlePos?: string
-  childId?: number
-  childHandlePos?: string
+  flow?: Flow
+  sourceNodeId?: number
+  sourceNode?: FlowNode
+  sourceNodeHandlePos?: string
+  targetNodeId?: number
+  targetNode?: FlowNode
+  targetNodeHandlePos?: string
   label?: string
   condition?: string
   order?: number

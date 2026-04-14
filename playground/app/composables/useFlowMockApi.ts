@@ -51,10 +51,10 @@ export function useFlowMockApi(): FlowApi {
     const created: FlowEdge = {
       id,
       flowId: edge.flowId,
-      parentId: edge.parentId,
-      childId: edge.childId,
-      parentHandlePos: edge.parentHandlePos,
-      childHandlePos: edge.childHandlePos,
+      sourceNodeId: edge.sourceNodeId,
+      targetNodeId: edge.targetNodeId,
+      sourceNodeHandlePos: edge.sourceNodeHandlePos,
+      targetNodeHandlePos: edge.targetNodeHandlePos,
       label: edge.label
     }
     console.log('[FlowApi] createEdge:', created)

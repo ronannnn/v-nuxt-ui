@@ -184,15 +184,15 @@ const flowData = ref<Flow>({
   ],
   edges: [
     // 第一行从左到右
-    { id: 1, parentId: 1, childId: 2, parentHandlePos: 'r2', childHandlePos: 'l2', label: '立项批复' },
-    { id: 2, parentId: 2, childId: 3, parentHandlePos: 'r2', childHandlePos: 'l2', label: '可行性报告' },
+    { id: 1, sourceNodeId: 1, targetNodeId: 2, sourceNodeHandlePos: 'r2', targetNodeHandlePos: 'l2', label: '立项批复' },
+    { id: 2, sourceNodeId: 2, targetNodeId: 3, sourceNodeHandlePos: 'r2', targetNodeHandlePos: 'l2', label: '可行性报告' },
     // 从第一行右侧转到第二行右侧
-    { id: 3, parentId: 3, childId: 4, parentHandlePos: 'b2', childHandlePos: 't2', label: '中标通知' },
+    { id: 3, sourceNodeId: 3, targetNodeId: 4, sourceNodeHandlePos: 'b2', targetNodeHandlePos: 't2', label: '中标通知' },
     // 第二行从右到左
-    { id: 4, parentId: 4, childId: 5, parentHandlePos: 'l2', childHandlePos: 'r2', label: '合同签署' },
-    { id: 5, parentId: 5, childId: 6, parentHandlePos: 'l2', childHandlePos: 'r2', label: '验收合格' },
+    { id: 4, sourceNodeId: 4, targetNodeId: 5, sourceNodeHandlePos: 'l2', targetNodeHandlePos: 'r2', label: '合同签署' },
+    { id: 5, sourceNodeId: 5, targetNodeId: 6, sourceNodeHandlePos: 'l2', targetNodeHandlePos: 'r2', label: '验收合格' },
     // 从第二行左侧转到第三行
-    { id: 6, parentId: 6, childId: 7, parentHandlePos: 'b2', childHandlePos: 't2', label: '入账完成' }
+    { id: 6, sourceNodeId: 6, targetNodeId: 7, sourceNodeHandlePos: 'b2', targetNodeHandlePos: 't2', label: '入账完成' }
   ]
 })
 
