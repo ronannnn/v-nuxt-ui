@@ -11,6 +11,7 @@
  */
 @source "./components";
 @source "./composables";
+@source "./constants";
 @source "./utils";
 
 html,
