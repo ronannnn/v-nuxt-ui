@@ -23,7 +23,7 @@ const {
 <template>
   <div
     ref="nodeRef"
-    class="bg-background border px-3 py-2 relative flex"
+    class="bg-background border relative flex"
     :style="{
       boxSizing: 'border-box',
       width: data.width ? `${data.width}px` : GRID_SIZE * 6 + 'px',
