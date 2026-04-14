@@ -5,7 +5,7 @@ export type Flow = {
   name?: string
   description?: string
   nodes?: FlowNode[]
-  links?: FlowNodeLink[]
+  edges?: FlowEdge[]
 } & BaseModel
 
 export type FlowNode = {
@@ -15,11 +15,11 @@ export type FlowNode = {
   positionY?: number
   width?: number
   height?: number
-  parentLinks?: FlowNodeLink[]
-  childLinks?: FlowNodeLink[]
+  parentEdges?: FlowEdge[]
+  childEdges?: FlowEdge[]
 } & BaseModel
 
-export type FlowNodeLink = {
+export type FlowEdge = {
   flowId?: number
   parentId?: number
   parentHandlePos?: string
@@ -59,9 +59,9 @@ export interface FlowApi {
   /** 删除节点 */
   deleteNode?: ApiGroup<FlowNode>['deleteById']
   /** 创建边/连接，返回创建后的边 */
-  createLink?: ApiGroup<FlowNodeLink>['create']
+  createEdge?: ApiGroup<FlowEdge>['create']
   /** 更新边（label 等） */
-  updateLink?: ApiGroup<FlowNodeLink>['update']
+  updateEdge?: ApiGroup<FlowEdge>['update']
   /** 删除边 */
-  deleteLink?: ApiGroup<FlowNodeLink>['deleteById']
+  deleteEdge?: ApiGroup<FlowEdge>['deleteById']
 }

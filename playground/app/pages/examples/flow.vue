@@ -182,7 +182,7 @@ const flowData = ref<Flow>({
     // 第三行：付款结算
     { id: 7, name: '付款结算', positionX: 60, positionY: 680, width: 280, height: 220 }
   ],
-  links: [
+  edges: [
     // 第一行从左到右
     { id: 1, parentId: 1, childId: 2, parentHandlePos: 'r2', childHandlePos: 'l2', label: '立项批复' },
     { id: 2, parentId: 2, childId: 3, parentHandlePos: 'r2', childHandlePos: 'l2', label: '可行性报告' },

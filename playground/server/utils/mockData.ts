@@ -573,7 +573,7 @@ export interface MockDepartment {
   version: number
 }
 
-export interface MockFlowNodeLink {
+export interface MockFlowEdge {
   id: number
   flowId: number
   parentId?: number
@@ -608,7 +608,7 @@ export interface MockFlow {
   name?: string
   description?: string
   nodes?: MockFlowNode[]
-  links?: MockFlowNodeLink[]
+  edges?: MockFlowEdge[]
   createdAt: string
   updatedAt: string
   createdBy?: string
@@ -636,7 +636,7 @@ const flowNodes: MockFlowNode[] = [
   { id: 1006, flowId: 2, name: '财务复核', positionX: 640, positionY: 120, width: 180, height: 100, createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 }
 ]
 
-const flowLinks: MockFlowNodeLink[] = [
+const flowEdges: MockFlowEdge[] = [
   { id: 2001, flowId: 1, parentId: 1001, childId: 1002, parentHandlePos: 'r2', childHandlePos: 'l2', label: '进入评估', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
   { id: 2002, flowId: 1, parentId: 1002, childId: 1003, parentHandlePos: 'r2', childHandlePos: 'l2', label: '输出方案', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
   { id: 2003, flowId: 2, parentId: 1004, childId: 1005, parentHandlePos: 'r2', childHandlePos: 'l2', label: '主管审核', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z', createdBy: 'playground', updatedBy: 'playground', version: 1 },
@@ -650,7 +650,7 @@ const flows: MockFlow[] = [
 
 let nextFlowId = 3
 let nextFlowNodeId = 1007
-let nextFlowLinkId = 2005
+let nextFlowEdgeId = 2005
 
 const users: MockUser[] = [
   { id: 1, nickname: '张三', username: 'zhangsan', email: 'zhangsan@example.com', gender: 1, departmentId: 1, department: { id: 1, name: '工程部' }, isAdmin: true, status: 'active', entryDate: '2022-03-15', telNo: '13800001111', tablePermissions: [1, 4], createdAt: '2022-03-15T08:00:00Z', updatedAt: '2025-01-10T10:00:00Z', createdBy: 'system', updatedBy: 'admin', version: 5 },
@@ -747,7 +747,7 @@ function attachFlowGraph(flow: MockFlow): MockFlow {
   return {
     ...flow,
     nodes: flowNodes.filter(node => node.flowId === flow.id),
-    links: flowLinks.filter(link => link.flowId === flow.id)
+    edges: flowEdges.filter(edge => edge.flowId === flow.id)
   }
 }
 
@@ -783,7 +783,7 @@ export function updateFlow(data: Partial<MockFlow>): MockFlow | null {
     version: flows[idx]!.version + 1
   }
   delete (updated as Partial<MockFlow>).nodes
-  delete (updated as Partial<MockFlow>).links
+  delete (updated as Partial<MockFlow>).edges
   flows[idx] = updated
   return attachFlowGraph(updated)
 }
@@ -797,8 +797,8 @@ export function deleteFlows(ids: number[]): void {
       if (flowNodes[i]!.flowId === id) flowNodes.splice(i, 1)
     }
 
-    for (let i = flowLinks.length - 1; i >= 0; i--) {
-      if (flowLinks[i]!.flowId === id) flowLinks.splice(i, 1)
+    for (let i = flowEdges.length - 1; i >= 0; i--) {
+      if (flowEdges[i]!.flowId === id) flowEdges.splice(i, 1)
     }
   })
 }
@@ -906,16 +906,16 @@ export function deleteFlowNodes(ids: number[]): void {
     const idx = flowNodes.findIndex(item => item.id === id)
     if (idx !== -1) flowNodes.splice(idx, 1)
 
-    for (let i = flowLinks.length - 1; i >= 0; i--) {
-      if (flowLinks[i]!.parentId === id || flowLinks[i]!.childId === id) flowLinks.splice(i, 1)
+    for (let i = flowEdges.length - 1; i >= 0; i--) {
+      if (flowEdges[i]!.parentId === id || flowEdges[i]!.childId === id) flowEdges.splice(i, 1)
     }
   })
 }
 
-export function createFlowLink(data: Partial<MockFlowNodeLink>): MockFlowNodeLink {
+export function createFlowEdge(data: Partial<MockFlowEdge>): MockFlowEdge {
   const now = new Date().toISOString()
-  const link: MockFlowNodeLink = {
-    id: nextFlowLinkId++,
+  const edge: MockFlowEdge = {
+    id: nextFlowEdgeId++,
     flowId: data.flowId || 0,
     parentId: data.parentId,
     parentHandlePos: data.parentHandlePos,
@@ -928,28 +928,28 @@ export function createFlowLink(data: Partial<MockFlowNodeLink>): MockFlowNodeLin
     updatedBy: 'playground',
     version: 1
   }
-  flowLinks.push(link)
-  return link
+  flowEdges.push(edge)
+  return edge
 }
 
-export function updateFlowLink(data: Partial<MockFlowNodeLink>): MockFlowNodeLink | null {
-  const idx = flowLinks.findIndex(item => item.id === data.id)
+export function updateFlowEdge(data: Partial<MockFlowEdge>): MockFlowEdge | null {
+  const idx = flowEdges.findIndex(item => item.id === data.id)
   if (idx === -1) return null
-  const updated: MockFlowNodeLink = {
-    ...flowLinks[idx]!,
+  const updated: MockFlowEdge = {
+    ...flowEdges[idx]!,
     ...data,
     updatedAt: new Date().toISOString(),
     updatedBy: 'playground',
-    version: flowLinks[idx]!.version + 1
+    version: flowEdges[idx]!.version + 1
   }
-  flowLinks[idx] = updated
+  flowEdges[idx] = updated
   return updated
 }
 
-export function deleteFlowLinks(ids: number[]): void {
+export function deleteFlowEdges(ids: number[]): void {
   ids.forEach((id) => {
-    const idx = flowLinks.findIndex(item => item.id === id)
-    if (idx !== -1) flowLinks.splice(idx, 1)
+    const idx = flowEdges.findIndex(item => item.id === id)
+    if (idx !== -1) flowEdges.splice(idx, 1)
   })
 }
 

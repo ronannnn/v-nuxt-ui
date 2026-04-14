@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import type { FlowApi, FlowNode, FlowNodeLink, RequestResult } from '#v/types'
+import type { FlowApi, FlowNode, FlowEdge, RequestResult } from '#v/types'
 
 /**
  * Mock FlowApi 实现，用于 playground 演示
@@ -45,31 +45,31 @@ export function useFlowMockApi(): FlowApi {
     return success(undefined)
   }
 
-  const createLink: FlowApi['createLink'] = async (link) => {
+  const createEdge: FlowApi['createEdge'] = async (edge) => {
     await delay()
     const id = nextLinkId++
-    const created: FlowNodeLink = {
+    const created: FlowEdge = {
       id,
-      flowId: link.flowId,
-      parentId: link.parentId,
-      childId: link.childId,
-      parentHandlePos: link.parentHandlePos,
-      childHandlePos: link.childHandlePos,
-      label: link.label
+      flowId: edge.flowId,
+      parentId: edge.parentId,
+      childId: edge.childId,
+      parentHandlePos: edge.parentHandlePos,
+      childHandlePos: edge.childHandlePos,
+      label: edge.label
     }
-    console.log('[FlowApi] createLink:', created)
+    console.log('[FlowApi] createEdge:', created)
     return success(created)
   }
 
-  const updateLink: FlowApi['updateLink'] = async (link) => {
+  const updateEdge: FlowApi['updateEdge'] = async (edge) => {
     await delay()
-    console.log('[FlowApi] updateLink:', link)
-    return success(link)
+    console.log('[FlowApi] updateEdge:', edge)
+    return success(edge)
   }
 
-  const deleteLink: FlowApi['deleteLink'] = async (linkId) => {
+  const deleteEdge: FlowApi['deleteEdge'] = async (edgeId) => {
     await delay()
-    console.log('[FlowApi] deleteLink:', linkId)
+    console.log('[FlowApi] deleteEdge:', edgeId)
     return success(undefined)
   }
 
@@ -77,8 +77,8 @@ export function useFlowMockApi(): FlowApi {
     createNode,
     updateNode,
     deleteNode,
-    createLink,
-    updateLink,
-    deleteLink
+    createEdge,
+    updateEdge,
+    deleteEdge
   }
 }

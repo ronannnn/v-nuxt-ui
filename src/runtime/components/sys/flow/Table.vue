@@ -3,7 +3,7 @@ import { h, ref } from 'vue'
 import { useOverlay } from '@nuxt/ui/composables'
 import type { Flow, FlowApi, FlowNode, VColumn } from '#v/types'
 import { getCreateAtColumn } from '#v/constants'
-import { useFlowApi, useFlowNodeApi, useFlowNodeLinkApi } from '#v/composables'
+import { useFlowApi, useFlowNodeApi, useFlowEdgeApi } from '#v/composables'
 import TablePage from '#v/components/table/Page.vue'
 import FlowEditor from '#v/components/flow/FlowEditor.client.vue'
 import CreateModal from './CreateModal.vue'
@@ -36,22 +36,22 @@ const columns: VColumn<Flow>[] = [
     cell: ({ row }) => `${row.original.nodes?.length ?? 0}个`
   },
   {
-    accessorKey: 'links',
+    accessorKey: 'edges',
     header: '连接数',
-    cell: ({ row }) => `${row.original.links?.length ?? 0}个`
+    cell: ({ row }) => `${row.original.edges?.length ?? 0}个`
   },
   getCreateAtColumn<Flow>()
 ]
 
 const flowNodeApi = useFlowNodeApi()
-const flowNodeLinkApi = useFlowNodeLinkApi()
+const flowEdgeApi = useFlowEdgeApi()
 const flowEditorApi: FlowApi = {
   createNode: flowNodeApi.create,
   updateNode: flowNodeApi.update,
   deleteNode: flowNodeApi.deleteById,
-  createLink: flowNodeLinkApi.create,
-  updateLink: flowNodeLinkApi.update,
-  deleteLink: flowNodeLinkApi.deleteById
+  createEdge: flowEdgeApi.create,
+  updateEdge: flowEdgeApi.update,
+  deleteEdge: flowEdgeApi.deleteById
 }
 
 function updateExpandedFlow(row: Flow, updatedFlow: Flow) {

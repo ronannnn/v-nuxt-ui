@@ -1,7 +1,7 @@
 import { shallowRef, ref, watch } from 'vue'
 import type { Node, Edge, Connection } from '@vue-flow/core'
 import type { ComputedRef, ShallowRef, Ref } from 'vue'
-import type { Flow, FlowNode, FlowNodeLink, FlowApi, UseFlowResizeDimensions } from '#v/types'
+import type { Flow, FlowNode, FlowEdge, FlowApi, UseFlowResizeDimensions } from '#v/types'
 import { GRID_SIZE } from '#v/constants'
 
 export interface UseFlowOptions {
@@ -76,11 +76,10 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     }
 
     const deletePromise = (async () => {
-      if (api?.value?.deleteLink) {
-        const linkId = Number(edgeId)
-        if (!Number.isNaN(linkId)) {
+      if (api?.value?.deleteEdge) {
+        if (!Number.isNaN(Number(edgeId))) {
           try {
-            await api.value.deleteLink(linkId)
+            await api.value.deleteEdge(Number(edgeId))
           } catch (error) {
             throw new Error(`删除连线 ${edgeId} 失败: ${getErrorMessage(error)}`)
           }
@@ -113,15 +112,15 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     }
   })
 
-  // 将 FlowNodeLink 转换为 VueFlow Edge
-  const toVueFlowEdge = (link: FlowNodeLink): Edge => ({
-    id: String(link.id),
+  // 将 FlowEdge 转换为 VueFlow Edge
+  const toVueFlowEdge = (edge: FlowEdge): Edge => ({
+    id: String(edge.id),
     type: 'custom',
-    source: String(link.parentId),
-    target: String(link.childId),
-    sourceHandle: link.parentHandlePos ?? undefined,
-    targetHandle: link.childHandlePos ?? undefined,
-    label: link.label
+    source: String(edge.parentId),
+    target: String(edge.childId),
+    sourceHandle: edge.parentHandlePos ?? undefined,
+    targetHandle: edge.childHandlePos ?? undefined,
+    label: edge.label
   })
 
   // 从 Flow 数据初始化
@@ -130,7 +129,7 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     (newFlow) => {
       if (!newFlow) return
       nodes.value = (newFlow.nodes ?? []).map(toVueFlowNode)
-      edges.value = (newFlow.links ?? []).map(toVueFlowEdge)
+      edges.value = (newFlow.edges ?? []).map(toVueFlowEdge)
     },
     { immediate: true }
   )
@@ -150,14 +149,14 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
         width: n.data.width,
         height: n.data.height
       } as FlowNode)),
-      links: edges.value.map(e => ({
+      edges: edges.value.map(e => ({
         id: Number(e.id) || undefined,
         parentId: Number(e.source),
         childId: Number(e.target),
         parentHandlePos: e.sourceHandle ?? undefined,
         childHandlePos: e.targetHandle ?? undefined,
         label: typeof e.label === 'string' ? e.label : undefined
-      } as FlowNodeLink))
+      } as FlowEdge))
     }
     onUpdateModel.value(updatedFlow)
   }
@@ -208,8 +207,8 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
       let edgeId = `e-${params.source}-${params.sourceHandle}-${params.target}-${params.targetHandle}-${Date.now()}`
       let label: string | undefined
 
-      if (api?.value?.createLink) {
-        const { data } = await api.value.createLink({
+      if (api?.value?.createEdge) {
+        const { data } = await api.value.createEdge({
           id: 0,
           flowId: flow.value?.id,
           parentId: Number(params.source),
@@ -280,10 +279,9 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     await withLoading(async () => {
       try {
         // 1. 删除旧边
-        if (api.value?.deleteLink) {
-          const linkId = Number(oldEdgeId)
-          if (!Number.isNaN(linkId)) {
-            await api.value.deleteLink(linkId)
+        if (api.value?.deleteEdge) {
+          if (!Number.isNaN(Number(oldEdgeId))) {
+            await api.value.deleteEdge(Number(oldEdgeId))
           }
         }
 
@@ -291,8 +289,8 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
         let finalId = tempId
         let label: string | undefined = typeof pendingEdge.label === 'string' ? pendingEdge.label : undefined
 
-        if (api.value?.createLink) {
-          const { data } = await api.value.createLink({
+        if (api.value?.createEdge) {
+          const { data } = await api.value.createEdge({
             id: 0,
             flowId: flow.value?.id,
             parentId: Number(connection.source),
@@ -381,17 +379,16 @@ export function useFlow(options: UseFlowOptions): UseFlowReturn {
     const doUpdate = async () => {
       const edge = edges.value.find(e => e.id === edgeId)
       if (edge) {
-        if (api?.value?.updateLink) {
-          const linkId = Number(edgeId)
-          if (!Number.isNaN(linkId)) {
-            await api.value.updateLink({
-              id: linkId,
+        if (api?.value?.updateEdge) {
+          if (!Number.isNaN(Number(edgeId))) {
+            await api.value.updateEdge({
+              id: Number(edgeId),
               parentId: Number(edge.source),
               childId: Number(edge.target),
               parentHandlePos: edge.sourceHandle ?? undefined,
               childHandlePos: edge.targetHandle ?? undefined,
               label: label || undefined
-            } as FlowNodeLink)
+            } as FlowEdge)
           }
         }
         edge.label = label || undefined

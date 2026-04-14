@@ -29,7 +29,7 @@ const props = withDefaults(defineProps<{
   /** 默认缩放 */
   defaultZoom?: number
 }>(), {
-  modelValue: () => ({ id: 0, nodes: [], links: [] }),
+  modelValue: () => ({ id: 0, nodes: [], edges: [] }),
   api: undefined,
   showBackground: true,
   showToolbar: true,
