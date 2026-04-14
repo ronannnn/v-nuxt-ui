@@ -280,6 +280,7 @@ const isValidConnection = () => true
     :default-edge-options="defaultEdgeOptions"
     :is-valid-connection="isValidConnection"
     :edges-updatable="true"
+    fit-view-on-init
   >
     <Background
       v-if="showBackground"
