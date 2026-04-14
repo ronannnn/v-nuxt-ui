@@ -67,20 +67,15 @@ function updateNodeInFlow(row: Flow, updatedNode: FlowNode) {
 }
 
 async function handleEditNode(row: Flow, node: FlowNode) {
-  const updatedNode = await new Promise<FlowNode | null>((resolve, reject) => {
-    editNodeModal.open({ model: node }).result.then((result) => {
-      if (!result || typeof result === 'boolean') {
-        resolve(null)
-        return
+  await editNodeModal.open({
+    model: node,
+    onSave: async (newNode: FlowNode) => {
+      const { data } = await flowNodeApi.update(newNode)
+      if (data.value.data) {
+        updateNodeInFlow(row, data.value.data)
       }
-      resolve(result as FlowNode)
-    }).catch(reject)
-  })
-  if (!updatedNode) return
-  const { data } = await flowNodeApi.update(updatedNode)
-  if (data.value.data) {
-    updateNodeInFlow(row, data.value.data)
-  }
+    }
+  }).result
 }
 
 function getExpandVNode(row: Flow) {
