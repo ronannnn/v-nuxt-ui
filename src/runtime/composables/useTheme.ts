@@ -24,7 +24,6 @@ const _useTheme = () => {
       return (appConfig as any).ui?.colors?.neutral
     },
     set(option) {
-      console.log(option, appConfig);
       (appConfig as any).ui.colors.neutral = option
       app.updateNeutralColor(option)
     }

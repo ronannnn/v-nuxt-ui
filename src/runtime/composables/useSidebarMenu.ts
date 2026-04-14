@@ -37,7 +37,6 @@ export function setGlobalSidebarMenus(opts: {
   bizMenus?: ShallowNavigationMenuItem[]
   menuMode?: 'static' | 'dynamic'
 }) {
-  console.log('Setting global sidebar menus with options:', opts)
   if (opts.constantMenus) constantMenus.value = opts.constantMenus
   if (opts.bizMenus) bizMenus.value = opts.bizMenus
   if (opts.menuMode) menuMode.value = opts.menuMode
@@ -114,7 +113,6 @@ export const _useSidebarMenus = (): {
   }
   watch([loginUserRoles, loginUserMenus, bizMenus], ([newRoles, newMenus]) => {
     setUserDynamicMenus(newRoles, newMenus)
-    console.log(bizMenus.value.length, '123')
   }, { immediate: true })
 
   // 把某个菜单展开，并展开它所有父菜单
