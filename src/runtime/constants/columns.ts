@@ -23,7 +23,7 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     filterOption: {
       type: 'async-select',
       listApi: useUserApi().list,
-      searchFields: ['nickname'],
+      likeSearchFields: ['nickname'],
       labelField: 'nickname',
       valueField: 'id',
       multiple: true,
@@ -38,7 +38,7 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     filterOption: {
       type: 'async-select',
       listApi: useUserApi().list,
-      searchFields: ['nickname'],
+      likeSearchFields: ['nickname'],
       labelField: 'nickname',
       valueField: 'id',
       multiple: true,

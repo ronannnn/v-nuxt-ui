@@ -44,7 +44,7 @@ const columns: VColumn<User>[] = [
     filterOption: {
       type: 'async-select',
       listApi: useDepartmentApi().list,
-      searchFields: ['name'],
+      likeSearchFields: ['name'],
       labelField: 'name',
       valueField: 'id',
       multiple: true,
@@ -59,7 +59,7 @@ const columns: VColumn<User>[] = [
     filterOption: {
       type: 'async-select',
       listApi: useUserApi().list,
-      searchFields: ['name'],
+      likeSearchFields: ['name'],
       labelField: 'name',
       valueField: 'id',
       multiple: true,
@@ -73,7 +73,7 @@ const columns: VColumn<User>[] = [
     filterOption: {
       type: 'async-select',
       listApi: useRoleApi().list,
-      searchFields: ['name'],
+      likeSearchFields: ['name'],
       labelField: 'name',
       valueField: 'id',
       multiple: true,

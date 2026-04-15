@@ -41,12 +41,12 @@ const { onSubmit } = useFormSubmission(
         type: 'async-tree-select',
         labelField: 'name',
         valueField: 'id',
-        searchFields: ['name'],
+        likeSearchFields: ['name'],
         listApi: useMenuApi().list,
         fetchAll: true,
         enableEmptyOption: true,
-        initModelValues: newValues.parent,
-        onUpdateInitModelValues: newInitModelValues => newValues.parent = newInitModelValues,
+        initModel: newValues.parent,
+        onUpdateInitModel: newInitModelValues => newValues.parent = newInitModelValues,
         extraQuery: {
           orderQuery: [
             { field: 'order', order: 'asc' }

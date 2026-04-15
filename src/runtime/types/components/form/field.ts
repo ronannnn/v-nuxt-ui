@@ -1,35 +1,17 @@
-import type { VNode, Ref, Component } from 'vue'
+import type { VNode } from 'vue'
 import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, SelectProps, TreeItem } from '@nuxt/ui'
 import type { ZodType } from 'zod'
-import type { PageResult, RequestResult } from '../../request'
-import type { QueryTemplate, WhereQueryItem } from '../../query'
+import type { VAsyncSelectProps } from '../opr'
 
 export type VFormFieldAsyncSelectProps<T> = {
-  // 使用方法签名以保持 T 的双变
-  listApi(payload: Omit<QueryTemplate<T>, 'selectQuery'>): Promise<{ data: Ref<RequestResult<PageResult<T>>> }>
-  extraQuery?: QueryTemplate<T>
-  initModelValues?: any | any[]
-  onUpdateInitModelValues?: (newInitModels: any | any[]) => void
-  searchFields: (string)[]
-  // 使用方法签名以保持 T 的双变
-  extraSearchFieldFn?(keyword: string): WhereQueryItem<T>
-  labelField?: keyof T
-  valueField: keyof T
-  // 使用方法签名以保持 T 的双变
-  labelRenderFn?(model: T): string | undefined
-  enableEmptyOption?: boolean
-  disableOprSelector?: boolean
-  multiple?: boolean
-  placeholder?: string
-  size?: SelectProps['size']
+  initModel?: any | any[] // 用于form表单的初始值设置，有些值是id，需要传入id对应model来显示值
+  onUpdateInitModel?(model: any | any[] | undefined): void // initModel设置后会触发这个回调，传入model值，方便外部获取到model值
+} & VAsyncSelectProps<T>
 
-  canCreate?: boolean
-  createModalComponent?: Component
-  createModalOpenProps?: Record<string, any>
-}
 export type VFormFieldAsyncTreeSelectProps<T> = {
-  fetchAll?: boolean
-} & VFormFieldAsyncSelectProps<T>
+  initModel?: any | any[] // 用于form表单的初始值设置，有些值是id，需要传入id对应model来显示值
+  onUpdateInitModel?(model: any | any[] | undefined): void // initModel设置后会触发这个回调，传入model值，方便外部获取到model值
+} & VAsyncSelectProps<T>
 
 export type VFormFieldTreeSelectTransferProps = {
   sourceTreeItems: TreeItem[]

@@ -71,7 +71,7 @@ defineExpose({
     :trigger-fetching="triggerFetching"
     :label="option.label!"
     :list-api="option.listApi!"
-    :search-fields="option.searchFields ?? []"
+    :search-fields="option.searchFields"
     :label-render-fn="option.labelRenderFn"
     :label-field="option.labelField"
     :value-field="option.valueField"

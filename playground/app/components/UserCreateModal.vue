@@ -34,7 +34,7 @@ const fields: VFormFieldProps[] = [
     label: '部门',
     type: 'async-select',
     listApi: useDepartmentApi().list,
-    searchFields: ['name'],
+    likeSearchFields: ['name'],
     labelField: 'name',
     valueField: 'id',
     colSpan: '12'

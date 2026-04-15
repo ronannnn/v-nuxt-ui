@@ -47,11 +47,11 @@ const { onSubmit } = useFormSubmission(
         type: 'async-tree-select',
         labelField: 'name',
         valueField: 'id',
-        searchFields: ['name'],
+        likeSearchFields: ['name'],
         listApi: useDepartmentApi().list,
         fetchAll: true,
-        initModelValues: newValues.parent,
-        onUpdateInitModelValues: newInitModelValues => newValues.parent = newInitModelValues,
+        initModel: newValues.parent,
+        onUpdateInitModel: newInitModelValues => newValues.parent = newInitModelValues,
         zodType: z.number().min(0)
       },
       {
@@ -61,10 +61,10 @@ const { onSubmit } = useFormSubmission(
         type: 'async-select',
         labelField: 'nickname',
         valueField: 'id',
-        searchFields: ['nickname'],
+        likeSearchFields: ['nickname'],
         listApi: useCompanyApi().list,
-        initModelValues: newValues.company,
-        onUpdateInitModelValues: newInitModelValues => newValues.company = newInitModelValues,
+        initModel: newValues.company,
+        onUpdateInitModel: newInitModelValues => newValues.company = newInitModelValues,
         zodType: z.number().min(0)
       },
       {
@@ -74,10 +74,10 @@ const { onSubmit } = useFormSubmission(
         type: 'async-select',
         labelField: 'nickname',
         valueField: 'id',
-        searchFields: ['nickname'],
+        likeSearchFields: ['nickname'],
         listApi: useUserApi().list,
-        initModelValues: newValues.leader,
-        onUpdateInitModelValues: newInitModelValues => newValues.leader = newInitModelValues,
+        initModel: newValues.leader,
+        onUpdateInitModel: newInitModelValues => newValues.leader = newInitModelValues,
         zodType: z.number().min(0)
       }
     ]"

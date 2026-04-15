@@ -147,11 +147,11 @@ const fields = computed<VFormFieldProps[]>(() => [
     type: 'async-tree-select',
     labelField: 'name',
     valueField: 'id',
-    searchFields: ['name'],
+    likeSearchFields: ['name'],
     listApi: useDepartmentApi().list,
     fetchAll: true,
-    initModelValues: newValues.value.department,
-    onUpdateInitModelValues: updateDepartment,
+    initModel: newValues.value.department,
+    onUpdateInitModel: updateDepartment,
     zodType: z.number().min(0)
   },
   {
@@ -161,10 +161,10 @@ const fields = computed<VFormFieldProps[]>(() => [
     type: 'async-select',
     labelField: 'nickname',
     valueField: 'id',
-    searchFields: ['nickname'],
+    likeSearchFields: ['nickname'],
     listApi: useUserApi().list,
-    initModelValues: newValues.value.supervisor,
-    onUpdateInitModelValues: updateSupervisor,
+    initModel: newValues.value.supervisor,
+    onUpdateInitModel: updateSupervisor,
     enableEmptyOption: true,
     zodType: z.number().min(0).optional()
   },
@@ -216,7 +216,9 @@ onMounted(async () => {
   >
     <template #after-form>
       <div class="border-t pt-4 mt-4">
-        <div class="font-semibold mb-2">Table 权限</div>
+        <div class="font-semibold mb-2">
+          Table 权限
+        </div>
         <TablePermissionTab v-model="tablePermissions" />
       </div>
     </template>
