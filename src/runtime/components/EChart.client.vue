@@ -7,7 +7,8 @@ import {
   TooltipComponent,
   LegendComponent,
   GridComponent,
-  ToolboxComponent
+  ToolboxComponent,
+  RadarComponent
 } from 'echarts/components'
 import VChart from 'vue-echarts'
 import { useTheme, useApp, useEChart } from '#v/composables'
@@ -21,6 +22,7 @@ interface Props {
   usePie?: boolean
   useLine?: boolean
   useGrid?: boolean
+  useRadar?: boolean
   colors?: string[]
 }
 
@@ -53,6 +55,9 @@ if (props.usePie) {
 }
 if (props.useLine) {
   chartsToUse.push(LineChart)
+}
+if (props.useRadar) {
+  chartsToUse.push(RadarComponent)
 }
 
 use([...chartsToUse, ...componentsToUse])
