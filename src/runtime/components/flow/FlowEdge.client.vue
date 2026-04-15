@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, inject } from 'vue'
 import { useFlowStyles } from '#v/composables/flow/useFlowStyles'
-import { FLOW_EDGE_STROKE_TYPES } from '#v/constants'
+import { FLOW_EDGE_STROKE_TYPES, FLOW_EDITABLE_KEY } from '#v/constants'
 import type { FlowArrowType } from '#v/constants'
 import { EdgeLabelRenderer, getSmoothStepPath, getBezierPath, getStraightPath, BaseEdge } from '@vue-flow/core'
 import type { EdgeProps } from '@vue-flow/core'
 
 const props = defineProps<EdgeProps>()
+
+const editable = inject(FLOW_EDITABLE_KEY, ref(true))
 
 const {
   edgeMarkerStart,
@@ -135,6 +137,7 @@ const tempLabel = ref('')
 const inputRef = ref<HTMLInputElement | null>(null)
 
 const startEditing = () => {
+  if (!editable.value) return
   editingLabel.value = true
   tempLabel.value = typeof props.label === 'string' ? props.label : ''
   nextTick(() => {
@@ -233,9 +236,9 @@ const labelBorderColorStyle = computed(() => effectiveNodeBorderColor.value ? { 
       >
         {{ label }}
       </div>
-      <!-- Invisible placeholder for edges without label -->
+      <!-- Invisible placeholder for edges without label (only in editable mode) -->
       <div
-        v-else
+        v-else-if="editable"
         class="w-6 h-4 opacity-0 hover:opacity-30 hover:bg-muted rounded transition-opacity"
       />
     </div>

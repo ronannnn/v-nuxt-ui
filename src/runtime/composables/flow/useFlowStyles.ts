@@ -19,6 +19,7 @@ export interface FlowEdgeStylesState {
 
 /** 节点样式存储结构 */
 export interface FlowNodeStylesState {
+  showBorder: boolean
   borderWidth: number
   borderRadius: number
   borderColor: string
@@ -51,6 +52,7 @@ const EDGE_DEFAULTS: FlowEdgeStylesState = {
 }
 
 const NODE_DEFAULTS: FlowNodeStylesState = {
+  showBorder: true,
   borderWidth: 2,
   borderRadius: 6,
   borderColor: '',
@@ -137,6 +139,7 @@ export function useFlowStyles() {
   const edgeLabelColor = useField(edgeStore, 'labelColor')
 
   // 节点（原始自定义值）
+  const nodeShowBorder = useField(nodeStore, 'showBorder')
   const nodeBorderWidth = useField(nodeStore, 'borderWidth')
   const nodeBorderRadius = useField(nodeStore, 'borderRadius')
   const nodeBorderColor = useField(nodeStore, 'borderColor')
@@ -187,6 +190,7 @@ export function useFlowStyles() {
     edgeLabelColor,
 
     // 节点（原始自定义值，用于 UI 绑定）
+    nodeShowBorder,
     nodeBorderWidth,
     nodeBorderRadius,
     nodeBorderColor,

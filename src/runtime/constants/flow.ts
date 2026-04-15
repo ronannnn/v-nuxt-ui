@@ -29,6 +29,11 @@ export interface FlowHandle {
  */
 export const FLOW_MOUSE_POSITION_KEY: InjectionKey<Ref<FlowMousePosition>> = Symbol('flow-mouse-position')
 
+/**
+ * 是否可编辑注入 Key
+ */
+export const FLOW_EDITABLE_KEY: InjectionKey<Ref<boolean>> = Symbol('flow-editable')
+
 // 定义16个固定连接点位置
 export const FLOW_HANDLES: FlowHandle[] = [
   // 4个角 - 可以双向调整

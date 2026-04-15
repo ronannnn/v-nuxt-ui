@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, provide, watchEffect, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, provide, watchEffect, watch, nextTick, onMounted, onBeforeUnmount, toRef } from 'vue'
 import { VueFlow, useVueFlow, Panel } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import type { Flow, FlowNode as FlowNodeType, FlowMousePosition, FlowApi, UseFlowResizeDimensions } from '#v/types'
-import { FLOW_MOUSE_POSITION_KEY, FLOW_EDGE_STROKE_TYPES } from '#v/constants'
+import { FLOW_MOUSE_POSITION_KEY, FLOW_EDITABLE_KEY, FLOW_EDGE_STROKE_TYPES } from '#v/constants'
+import type { ResizeEdge } from '#v/constants'
 import FlowNode from './FlowNode.client.vue'
 import FlowEdge from './FlowEdge.client.vue'
 import FlowToolbar from './FlowToolbar.vue'
 import FlowStats from './FlowStats.vue'
-import type { ResizeEdge } from '#v/constants'
 import { useFlow, useFlowResize, useFlowStyles } from '#v/composables'
 
 const props = withDefaults(defineProps<{
@@ -28,6 +28,15 @@ const props = withDefaults(defineProps<{
   maxZoom?: number
   /** 默认缩放 */
   defaultZoom?: number
+  /** 是否允许鼠标滚轮缩放 */
+  zoomable?: boolean
+  /** 是否允许拖拽画布（平移） */
+  draggable?: boolean
+  /** 是否可编辑（false 时：工具栏新增按钮禁用、edge 不能增删改、node handles 不显示） */
+  editable?: boolean
+  /** 是否自动适配填满容器并居中 */
+  fitView?: boolean
+  fitViewPadding?: number
 }>(), {
   modelValue: () => ({ id: 0, nodes: [], edges: [] }),
   api: undefined,
@@ -36,7 +45,12 @@ const props = withDefaults(defineProps<{
   showStats: true,
   minZoom: 0.2,
   maxZoom: 4,
-  defaultZoom: 1
+  defaultZoom: 1,
+  zoomable: true,
+  draggable: true,
+  editable: true,
+  fitView: false,
+  fitViewPadding: 0.01
 })
 
 const emit = defineEmits<{
@@ -82,6 +96,7 @@ const {
   edgePathType,
   edgeColor,
   edgeLabelColor,
+  nodeShowBorder,
   nodeBorderWidth,
   nodeBorderRadius,
   nodeBorderColor,
@@ -101,7 +116,7 @@ const {
 } = useFlowStyles()
 
 // VueFlow 实例
-const { onConnect, onNodeDragStop, onEdgeUpdate, getSelectedNodes, getSelectedEdges, getViewport } = useVueFlow()
+const { onConnect, onNodeDragStop, onEdgeUpdate, getSelectedNodes, getSelectedEdges, getViewport, fitView: vueFlowFitView } = useVueFlow()
 
 // Resize 功能
 const handleResizeEnd = async (nodeId: string, dimensions: UseFlowResizeDimensions) => {
@@ -125,6 +140,9 @@ const {
 const mousePosition = ref<FlowMousePosition>({ x: 0, y: 0 })
 provide(FLOW_MOUSE_POSITION_KEY, mousePosition)
 
+// 共享可编辑状态
+provide(FLOW_EDITABLE_KEY, toRef(props, 'editable'))
+
 // 处理节点编辑（双击）
 const handleEditNode = (nodeId: string) => {
   const flowNode = props.modelValue?.nodes?.find(n => String(n.id) === nodeId)
@@ -138,6 +156,7 @@ watchEffect(() => {
   flowLogic.syncNodes(nodeId => ({
     onEdit: () => handleEditNode(nodeId),
     onDelete: () => deleteNode(nodeId),
+    showBorder: nodeShowBorder.value,
     borderWidth: nodeBorderWidth.value,
     borderRadius: nodeBorderRadius.value,
     borderColor: effectiveNodeBorderColor.value,
@@ -147,6 +166,7 @@ watchEffect(() => {
     handleSize: nodeHandleSize.value,
     handleColor: effectiveNodeHandleColor.value,
     onResizeStart: (event: MouseEvent, edge: ResizeEdge) => {
+      if (!props.editable) return
       const node = props.modelValue?.nodes?.find(n => String(n.id) === nodeId)
       if (node) {
         startResize(event, nodeId, node, edge)
@@ -193,6 +213,7 @@ const isEditableTarget = (target: EventTarget | null) => {
 
 // 键盘事件处理
 const handleKeyDown = async (event: KeyboardEvent) => {
+  if (!props.editable) return
   if (!isDeleteKey(event)) return
   if (isEditableTarget(event.target)) return
 
@@ -223,6 +244,11 @@ onMounted(() => {
   window.addEventListener('mousemove', handleGlobalMouseMove)
   window.addEventListener('mouseup', handleMouseUp)
 
+  // fitView 模式：延迟执行确保 VueFlow 已完成内部布局
+  if (props.fitView) {
+    setTimeout(() => vueFlowFitView({ padding: props.fitViewPadding }), 100)
+  }
+
   onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyDown, true)
     window.removeEventListener('mousemove', handleGlobalMouseMove)
@@ -238,15 +264,29 @@ onNodeDragStop(async (event) => {
 
 // 连接节点
 onConnect(async (params) => {
+  if (!props.editable) return
   await createEdge(params)
 })
 
 // Edge reconnect：拖拽边端点到新 handle 时触发（onEdgeUpdate 提供 connection）
 onEdgeUpdate(({ edge, connection }) => {
+  if (!props.editable) return
   if (connection.source && connection.target) {
     reconnectEdge(edge.id, connection)
   }
 })
+
+// fitView 模式：当节点数据变化或 fitView 开启时自动适配
+watch(
+  [
+    () => props.fitView,
+    () => nodes.value.map(n => `${n.id}:${n.position?.x}:${n.position?.y}:${n.data?.width}:${n.data?.height}`).join(',')
+  ],
+  () => {
+    if (props.fitView) nextTick(() => vueFlowFitView({ padding: props.fitViewPadding }))
+  },
+  { flush: 'post' }
+)
 
 // 边的默认样式配置
 const defaultEdgeOptions = computed(() => {
@@ -279,8 +319,16 @@ const isValidConnection = () => true
     :snap-grid="[GRID_SIZE, GRID_SIZE]"
     :default-edge-options="defaultEdgeOptions"
     :is-valid-connection="isValidConnection"
-    :edges-updatable="true"
-    fit-view-on-init
+    :edges-updatable="editable"
+    :zoom-on-scroll="zoomable"
+    :zoom-on-pinch="zoomable"
+    :zoom-on-double-click="zoomable"
+    :pan-on-drag="draggable"
+    :pan-on-scroll="false"
+    :nodes-draggable="draggable"
+    :nodes-connectable="editable"
+    :elements-selectable="editable"
+    :class="{ 'flow-fit-view': fitView }"
   >
     <Background
       v-if="showBackground"
@@ -305,6 +353,7 @@ const isValidConnection = () => true
       <FlowToolbar
         :on-add-node="createNode"
         :loading="loading"
+        :editable="editable"
         :edge-stroke-width="edgeStrokeWidth"
         :edge-stroke-type="edgeStrokeType"
         :edge-path-type="edgePathType"
@@ -313,6 +362,7 @@ const isValidConnection = () => true
         :edge-animated="edgeAnimated"
         :edge-color="edgeColor"
         :edge-label-color="edgeLabelColor"
+        :node-show-border="nodeShowBorder"
         :node-border-width="nodeBorderWidth"
         :node-border-radius="nodeBorderRadius"
         :node-border-color="nodeBorderColor"
@@ -329,6 +379,7 @@ const isValidConnection = () => true
         :on-toggle-edge-animated="() => edgeAnimated = !edgeAnimated"
         :on-edge-color-change="(v) => edgeColor = v"
         :on-edge-label-color-change="(v) => edgeLabelColor = v"
+        :on-toggle-node-show-border="() => nodeShowBorder = !nodeShowBorder"
         :on-node-border-width-change="(v) => nodeBorderWidth = v"
         :on-node-border-radius-change="(v) => nodeBorderRadius = v"
         :on-node-border-color-change="(v) => nodeBorderColor = v"
@@ -376,5 +427,11 @@ const isValidConnection = () => true
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* fitView 模式：占满容器 */
+.flow-fit-view {
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>

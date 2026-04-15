@@ -26,6 +26,8 @@ defineProps<{
   edgeAnimated?: boolean
   edgeColor?: string
   edgeLabelColor?: string
+  editable?: boolean
+  nodeShowBorder?: boolean
   nodeBorderWidth?: number
   nodeBorderRadius?: number
   nodeBorderColor?: string
@@ -48,6 +50,7 @@ defineProps<{
   onToggleEdgeAnimated?: () => void
   onEdgeColorChange?: (color: string) => void
   onEdgeLabelColorChange?: (color: string) => void
+  onToggleNodeShowBorder?: () => void
   onNodeBorderWidthChange?: (width: number) => void
   onNodeBorderRadiusChange?: (radius: number) => void
   onNodeBorderColorChange?: (color: string) => void
@@ -87,7 +90,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
       icon="i-lucide-circle-plus"
       size="sm"
       variant="subtle"
-      :disabled="loading"
+      :disabled="loading || editable === false"
       :loading="loading"
       @click="onAddNode?.()"
     />
@@ -155,6 +158,17 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
 
           <template #node>
             <div class="flex flex-col gap-4">
+              <!-- 显示边框 -->
+              <FlowToolbarItemWrapper label="显示边框">
+                <div class="flex items-center h-7">
+                  <USwitch
+                    :model-value="nodeShowBorder"
+                    size="lg"
+                    @update:model-value="onToggleNodeShowBorder?.()"
+                  />
+                </div>
+              </FlowToolbarItemWrapper>
+
               <!-- 边框粗细 -->
               <FlowToolbarItemWrapper label="边框粗细">
                 <USelect
@@ -162,6 +176,7 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                   :items="FLOW_WIDTH_ITEMS"
                   :size="itemSize"
                   trailing-icon=""
+                  :disabled="!nodeShowBorder"
                   @update:model-value="(v: number) => onNodeBorderWidthChange?.(v)"
                 >
                   <template #item-leading="{ item }">

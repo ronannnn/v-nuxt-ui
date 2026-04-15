@@ -218,7 +218,7 @@ const summary = computed(() => {
 </script>
 
 <template>
-  <div class="p-4 w-full flex flex-col">
+  <div class="p-4 w-full flex flex-col overflow-auto">
     <div class="mb-4">
       <div class="flex items-center gap-1">
         <ProLayoutButtonCollapse class="-ml-2" />
@@ -260,17 +260,22 @@ const summary = computed(() => {
       </div>
     </div>
 
-    <div class="flex-1 w-full border border-default rounded-lg overflow-hidden">
+    <div class="h-250 w-full rounded-lg shrink-0">
       <ProFlowEditor
         v-model="flowData"
         :api="flowApi"
-        :default-zoom="0.85"
+        fit-view
+        :editable="false"
+        :draggable="false"
+        :zoomable="false"
+        :show-background="false"
+        :show-stats="false"
         @edit-node="handleEditNode"
       >
         <template #node="{ data }">
           <div
             v-if="riskData[data.id]"
-            class="size-full flex flex-col px-3 py-2.5 text-xs select-none overflow-hidden rounded bg-default"
+            class="size-full flex flex-col px-3 py-2.5 text-xs select-none overflow-hidden rounded-lg bg-default border border-default"
           >
             <!-- 顶部：阶段名 + 编号 + 风险等级 -->
             <div class="flex items-center justify-between gap-1 mb-1.5 shrink-0">
