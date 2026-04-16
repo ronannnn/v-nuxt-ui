@@ -308,12 +308,38 @@ const defaultEdgeOptions = computed(() => {
   }
 })
 
+// 监听容器宽度变化，自动 fitView 居中
+const flowContainer = ref<HTMLElement | null>(null)
+let resizeObserver: ResizeObserver | null = null
+let prevWidth = 0
+
+onMounted(() => {
+  const el = flowContainer.value?.$el ?? flowContainer.value
+  if (!el) return
+  prevWidth = el.clientWidth
+  resizeObserver = new ResizeObserver((entries) => {
+    const entry = entries[0]
+    if (!entry) return
+    const newWidth = entry.contentRect.width
+    if (newWidth !== prevWidth) {
+      prevWidth = newWidth
+      nextTick(() => vueFlowFitView({ padding: props.fitViewPadding }))
+    }
+  })
+  resizeObserver.observe(el)
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+})
+
 // 允许任意连接
 const isValidConnection = () => true
 </script>
 
 <template>
   <VueFlow
+    ref="flowContainer"
     v-model:nodes="nodes"
     v-model:edges="edges"
     :default-zoom="defaultZoom"
