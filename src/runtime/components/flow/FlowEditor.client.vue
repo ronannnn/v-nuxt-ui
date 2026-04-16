@@ -314,19 +314,22 @@ let resizeObserver: ResizeObserver | null = null
 let prevWidth = 0
 
 onMounted(() => {
-  const el = flowContainer.value?.$el ?? flowContainer.value
-  if (!el) return
-  prevWidth = el.clientWidth
-  resizeObserver = new ResizeObserver((entries) => {
-    const entry = entries[0]
-    if (!entry) return
-    const newWidth = entry.contentRect.width
-    if (newWidth !== prevWidth) {
-      prevWidth = newWidth
-      nextTick(() => vueFlowFitView({ padding: props.fitViewPadding }))
-    }
-  })
-  resizeObserver.observe(el)
+  // 延迟初始化，确保 VueFlow 内部布局完成
+  setTimeout(() => {
+    const el = (flowContainer.value as any)?.$el ?? flowContainer.value
+    if (!el) return
+    prevWidth = el.clientWidth
+    resizeObserver = new ResizeObserver((entries) => {
+      const entry = entries[0]
+      if (!entry) return
+      const newWidth = entry.contentRect.width
+      if (newWidth !== prevWidth) {
+        prevWidth = newWidth
+        nextTick(() => vueFlowFitView({ padding: props.fitViewPadding }))
+      }
+    })
+    resizeObserver.observe(el)
+  }, 200)
 })
 
 onBeforeUnmount(() => {
