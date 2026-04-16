@@ -24,6 +24,7 @@ defineProps<{
   edgeMarkerStart?: FlowArrowType
   edgeMarkerEnd?: FlowArrowType
   edgeAnimated?: boolean
+  edgeColorOpacity?: number
   edgeColor?: string
   edgeLabelColor?: string
   editable?: boolean
@@ -48,6 +49,7 @@ defineProps<{
   onEdgeMarkerStartChange?: (type: FlowArrowType) => void
   onEdgeMarkerEndChange?: (type: FlowArrowType) => void
   onToggleEdgeAnimated?: () => void
+  onEdgeColorOpacityChange?: (opacity: number) => void
   onEdgeColorChange?: (color: string) => void
   onEdgeLabelColorChange?: (color: string) => void
   onToggleNodeShowBorder?: () => void
@@ -555,6 +557,19 @@ function getStrokeDasharray(value: FlowEdgeStrokeType) {
                     @update:model-value="onToggleEdgeAnimated?.()"
                   />
                 </div>
+              </FlowToolbarItemWrapper>
+
+              <!-- 颜色透明度 -->
+              <FlowToolbarItemWrapper label="颜色透明度">
+                <USlider
+                  :model-value="edgeColorOpacity ?? 100"
+                  :min="0"
+                  :max="100"
+                  :step="5"
+                  size="sm"
+                  class="flex-1"
+                  @update:model-value="v => onEdgeColorOpacityChange?.(v ?? 100)"
+                />
               </FlowToolbarItemWrapper>
 
               <!-- 连接线颜色 -->

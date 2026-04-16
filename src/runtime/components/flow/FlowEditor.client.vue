@@ -96,6 +96,7 @@ const {
   edgeStrokeType,
   edgePathType,
   edgeColor,
+  edgeColorOpacity,
   edgeLabelColor,
   nodeShowBorder,
   nodeBorderWidth,
@@ -183,7 +184,8 @@ watchEffect(() => {
     edge.style = {
       strokeWidth: edgeStrokeWidth.value,
       ...(dasharray ? { strokeDasharray: dasharray } : {}),
-      ...(effectiveEdgeColor.value ? { stroke: effectiveEdgeColor.value } : {})
+      ...(effectiveEdgeColor.value ? { stroke: effectiveEdgeColor.value } : {}),
+      opacity: edgeColorOpacity.value / 100
     }
     // Markers are handled by FlowEdge custom SVG markers
     edge.markerStart = undefined
@@ -296,7 +298,8 @@ const defaultEdgeOptions = computed(() => {
     style: {
       strokeWidth: edgeStrokeWidth.value,
       ...(dasharray ? { strokeDasharray: dasharray } : {}),
-      ...(effectiveEdgeColor.value ? { stroke: effectiveEdgeColor.value } : {})
+      ...(effectiveEdgeColor.value ? { stroke: effectiveEdgeColor.value } : {}),
+      opacity: edgeColorOpacity.value / 100
     },
     // Markers are handled by FlowEdge custom SVG markers
     markerStart: undefined,
@@ -362,6 +365,7 @@ const isValidConnection = () => true
         :edge-marker-end="edgeMarkerEnd"
         :edge-animated="edgeAnimated"
         :edge-color="edgeColor"
+        :edge-color-opacity="edgeColorOpacity"
         :edge-label-color="edgeLabelColor"
         :node-show-border="nodeShowBorder"
         :node-border-width="nodeBorderWidth"
@@ -379,6 +383,7 @@ const isValidConnection = () => true
         :on-edge-marker-end-change="(v) => edgeMarkerEnd = v"
         :on-toggle-edge-animated="() => edgeAnimated = !edgeAnimated"
         :on-edge-color-change="(v) => edgeColor = v"
+        :on-edge-color-opacity-change="(v) => edgeColorOpacity = v"
         :on-edge-label-color-change="(v) => edgeLabelColor = v"
         :on-toggle-node-show-border="() => nodeShowBorder = !nodeShowBorder"
         :on-node-border-width-change="(v) => nodeBorderWidth = v"

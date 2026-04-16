@@ -14,6 +14,7 @@ export interface FlowEdgeStylesState {
   strokeType: FlowEdgeStrokeType
   pathType: FlowEdgePathType
   color: string
+  colorOpacity: number
   labelColor: string
 }
 
@@ -48,6 +49,7 @@ const EDGE_DEFAULTS: FlowEdgeStylesState = {
   strokeType: 'solid',
   pathType: 'smoothstep',
   color: '',
+  colorOpacity: 100,
   labelColor: ''
 }
 
@@ -136,6 +138,7 @@ export function useFlowStyles() {
   const edgeStrokeType = useField(edgeStore, 'strokeType')
   const edgePathType = useField(edgeStore, 'pathType')
   const edgeColor = useField(edgeStore, 'color')
+  const edgeColorOpacity = useField(edgeStore, 'colorOpacity')
   const edgeLabelColor = useField(edgeStore, 'labelColor')
 
   // 节点（原始自定义值）
@@ -187,6 +190,7 @@ export function useFlowStyles() {
     edgeStrokeType,
     edgePathType,
     edgeColor,
+    edgeColorOpacity,
     edgeLabelColor,
 
     // 节点（原始自定义值，用于 UI 绑定）

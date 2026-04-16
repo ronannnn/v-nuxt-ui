@@ -16,6 +16,7 @@ const {
   edgePathType,
   edgeAnimated,
   edgeStrokeType,
+  edgeColorOpacity,
   effectiveEdgeColor,
   effectiveEdgeLabelColor,
   effectiveNodeBorderColor
@@ -112,7 +113,8 @@ const markersToRender = computed(() => {
 const edgeStyle = computed(() => {
   const base: Record<string, any> = {
     ...props.style,
-    stroke: strokeColor.value
+    stroke: strokeColor.value,
+    opacity: edgeColorOpacity.value / 100
   }
 
   if (edgeAnimated.value) {

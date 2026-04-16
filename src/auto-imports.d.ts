@@ -37,6 +37,7 @@ declare module 'vue' {
     USelectMenu: typeof import('@nuxt/ui/components/SelectMenu.vue')['default']
     USeparator: typeof import('@nuxt/ui/components/Separator.vue')['default']
     USidebar: typeof import('@nuxt/ui/components/Sidebar.vue')['default']
+    USlider: typeof import('@nuxt/ui/components/Slider.vue')['default']
     USlideover: typeof import('@nuxt/ui/components/Slideover.vue')['default']
     USwitch: typeof import('@nuxt/ui/components/Switch.vue')['default']
     UTabs: typeof import('@nuxt/ui/components/Tabs.vue')['default']
