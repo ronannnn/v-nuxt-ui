@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useColorMode } from '@vueuse/core'
+import type { FlowColorRole } from '#v/constants'
+import { resolveFlowColor } from '#v/constants'
 
 const props = defineProps<{
   /** Tailwind 颜色名 (e.g. 'red', 'blue')，空字符串表示默认 */
   chip?: string
-  /** 色阶 (默认 500) */
-  shade?: number
   /** 是否选中 */
   selected?: boolean
   /** 标题提示 */
   title?: string
+  colorRole?: FlowColorRole
 }>()
 
 defineEmits<{
@@ -20,9 +21,9 @@ defineEmits<{
 const colorMode = useColorMode()
 
 const backgroundStyle = computed(() => {
-  if (!props.chip || props.chip === 'primary') return undefined
-  const shade = props.shade ?? (colorMode.value === 'dark' ? 400 : 500)
-  return `background-color: var(--color-${props.chip}-${shade})`
+  if (!props.chip) return undefined
+  const varName = resolveFlowColor(props.chip, props.colorRole ?? 'border', colorMode.value === 'dark')
+  return `background-color: ${varName}`
 })
 </script>
 

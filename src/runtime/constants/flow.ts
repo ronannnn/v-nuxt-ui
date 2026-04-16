@@ -121,7 +121,8 @@ export interface FlowColorOption {
 const FLOW_COLOR_NAMES = [
   'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald',
   'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple',
-  'fuchsia', 'pink', 'rose'
+  'fuchsia', 'pink', 'rose',
+  'neutral'
 ] as const
 
 /** 所有颜色选项（primary + 17色），存的都是颜色名，不含 shade */
@@ -154,7 +155,7 @@ export type FlowColorRole = keyof typeof FLOW_SHADE_MAP
 export function resolveFlowColor(name: string, role: FlowColorRole, isDark: boolean): string {
   if (!name) return ''
   const shade = FLOW_SHADE_MAP[role][isDark ? 'dark' : 'light']
-  if (name === 'primary') {
+  if (name === 'primary' || name === 'neutral') {
     return `var(--ui-color-${name}-${shade})`
   }
   return `var(--color-${name}-${shade})`
