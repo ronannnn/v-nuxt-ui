@@ -37,6 +37,7 @@ const props = withDefaults(defineProps<{
   /** 是否自动适配填满容器并居中 */
   fitView?: boolean
   fitViewPadding?: number
+  noFlowNodeBorder?: boolean
 }>(), {
   modelValue: () => ({ id: 0, nodes: [], edges: [] }),
   api: undefined,
@@ -156,7 +157,7 @@ watchEffect(() => {
   flowLogic.syncNodes(nodeId => ({
     onEdit: () => handleEditNode(nodeId),
     onDelete: () => deleteNode(nodeId),
-    showBorder: nodeShowBorder.value,
+    showBorder: nodeShowBorder.value && !props.noFlowNodeBorder,
     borderWidth: nodeBorderWidth.value,
     borderRadius: nodeBorderRadius.value,
     borderColor: effectiveNodeBorderColor.value,
