@@ -118,7 +118,7 @@ const {
 } = useFlowStyles()
 
 // VueFlow 实例
-const { onConnect, onNodeDragStop, onEdgeUpdate, getSelectedNodes, getSelectedEdges, getViewport, fitView: vueFlowFitView } = useVueFlow()
+const { onConnect, onNodeDragStop, onEdgeUpdate, getSelectedNodes, getSelectedEdges, getViewport, fitView: vueFlowFitView, onNodesInitialized } = useVueFlow()
 
 // Resize 功能
 const handleResizeEnd = async (nodeId: string, dimensions: UseFlowResizeDimensions) => {
@@ -247,11 +247,6 @@ onMounted(() => {
   window.addEventListener('mousemove', handleGlobalMouseMove)
   window.addEventListener('mouseup', handleMouseUp)
 
-  // fitView 模式：延迟执行确保 VueFlow 已完成内部布局
-  if (props.fitView) {
-    setTimeout(() => vueFlowFitView({ padding: props.fitViewPadding }), 100)
-  }
-
   onBeforeUnmount(() => {
     document.removeEventListener('keydown', handleKeyDown, true)
     window.removeEventListener('mousemove', handleGlobalMouseMove)
@@ -314,8 +309,8 @@ let resizeObserver: ResizeObserver | null = null
 let prevWidth = 0
 
 onMounted(() => {
-  // 延迟初始化，确保 VueFlow 内部布局完成
-  setTimeout(() => {
+  // 等待节点初始化完成后设置 ResizeObserver
+  onNodesInitialized(() => {
     const el = (flowContainer.value as any)?.$el ?? flowContainer.value
     if (!el) return
     prevWidth = el.clientWidth
@@ -329,11 +324,18 @@ onMounted(() => {
       }
     })
     resizeObserver.observe(el)
-  }, 200)
+  })
 })
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
+})
+
+// fitView 模式：等待节点初始化完成后执行
+onNodesInitialized(() => {
+  if (props.fitView) {
+    vueFlowFitView({ padding: props.fitViewPadding })
+  }
 })
 
 // 允许任意连接
