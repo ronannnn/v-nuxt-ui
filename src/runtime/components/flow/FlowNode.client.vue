@@ -54,18 +54,20 @@ const showBorder = computed(() => props.data.showBorder !== false)
     @mouseleave="isHoveredLocal = false"
     @dblclick="data.onEdit?.()"
   >
-    <!-- Connection handles：仅在可编辑模式下渲染 -->
-    <template v-if="editable">
-      <Handle
-        v-for="handle in activeHandles"
-        :id="`${handle.id}`"
-        :key="`${handle.id}`"
-        type="source"
-        :position="handle.position"
-        :style="handleStyle(handle)"
-        @mousedown.stop
-      />
-    </template>
+    <!-- Connection handles：始终渲染以确保 edge 连接点正确，非编辑模式下隐藏且禁用交互 -->
+    <Handle
+      v-for="handle in activeHandles"
+      :id="`${handle.id}`"
+      :key="`${handle.id}`"
+      type="source"
+      :position="handle.position"
+      :connectable="editable"
+      :style="{
+        ...handleStyle(handle),
+        ...(editable ? {} : { opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' })
+      }"
+      @mousedown.stop
+    />
 
     <!-- content -->
     <div class="flex items-center justify-center gap-2 w-full">
