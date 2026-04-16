@@ -32,5 +32,6 @@ const asyncSelectModelValue = computed<AsyncSelectCombinedValue>({
   <VAsyncSelect
     v-bind="props"
     v-model="asyncSelectModelValue"
+    class="w-full"
   />
 </template>

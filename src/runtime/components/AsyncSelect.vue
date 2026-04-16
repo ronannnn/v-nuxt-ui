@@ -8,9 +8,7 @@ import { isEmptyString } from '#v/utils'
 import type { AsyncSelectCombinedValue, AsyncSelectValue, QueryTemplate, VAsyncSelectProps } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 
-const props = withDefaults(defineProps<VAsyncSelectProps<T> & { noRounded?: boolean }>(), {
-  size: 'sm'
-})
+const props = defineProps<VAsyncSelectProps<T>>()
 
 const overlay = useOverlay()
 
@@ -137,6 +135,7 @@ defineExpose({
     :items="items"
     :multiple="multiple"
     :size="size"
+    :placeholder="placeholder"
     :create-item="canCreate && createModalComponent && {
       position: 'top',
       when: 'always'
@@ -153,7 +152,7 @@ defineExpose({
     open-on-focus
     trailing
     :ui="{
-      root: 'min-w-32' + (noRounded ? ' rounded-none' : ''),
+      root: 'min-w-32',
       base: 'peer',
       content: 'min-w-fit',
       tagsInput: 'min-w-4 w-0'
@@ -172,9 +171,5 @@ defineExpose({
       inputMenuRef?.inputRef.focus()
     }"
     @create="onCreateNew"
-  >
-    <label class="pointer-events-none absolute left-0 -top-2.5 text-highlighted text-xs font-medium px-1.5 transition-all peer-focus:-top-2.5 peer-focus:text-highlighted peer-focus:text-xs peer-focus:font-medium peer-placeholder-shown:text-sm peer-placeholder-shown:text-dimmed peer-placeholder-shown:top-1.5 peer-placeholder-shown:font-normal">
-      <span class="inline-flex bg-default px-1">{{ placeholder }}</span>
-    </label>
-  </UInputMenu>
+  />
 </template>

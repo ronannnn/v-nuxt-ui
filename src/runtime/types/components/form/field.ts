@@ -1,7 +1,7 @@
 import type { VNode } from 'vue'
 import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, SelectProps, TreeItem } from '@nuxt/ui'
 import type { ZodType } from 'zod'
-import type { VAsyncSelectProps } from '../opr'
+import type { VAsyncSelectProps } from '#v/types'
 
 export type VFormFieldAsyncSelectProps<T> = {
   initModel?: any | any[] // 用于form表单的初始值设置，有些值是id，需要传入id对应model来显示值

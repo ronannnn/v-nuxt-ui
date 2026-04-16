@@ -42,7 +42,7 @@ defineExpose({
     :trigger-fetching="triggerFetching"
   />
   <TableQueryWhereSimpleItemOprInputNumber
-    v-if="option.type === 'input-number'"
+    v-else-if="option.type === 'input-number'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
     :label="option.label || whereQueryItem.field"

@@ -38,6 +38,6 @@ defineExpose({
     ref="asyncSelect"
     v-bind="props"
     v-model="modelValue"
-    no-rounded
+    :placeholder="`请选择${label ?? ''}`"
   />
 </template>
