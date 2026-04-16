@@ -69,13 +69,6 @@ defineExpose({
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
-    :label="option.label!"
-    :list-api="option.listApi!"
-    :search-fields="option.searchFields"
-    :label-render-fn="option.labelRenderFn"
-    :label-field="option.labelField"
-    :value-field="option.valueField"
-    :multiple="option.multiple"
-    :placeholder="option.placeholder"
+    v-bind="option"
   />
 </template>

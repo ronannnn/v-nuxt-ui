@@ -28,13 +28,14 @@ const allModels = computed<T[]>(() => {
       [props.labelField]: '无'
     } as T)
   }
-  newSearchedModel.push(...currentSelectedModels.value)
-  searchedModel.value.forEach((searchedItem) => {
-    const idx = newSearchedModel.findIndex(item => item[props.valueField] === (searchedItem as any)[props.valueField])
-    if (idx === -1) {
-      newSearchedModel.push(searchedItem as T)
+  // 遍历 currentSelectedModels，如果其中的项在 searchedModel 中没有，则添加到 newSearchedModel 最前面
+  currentSelectedModels.value.forEach((currentModel) => {
+    const existInSearched = searchedModel.value.some(searched => (searched as T)[props.valueField] === currentModel[props.valueField])
+    if (!existInSearched) {
+      newSearchedModel.unshift(currentModel)
     }
   })
+  newSearchedModel.push(...(searchedModel.value as T[]))
   return newSearchedModel
 })
 
@@ -113,11 +114,14 @@ const onSelect = (values: AsyncSelectValue) => {
   }
 }
 
+const dropdownOpen = ref(false)
 const searchTerm = ref('')
 const onDebounceFetchItems = useDebounceFn(onFetchItems, 512)
 watch(searchTerm, (newVal) => {
-  onDebounceFetchItems(newVal)
-}, { immediate: false })
+  if (dropdownOpen.value) {
+    onDebounceFetchItems(newVal)
+  }
+}, { immediate: true })
 
 const inputMenuRef = useTemplateRef('inputMenu')
 defineExpose({
@@ -130,8 +134,9 @@ defineExpose({
 <template>
   <UInputMenu
     ref="inputMenu"
+    v-model:open="dropdownOpen"
+    v-model:search-term="searchTerm"
     :model-value="modelValue.values"
-    :search-term="searchTerm"
     :items="items"
     :multiple="multiple"
     :size="size"
@@ -140,7 +145,6 @@ defineExpose({
       position: 'top',
       when: 'always'
     }"
-    :reset-search-term-on-select="false"
     color="neutral"
     delete-icon="i-lucide-trash"
     value-key="value"
@@ -151,6 +155,7 @@ defineExpose({
     :disabled="disabled"
     open-on-focus
     trailing
+    ignore-filter
     :ui="{
       root: 'min-w-32',
       base: 'peer',
@@ -165,11 +170,7 @@ defineExpose({
         onFetchItems(searchTerm)
       }
     }"
-    @update:model-value="(newValues) => {
-      console.log(newValues)
-      onSelect(newValues)
-      inputMenuRef?.inputRef.focus()
-    }"
+    @update:model-value="onSelect"
     @create="onCreateNew"
   />
 </template>
