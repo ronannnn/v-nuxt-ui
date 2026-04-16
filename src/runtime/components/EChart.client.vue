@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { BarChart, PieChart, LineChart } from 'echarts/charts'
+import { BarChart, PieChart, LineChart, RadarChart } from 'echarts/charts'
 import {
   TitleComponent,
   TooltipComponent,
@@ -46,6 +46,9 @@ const componentsToUse: any[] = [
 if (props.useGrid) {
   componentsToUse.push(GridComponent)
 }
+if (props.useRadar) {
+  componentsToUse.push(RadarComponent)
+}
 
 if (props.useBar) {
   chartsToUse.push(BarChart)
@@ -57,7 +60,7 @@ if (props.useLine) {
   chartsToUse.push(LineChart)
 }
 if (props.useRadar) {
-  chartsToUse.push(RadarComponent)
+  chartsToUse.push(RadarChart)
 }
 
 use([...chartsToUse, ...componentsToUse])
