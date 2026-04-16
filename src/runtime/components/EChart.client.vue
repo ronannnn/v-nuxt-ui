@@ -76,6 +76,7 @@ const updateOption = () => {
   finalOption.value = echart.mergeOption(props.option)
 }
 
+const devicePixelRatio = window.devicePixelRatio || 1
 const chartRef = useTemplateRef('v-chart')
 
 // 监听所有依赖变化
@@ -102,5 +103,10 @@ defineExpose({
 </script>
 
 <template>
-  <v-chart ref="v-chart" :option="finalOption" autoresize />
+  <v-chart
+    ref="v-chart"
+    :option="finalOption"
+    :init-options="{ devicePixelRatio }"
+    autoresize
+  />
 </template>
