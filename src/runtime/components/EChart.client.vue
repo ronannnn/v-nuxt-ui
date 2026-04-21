@@ -23,6 +23,8 @@ interface Props {
   useLine?: boolean
   useGrid?: boolean
   useRadar?: boolean
+  enableXAxis?: boolean
+  enableYAxis?: boolean
   colors?: string[]
 }
 
@@ -31,6 +33,8 @@ const props = withDefaults(defineProps<Props>(), {
   usePie: false,
   useLine: false,
   useGrid: false,
+  enableXAxis: true,
+  enableYAxis: true,
   colors: () => []
 })
 
@@ -76,7 +80,10 @@ const rotateXAxisLabel = useLocalStorage<boolean>(StorageKey.ECHART_ROTATE_X_AXI
 const finalOption = ref({})
 
 const updateOption = () => {
-  finalOption.value = echart.mergeOption(props.option)
+  finalOption.value = echart.mergeOption(props.option, {
+    enableXAxis: props.enableXAxis,
+    enableYAxis: props.enableYAxis
+  })
 }
 
 const devicePixelRatio = window.devicePixelRatio || 1
@@ -86,6 +93,8 @@ const chartRef = useTemplateRef('v-chart')
 watch(
   [
     () => props.option, colorMode,
+    () => props.enableXAxis,
+    () => props.enableYAxis,
     () => theme.primary.value,
     () => theme.neutral.value,
     () => app.appConfig.value.radius,

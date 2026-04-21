@@ -4,6 +4,11 @@ import { useApp } from './useApp'
 import { StorageKey } from '#v/types'
 import { triggerFileDownloadFromUrl } from '#v/utils'
 
+interface MergeOptionConfig {
+  enableXAxis?: boolean
+  enableYAxis?: boolean
+}
+
 const _useEChart = () => {
   const app = useApp()
 
@@ -49,13 +54,13 @@ const _useEChart = () => {
     }
   })
 
-  const getCommonXAxisOption = () => ({
+  const getCommonXAxisOption = (enableXAxis = true) => ({
     xAxis: {
       nameTextStyle: {
         color: getNormedUiTextColor()
       },
       axisLine: {
-        show: true,
+        show: enableXAxis,
         lineStyle: {
           color: getNormedUiBorderColor()
         }
@@ -67,7 +72,7 @@ const _useEChart = () => {
         rotate: rotateXAxisLabel.value ? 90 : 0
       },
       axisTick: {
-        show: true,
+        show: enableXAxis,
         interval: () => true, // 始终显示所有刻度线
         lineStyle: {
           color: getNormedUiBorderColor()
@@ -76,13 +81,13 @@ const _useEChart = () => {
     }
   })
 
-  const getCommonYAxisOption = () => ({
+  const getCommonYAxisOption = (enableYAxis = true) => ({
     yAxis: {
       nameTextStyle: {
         color: getNormedUiTextColor()
       },
       axisLine: {
-        show: true,
+        show: enableYAxis,
         lineStyle: {
           color: getNormedUiBorderColor()
         }
@@ -255,14 +260,29 @@ const _useEChart = () => {
     })
   }
 
-  const mergeOption = (option: any): any => {
+  const mergeOption = (option: any, config: MergeOptionConfig = {}): any => {
+    const {
+      enableXAxis = true,
+      enableYAxis = true
+    } = config
+
     // 每次调用时获取最新的配置
-    const commonOption = defu(getCommonGridOption(), getCommonLegendOption(), getCommonXAxisOption(), getCommonYAxisOption())
+    const commonOption = defu(
+      getCommonGridOption(),
+      getCommonLegendOption(),
+      getCommonXAxisOption(enableXAxis),
+      getCommonYAxisOption(enableYAxis)
+    )
     const merged = defu(option, commonOption)
+
+    if (merged.xAxis && Array.isArray(merged.xAxis) && merged.xAxis.length > 1) {
+      const xAxisDefaults = getCommonXAxisOption(enableXAxis).xAxis
+      merged.xAxis = merged.xAxis.map((axis: any) => defu(axis, xAxisDefaults))
+    }
 
     // 如果用户传入的 yAxis 是数组，需要为每个元素合并默认配置
     if (merged.yAxis && Array.isArray(merged.yAxis) && merged.yAxis.length > 1) {
-      const yAxisDefaults = getCommonYAxisOption().yAxis
+      const yAxisDefaults = getCommonYAxisOption(enableYAxis).yAxis
       merged.yAxis = merged.yAxis.map((axis: any) => defu(axis, yAxisDefaults))
     }
 
