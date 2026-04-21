@@ -217,13 +217,7 @@ const summary = computed(() => {
 })
 
 const flowRef = useTemplateRef('flow')
-watch(() => flowRef.value?.selectedNode, (newData) => {
-  useToast().add({
-    title: '节点选中',
-    description: newData ? `当前选中节点：${riskData[newData.id]?.label || newData.name}` : '未选中任何节点',
-    icon: 'i-lucide-info'
-  })
-})
+const selectedNodeId = computed(() => flowRef.value?.selectedNode?.id)
 </script>
 
 <template>
@@ -284,122 +278,118 @@ watch(() => flowRef.value?.selectedNode, (newData) => {
         @edit-node="handleEditNode"
       >
         <template #node="{ data }">
-          <div
-            v-if="riskData[data.id]"
-            class="size-full flex flex-col px-3 py-2.5 text-xs select-none overflow-hidden rounded-lg bg-default border border-default"
-          >
-            <!-- 顶部：阶段名 + 编号 + 风险等级 -->
-            <div class="flex items-center justify-between gap-1 mb-1.5 shrink-0">
-              <div class="flex items-center gap-1.5 min-w-0">
-                <UIcon
-                  :name="statusConfig[riskData[data.id]!.status]!.icon"
-                  class="size-3.5 shrink-0"
-                  :class="statusConfig[riskData[data.id]!.status]!.color"
-                />
-                <span class="font-semibold text-sm truncate">{{ riskData[data.id]!.label }}</span>
-                <span class="text-muted text-[10px]">{{ riskData[data.id]!.code }}</span>
-              </div>
-              <UBadge
-                :color="getBadgeColor(riskData[data.id]!.riskLevel)"
-                variant="subtle"
-                size="xs"
-                class="shrink-0"
-              >
-                {{ riskLevelConfig[riskData[data.id]!.riskLevel].text }}
-              </UBadge>
-            </div>
-
-            <!-- 负责部门 + 状态 -->
-            <div class="flex items-center justify-between text-[11px] text-muted mb-2 shrink-0">
-              <div class="flex items-center gap-1">
-                <UIcon name="i-lucide-building-2" class="size-3" />
-                <span>{{ riskData[data.id]!.department }}</span>
-              </div>
-              <span
-                class="font-medium"
-                :class="statusConfig[riskData[data.id]!.status]!.color"
-              >
-                {{ riskData[data.id]!.status }}
-              </span>
-            </div>
-
-            <!-- 核心指标网格 -->
-            <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-2 shrink-0">
-              <!-- 预警指标数 -->
-              <div class="flex items-center justify-between">
-                <span class="text-muted text-[10px]">预警指标</span>
-                <span class="font-semibold text-[11px]">{{ riskData[data.id]!.indicatorCount }} 项</span>
-              </div>
-              <!-- 当前预警 -->
-              <div class="flex items-center justify-between">
-                <span class="text-muted text-[10px]">当前预警</span>
-                <span
-                  class="font-semibold text-[11px]"
-                  :class="riskData[data.id]!.warningCount > 0 ? 'text-red-600 dark:text-red-400' : ''"
+          <ProGlowBorder :active="selectedNodeId === data.id" class="size-full">
+            <div class="size-full flex flex-col px-3 py-2.5 text-xs select-none rounded-lg border border-default">
+              <!-- 顶部：阶段名 + 编号 + 风险等级 -->
+              <div class="flex items-center justify-between gap-1 mb-1.5 shrink-0">
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <UIcon
+                    :name="statusConfig[riskData[data.id]!.status]!.icon"
+                    class="size-3.5 shrink-0"
+                    :class="statusConfig[riskData[data.id]!.status]!.color"
+                  />
+                  <span class="font-semibold text-sm truncate">{{ riskData[data.id]!.label }}</span>
+                  <span class="text-muted text-[10px]">{{ riskData[data.id]!.code }}</span>
+                </div>
+                <UBadge
+                  :color="getBadgeColor(riskData[data.id]!.riskLevel)"
+                  variant="subtle"
+                  size="xs"
+                  class="shrink-0"
                 >
-                  {{ riskData[data.id]!.warningCount }} 条
+                  {{ riskLevelConfig[riskData[data.id]!.riskLevel].text }}
+                </UBadge>
+              </div>
+
+              <!-- 负责部门 + 状态 -->
+              <div class="flex items-center justify-between text-[11px] text-muted mb-2 shrink-0">
+                <div class="flex items-center gap-1">
+                  <UIcon name="i-lucide-building-2" class="size-3" />
+                  <span>{{ riskData[data.id]!.department }}</span>
+                </div>
+                <span
+                  class="font-medium"
+                  :class="statusConfig[riskData[data.id]!.status]!.color"
+                >
+                  {{ riskData[data.id]!.status }}
                 </span>
               </div>
-              <!-- 已处理 -->
-              <div class="flex items-center justify-between">
-                <span class="text-muted text-[10px]">已处理</span>
-                <span class="font-semibold text-[11px] text-emerald-600 dark:text-emerald-400">
-                  {{ riskData[data.id]!.resolvedCount }} 条
+
+              <!-- 核心指标网格 -->
+              <div class="grid grid-cols-2 gap-x-3 gap-y-1 mb-2 shrink-0">
+                <!-- 预警指标数 -->
+                <div class="flex items-center justify-between">
+                  <span class="text-muted text-[10px]">预警指标</span>
+                  <span class="font-semibold text-[11px]">{{ riskData[data.id]!.indicatorCount }} 项</span>
+                </div>
+                <!-- 当前预警 -->
+                <div class="flex items-center justify-between">
+                  <span class="text-muted text-[10px]">当前预警</span>
+                  <span
+                    class="font-semibold text-[11px]"
+                    :class="riskData[data.id]!.warningCount > 0 ? 'text-red-600 dark:text-red-400' : ''"
+                  >
+                    {{ riskData[data.id]!.warningCount }} 条
+                  </span>
+                </div>
+                <!-- 已处理 -->
+                <div class="flex items-center justify-between">
+                  <span class="text-muted text-[10px]">已处理</span>
+                  <span class="font-semibold text-[11px] text-emerald-600 dark:text-emerald-400">
+                    {{ riskData[data.id]!.resolvedCount }} 条
+                  </span>
+                </div>
+                <!-- 涉及金额 -->
+                <div class="flex items-center justify-between">
+                  <span class="text-muted text-[10px]">涉及金额</span>
+                  <span class="font-semibold text-[11px]">{{ riskData[data.id]!.amount }} 万</span>
+                </div>
+              </div>
+
+              <!-- 进度条 -->
+              <div class="mb-1.5 shrink-0">
+                <div class="flex items-center justify-between text-[10px] mb-0.5">
+                  <span class="text-muted">时间进度</span>
+                  <span class="text-muted">
+                    {{ riskData[data.id]!.elapsedDays }}/{{ riskData[data.id]!.estimatedDays }} 天
+                  </span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all"
+                    :class="[
+                      riskData[data.id]!.elapsedDays > riskData[data.id]!.estimatedDays
+                        ? 'bg-red-500'
+                        : riskData[data.id]!.elapsedDays / riskData[data.id]!.estimatedDays > 0.8
+                          ? 'bg-amber-500'
+                          : 'bg-blue-500'
+                    ]"
+                    :style="{
+                      width: `${Math.min(100, (riskData[data.id]!.elapsedDays / riskData[data.id]!.estimatedDays) * 100)}%`
+                    }"
+                  />
+                </div>
+              </div>
+
+              <!-- 底部关键指标标签 -->
+              <div class="flex flex-wrap gap-0.5 mt-auto overflow-hidden">
+                <span
+                  v-for="(indicator, idx) in riskData[data.id]!.indicators.slice(0, 4)"
+                  :key="idx"
+                  class="inline-flex items-center px-1 py-0.5 rounded text-[9px] bg-neutral-100 dark:bg-neutral-800 text-muted truncate max-w-15"
+                  :title="indicator"
+                >
+                  {{ indicator }}
+                </span>
+                <span
+                  v-if="riskData[data.id]!.indicators.length > 4"
+                  class="inline-flex items-center px-1 py-0.5 rounded text-[9px] bg-neutral-100 dark:bg-neutral-800 text-muted"
+                >
+                  +{{ riskData[data.id]!.indicators.length - 4 }}
                 </span>
               </div>
-              <!-- 涉及金额 -->
-              <div class="flex items-center justify-between">
-                <span class="text-muted text-[10px]">涉及金额</span>
-                <span class="font-semibold text-[11px]">{{ riskData[data.id]!.amount }} 万</span>
-              </div>
             </div>
-
-            <!-- 进度条 -->
-            <div class="mb-1.5 shrink-0">
-              <div class="flex items-center justify-between text-[10px] mb-0.5">
-                <span class="text-muted">时间进度</span>
-                <span class="text-muted">
-                  {{ riskData[data.id]!.elapsedDays }}/{{ riskData[data.id]!.estimatedDays }} 天
-                </span>
-              </div>
-              <div class="w-full h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
-                <div
-                  class="h-full rounded-full transition-all"
-                  :class="[
-                    riskData[data.id]!.elapsedDays > riskData[data.id]!.estimatedDays
-                      ? 'bg-red-500'
-                      : riskData[data.id]!.elapsedDays / riskData[data.id]!.estimatedDays > 0.8
-                        ? 'bg-amber-500'
-                        : 'bg-blue-500'
-                  ]"
-                  :style="{
-                    width: `${Math.min(100, (riskData[data.id]!.elapsedDays / riskData[data.id]!.estimatedDays) * 100)}%`
-                  }"
-                />
-              </div>
-            </div>
-
-            <!-- 底部关键指标标签 -->
-            <div class="flex flex-wrap gap-0.5 mt-auto overflow-hidden">
-              <span
-                v-for="(indicator, idx) in riskData[data.id]!.indicators.slice(0, 4)"
-                :key="idx"
-                class="inline-flex items-center px-1 py-0.5 rounded text-[9px] bg-neutral-100 dark:bg-neutral-800 text-muted truncate max-w-15"
-                :title="indicator"
-              >
-                {{ indicator }}
-              </span>
-              <span
-                v-if="riskData[data.id]!.indicators.length > 4"
-                class="inline-flex items-center px-1 py-0.5 rounded text-[9px] bg-neutral-100 dark:bg-neutral-800 text-muted"
-              >
-                +{{ riskData[data.id]!.indicators.length - 4 }}
-              </span>
-            </div>
-          </div>
-
-          <!-- 没有风险数据的节点回退默认显示 -->
-          <span v-else class="font-medium">{{ data.name }}</span>
+          </ProGlowBorder>
         </template>
       </ProFlowEditor>
     </div>
