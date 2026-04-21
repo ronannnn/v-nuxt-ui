@@ -13,7 +13,7 @@ import {
 import VChart from 'vue-echarts'
 import { useTheme, useApp, useEChart } from '#v/composables'
 import { useColorMode, useLocalStorage } from '@vueuse/core'
-import { ref, useTemplateRef, watch } from 'vue'
+import { nextTick, ref, useTemplateRef, watch } from 'vue'
 import { StorageKey } from '#v/types'
 
 interface Props {
@@ -92,7 +92,8 @@ const chartRef = useTemplateRef('v-chart')
 // 监听所有依赖变化
 watch(
   [
-    () => props.option, colorMode,
+    () => props.option,
+    () => colorMode.value,
     () => props.enableXAxis,
     () => props.enableYAxis,
     () => theme.primary.value,
@@ -100,10 +101,11 @@ watch(
     () => app.appConfig.value.radius,
     () => rotateXAxisLabel.value
   ],
-  () => setTimeout(() => {
-    updateOption() // TODO: 通过更好的方式实现
-  }, 1),
-  { immediate: true, deep: true }
+  async () => {
+    await nextTick()
+    updateOption()
+  },
+  { immediate: true, deep: true, flush: 'post' }
 )
 
 defineExpose({
