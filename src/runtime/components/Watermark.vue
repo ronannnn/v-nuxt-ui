@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useColorMode } from '@vueuse/core'
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 
 interface Props {
   text?: string | string[]
@@ -200,12 +200,10 @@ watch(
   { immediate: true, deep: true }
 )
 
-// 监听主题变化
+// 监听主题变化（包括 html class 的实际变化，处理刷新时 auto 模式异步解析的问题）
 const colorMode = useColorMode()
-watch(() => colorMode.value, generateWatermark)
-
-onMounted(() => {
-  generateWatermark()
+watch(() => colorMode.value, () => {
+  nextTick(generateWatermark)
 })
 </script>
 
