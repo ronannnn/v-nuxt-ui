@@ -215,6 +215,15 @@ const summary = computed(() => {
     mediumRiskCount: values.filter(n => n.riskLevel === 'medium').length
   }
 })
+
+const flowRef = useTemplateRef('flow')
+watch(() => flowRef.value?.selectedNode, (newData) => {
+  useToast().add({
+    title: '节点选中',
+    description: newData ? `当前选中节点：${riskData[newData.id]?.label || newData.name}` : '未选中任何节点',
+    icon: 'i-lucide-info'
+  })
+})
 </script>
 
 <template>
@@ -262,6 +271,7 @@ const summary = computed(() => {
 
     <div class="h-250 w-full rounded-lg shrink-0">
       <ProFlowEditor
+        ref="flow"
         v-model="flowData"
         :api="flowApi"
         fit-view
@@ -270,6 +280,7 @@ const summary = computed(() => {
         :zoomable="false"
         :show-background="false"
         :show-stats="false"
+        node-selectable
         @edit-node="handleEditNode"
       >
         <template #node="{ data }">

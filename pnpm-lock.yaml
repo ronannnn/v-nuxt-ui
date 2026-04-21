@@ -152,6 +152,15 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1(echarts@6.0.0)(vue@3.5.32(typescript@5.9.3))
 
+  playground:
+    dependencies:
+      better-sqlite3:
+        specifier: ^12.8.0
+        version: 12.9.0
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+
 packages:
 
   '@alloc/quick-lru@5.2.0':

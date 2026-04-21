@@ -34,6 +34,8 @@ const props = withDefaults(defineProps<{
   draggable?: boolean
   /** 是否可编辑（false 时：工具栏新增按钮禁用、edge 不能增删改、node handles 不显示） */
   editable?: boolean
+  /** 是否允许点击选中节点（默认跟随 editable） */
+  nodeSelectable?: boolean
   /** 是否自动适配填满容器并居中 */
   fitView?: boolean
   fitViewPadding?: number
@@ -137,6 +139,21 @@ const {
   handleMouseMove,
   handleMouseUp
 } = resizeLogic
+
+const isNodeSelectable = computed(() => props.nodeSelectable ?? props.editable)
+
+const selectedNodes = computed<FlowNodeType[]>(() => {
+  return getSelectedNodes.value
+    .map(node => props.modelValue?.nodes?.find(item => String(item.id) === node.id))
+    .filter((node): node is FlowNodeType => Boolean(node))
+})
+
+const selectedNode = computed<FlowNodeType | null>(() => selectedNodes.value[0] ?? null)
+
+defineExpose({
+  selectedNode,
+  selectedNodes
+})
 
 // 共享鼠标位置（通过 provide/inject 传递给子组件，避免每个 FlowNode 都添加独立的 mousemove 监听）
 const mousePosition = ref<FlowMousePosition>({ x: 0, y: 0 })
@@ -362,7 +379,7 @@ const isValidConnection = () => true
     :pan-on-scroll="false"
     :nodes-draggable="draggable"
     :nodes-connectable="editable"
-    :elements-selectable="editable"
+    :elements-selectable="isNodeSelectable"
     :class="{ 'flow-fit-view': fitView }"
   >
     <Background
