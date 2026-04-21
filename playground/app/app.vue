@@ -36,6 +36,10 @@ setGlobalSidebarMenus({
     icon: 'i-lucide-workflow',
     to: '/examples/flow'
   }, {
+    label: '图表示例',
+    icon: 'i-lucide-chart-column-big',
+    to: '/examples/chart'
+  }, {
     label: '流程列表',
     icon: 'i-lucide-git-branch-plus',
     to: '/examples/flows'

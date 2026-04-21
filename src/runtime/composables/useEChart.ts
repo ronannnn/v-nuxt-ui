@@ -260,6 +260,29 @@ const _useEChart = () => {
     })
   }
 
+  const getCommonRadarOption = () => ({
+    radar: {
+      axisName: {
+        color: getNormedUiTextColor()
+      },
+      axisLine: {
+        lineStyle: {
+          color: getNormedUiBorderColor()
+        }
+      },
+      splitLine: {
+        lineStyle: {
+          color: getNormedUiBorderColor()
+        }
+      },
+      splitArea: {
+        areaStyle: {
+          color: ['transparent']
+        }
+      }
+    }
+  })
+
   const mergeOption = (option: any, config: MergeOptionConfig = {}): any => {
     const {
       enableXAxis = true,
@@ -284,6 +307,16 @@ const _useEChart = () => {
     if (merged.yAxis && Array.isArray(merged.yAxis) && merged.yAxis.length > 1) {
       const yAxisDefaults = getCommonYAxisOption(enableYAxis).yAxis
       merged.yAxis = merged.yAxis.map((axis: any) => defu(axis, yAxisDefaults))
+    }
+
+    // 雷达图：只在用户传了 radar 时合并默认样式
+    if (merged.radar) {
+      const radarDefaults = getCommonRadarOption().radar
+      if (Array.isArray(merged.radar)) {
+        merged.radar = merged.radar.map((r: any) => defu(r, radarDefaults))
+      } else {
+        merged.radar = defu(merged.radar, radarDefaults)
+      }
     }
 
     // 为 series 添加额外公共属性
