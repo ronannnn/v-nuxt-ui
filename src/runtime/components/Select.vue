@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T">
 import type { VSelectProps } from '#v/types'
+import { isEmptyString } from '#v/utils'
 import type { InputMenuItem } from '@nuxt/ui'
 import { computed, ref, useTemplateRef } from 'vue'
 
@@ -15,8 +16,10 @@ const getItemLabel = (item: InputMenuItem) => {
   return String(item?.label ?? '')
 }
 
+const dropdownOpen = ref(false)
+
 const filteredItems = computed(() => {
-  if (!searchTerm.value) {
+  if (isEmptyString(searchTerm.value) || !dropdownOpen.value) {
     return props.items
   }
   return props.items.filter(item => getItemLabel(item).toLowerCase().includes(searchTerm.value.toLowerCase()))
@@ -40,11 +43,12 @@ defineExpose({
 <template>
   <UInputMenu
     ref="inputMenu"
+    v-model:open="dropdownOpen"
     v-model:search-term="searchTerm"
     v-model="modelValue"
     :items="filteredItems"
     :placeholder="placeholder"
-    :multiple="multiple ?? false"
+    :multiple="multiple"
     :size="size"
     color="neutral"
     delete-icon="i-lucide-trash"
@@ -55,6 +59,7 @@ defineExpose({
     :disabled="disabled"
     open-on-focus
     trailing
+    ignore-filter
     :ui="ui"
     :content="{
       align: 'start'
