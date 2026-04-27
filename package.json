@@ -1,6 +1,6 @@
 {
   "name": "v-nuxt-ui",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "description": "Veken UI Component Library - Reusable Nuxt UI components, composables, and utilities for enterprise applications",
   "type": "module",
   "style": "./dist/runtime/index.css",
