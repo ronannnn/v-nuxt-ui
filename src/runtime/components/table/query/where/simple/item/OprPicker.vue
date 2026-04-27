@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import type { CommandPaletteGroup } from '@nuxt/ui'
+import type { ListboxItem } from '@nuxt/ui'
 import type { WhereQueryItem, WhereQueryOpr, WhereQueryOption } from '#v/types'
 import { computed, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
@@ -17,30 +17,24 @@ const option = computed<WhereQueryOption<T> | undefined>(() =>
   props.options.find(opt => opt.field === whereQueryItem.value.field)
 )
 
-const items = computed<CommandPaletteGroup[]>(() => {
+const items = computed<ListboxItem[]>(() => {
   if (!option.value || !option.value.type) {
     console.error('Cannot find field option or missing type for field:', whereQueryItem.value.field)
     return []
   }
 
-  return [
-    {
-      id: 'operators',
-      label: '操作符',
-      items: useTableOpr()
-        .getOprNameOptionsByType(option.value.type)
-        .map(option => ({
-          label: option.label,
-          value: option.value,
-          onSelect: () => {
-            modelValue.value = option.value as string
-            nextTick(() => {
-              props.focus?.()
-            })
-          }
-        }))
-    }
-  ]
+  return useTableOpr()
+    .getOprNameOptionsByType(option.value.type)
+    .map(option => ({
+      label: option.label,
+      value: option.value,
+      onSelect: () => {
+        modelValue.value = option.value as string
+        nextTick(() => {
+          props.focus?.()
+        })
+      }
+    }))
 })
 
 const modelValue = computed<string>({
@@ -66,7 +60,7 @@ const currentLabel = computed(() => {
   <!-- NOTE: 自己实现DropdownMenu, 原生DropdownMenu的Focus有问题，会让查询字段打开的Popover关闭 -->
   <ButtonDropdown
     v-model="modelValue"
-    :groups="items"
+    :items="items"
   >
     <UButton
       size="sm"

@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import type { CommandPaletteGroup } from '@nuxt/ui'
+import type { ListboxItem } from '@nuxt/ui'
 import type { WhereQueryItem, WhereQueryOption } from '#v/types'
 import { computed, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
@@ -14,25 +14,17 @@ const props = defineProps<{
 
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
-const items = computed<CommandPaletteGroup[]>(() => {
-  return [
-    {
-      id: 'query-fields',
-      label: '查询字段',
-      items: props.options.map(option => ({
-        label: option.label,
-        value: option.field,
-        icon: tableWhereQueryItemIconMap.get(option.type) || 'field',
-        onSelect: () => {
-          modelValue.value = option.field as string
-          nextTick(() => {
-            props.focus?.()
-          })
-        }
-      }))
-    }
-  ]
-})
+const items = computed<ListboxItem[]>(() => props.options.map(option => ({
+  label: option.label,
+  value: option.field,
+  icon: tableWhereQueryItemIconMap.get(option.type) || 'field',
+  onSelect: () => {
+    modelValue.value = option.field as string
+    nextTick(() => {
+      props.focus?.()
+    })
+  }
+})))
 
 const modelValue = computed({
   get() {
@@ -60,7 +52,7 @@ const currentOption = computed(() => {
 <template>
   <ButtonDropdown
     v-model="modelValue"
-    :groups="items"
+    :items="items"
   >
     <UButton
       :size="'sm'"

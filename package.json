@@ -1,6 +1,6 @@
 {
   "name": "v-nuxt-ui",
-  "version": "0.2.19",
+  "version": "0.2.20",
   "description": "Veken UI Component Library - Reusable Nuxt UI components, composables, and utilities for enterprise applications",
   "type": "module",
   "style": "./dist/runtime/index.css",
@@ -71,7 +71,7 @@
     "@nuxt/eslint-config": "^1.15.2",
     "@nuxt/fonts": "^0.12.1",
     "@nuxt/module-builder": "^1.0.2",
-    "@nuxt/ui": "^4.6.1",
+    "@nuxt/ui": "^4.7.0",
     "@nuxtjs/i18n": "^10.2.4",
     "@nuxtjs/mdc": "^0.20.2",
     "@tanstack/table-core": "^8.21.3",
