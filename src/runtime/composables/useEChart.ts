@@ -289,13 +289,23 @@ const _useEChart = () => {
       enableYAxis = true
     } = config
 
+    const hasXAxisOption = option?.xAxis !== undefined
+    const hasYAxisOption = option?.yAxis !== undefined
+
     // 每次调用时获取最新的配置
-    const commonOption = defu(
+    let commonOption = defu(
       getCommonGridOption(),
-      getCommonLegendOption(),
-      getCommonXAxisOption(enableXAxis),
-      getCommonYAxisOption(enableYAxis)
+      getCommonLegendOption()
     )
+
+    if (enableXAxis || hasXAxisOption) {
+      commonOption = defu(commonOption, getCommonXAxisOption(enableXAxis))
+    }
+
+    if (enableYAxis || hasYAxisOption) {
+      commonOption = defu(commonOption, getCommonYAxisOption(enableYAxis))
+    }
+
     const merged = defu(option, commonOption)
 
     if (merged.xAxis && Array.isArray(merged.xAxis) && merged.xAxis.length > 1) {
