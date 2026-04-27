@@ -55,8 +55,7 @@ defineExpose({
     ref="item"
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
-    :items="option.items || []"
-    :placeholder="option.placeholder"
+    v-bind="option"
   />
   <TableQueryWhereSimpleItemOprDatePicker
     v-else-if="option!.type === 'date-picker'"
@@ -69,7 +68,6 @@ defineExpose({
     ref="item"
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
-    :trigger-fetching="triggerFetching"
     v-bind="option"
   />
 </template>

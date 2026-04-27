@@ -132,6 +132,7 @@ const columns: VColumn<User>[] = [
     filterOption: {
       type: 'select',
       items: genderOptions,
+      multiple: true,
       empty: {
         label: '未知',
         variant: 'outline',

@@ -1,7 +1,7 @@
 import type { VNode } from 'vue'
-import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, SelectProps, TreeItem } from '@nuxt/ui'
+import type { ButtonProps, FormFieldProps, InputProps, RadioGroupProps, SelectMenuItem, TreeItem } from '@nuxt/ui'
 import type { ZodType } from 'zod'
-import type { VAsyncSelectProps } from '#v/types'
+import type { VAsyncSelectProps, VSelectProps } from '#v/types'
 
 export type VFormFieldAsyncSelectProps<T> = {
   initModel?: any | any[] // 用于form表单的初始值设置，有些值是id，需要传入id对应model来显示值
@@ -20,12 +20,8 @@ export type VFormFieldTreeSelectTransferProps = {
   disabled?: boolean
 }
 
-export type VFormFieldSelectProps = {
-  items: SelectMenuItem[]
-  searchable?: boolean
-  multiple?: SelectProps['multiple']
-  enableEmptyOption?: boolean
-} & Pick<SelectProps, 'placeholder'>
+export type VFormFieldSelectProps<T> = {
+} & VSelectProps<T>
 
 export type VFormFieldDynamicObjectInputProps = {
   objectFields: Array<{
@@ -64,7 +60,7 @@ export type VFormFieldProps = FormFieldProps & {
   }
   | {
     type: 'select'
-  } & VFormFieldSelectProps
+  } & VFormFieldSelectProps<any>
   | {
     type: 'multiple-select-string'
     items: SelectMenuItem[]

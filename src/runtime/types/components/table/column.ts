@@ -1,6 +1,6 @@
 import type { OrderQueryOpr, WhereQueryOpr } from '../../query'
-import type { TableColumn, BadgeProps, InputMenuProps } from '@nuxt/ui'
-import type { SelectOption, VAsyncSelectProps } from '../../index'
+import type { BadgeProps, TableColumn } from '@nuxt/ui'
+import type { VAsyncSelectProps, VSelectProps } from '../../index'
 
 export type WhereQueryType = 'input' | 'input-number' | 'date-picker' | 'select' | 'async-select' | 'unknown'
 
@@ -17,10 +17,8 @@ export type WhereQueryColumnOption<T> = {
   | {
     type: 'select'
     variant?: BadgeProps['variant']
-    items: SelectOption[]
     empty?: BadgeProps
-    placeholder?: InputMenuProps['placeholder']
-  }
+  } & VSelectProps<T>
   | {
     type: 'async-select'
   } & VAsyncSelectProps<T>

@@ -1,17 +1,15 @@
 <script setup lang="ts" generic="T">
-import type { WhereQueryItem } from '#v/types'
-import type { InputMenuItem, InputMenuProps } from '@nuxt/ui'
-import { computed, ref, useTemplateRef } from 'vue'
+import type { VSelectProps, WhereQueryItem } from '#v/types'
+import { computed, useTemplateRef } from 'vue'
+import VSelect from '#v/components/Select.vue'
 
-const props = defineProps<{
-  disabled?: boolean
-  items: InputMenuItem[]
-  placeholder?: InputMenuProps['placeholder']
-}>()
+const props = withDefaults(defineProps<VSelectProps<T>>(), {
+  size: 'sm'
+})
 
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
-const inputMenuValue = computed<(string | number)[]>({
+const modelValue = computed<string[] | number[]>({
   get() {
     return whereQueryItem.value.value
   },
@@ -20,49 +18,20 @@ const inputMenuValue = computed<(string | number)[]>({
   }
 })
 
-const searchTerm = ref('')
-const filteredItems = computed(() => {
-  if (!searchTerm.value) {
-    return props.items
-  }
-  return props.items.filter(item => (item as any)?.label.toLowerCase().includes(searchTerm.value.toLowerCase()))
-})
-
-const inputMenuRef = useTemplateRef('inputMenu')
+const selectRef = useTemplateRef('select')
 defineExpose({
   focus: () => {
-    inputMenuRef.value?.inputRef.focus()
+    selectRef.value?.focus()
   }
 })
 </script>
 
 <template>
-  <UInputMenu
-    ref="inputMenu"
-    v-model:search-term="searchTerm"
-    v-model="inputMenuValue"
-    :items="filteredItems"
-    :placeholder="placeholder"
-    multiple
-    color="neutral"
-    delete-icon="i-lucide-trash"
-    value-key="value"
-    clear
-    clear-icon="i-lucide-circle-x"
-    icon=""
-    :disabled="disabled"
-    open-on-focus
-    trailing
-    :ui="{
-      root: 'rounded-none min-w-32', // TODO: 不然有rounded，这个应该是个bug
-      content: 'min-w-fit',
-      tagsInput: 'min-w-4 w-0'
-    }"
-    :content="{
-      align: 'start'
-    }"
-    @update:model-value="() => {
-      inputMenuRef?.inputRef.focus()
-    }"
+  <VSelect
+    ref="select"
+    v-bind="props"
+    v-model="modelValue"
+    :placeholder="`请选择${label ?? ''}`"
+    rounded-none
   />
 </template>

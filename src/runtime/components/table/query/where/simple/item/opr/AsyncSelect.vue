@@ -39,5 +39,6 @@ defineExpose({
     v-bind="props"
     v-model="modelValue"
     :placeholder="`请选择${label ?? ''}`"
+    rounded-none
   />
 </template>

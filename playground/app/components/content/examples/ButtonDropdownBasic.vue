@@ -1,15 +1,11 @@
 <script setup lang="ts">
 const selected = ref<string | undefined>(undefined)
 
-const groups = [{
-  id: 'status',
-  label: 'Status',
-  items: [
-    { label: '在职', value: 'active' },
-    { label: '离职', value: 'inactive' },
-    { label: '实习', value: 'intern' }
-  ]
-}]
+const items = [
+  { label: '在职', value: 'active' },
+  { label: '离职', value: 'inactive' },
+  { label: '实习', value: 'intern' }
+]
 </script>
 
 <template>
@@ -17,9 +13,9 @@ const groups = [{
     <p class="text-sm text-muted">
       Selected: {{ selected ?? 'none' }}
     </p>
-    <ProButtonDropdown v-model="selected" :groups="groups">
+    <ProButtonDropdown v-model="selected" :items="items">
       <UButton variant="outline" color="neutral" trailing-icon="i-lucide-chevron-down">
-        {{ groups[0]?.items.find(i => i.value === selected)?.label ?? 'Select status...' }}
+        {{ items.find(i => i.value === selected)?.label ?? 'Select status...' }}
       </UButton>
     </ProButtonDropdown>
   </div>

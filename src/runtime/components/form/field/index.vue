@@ -114,13 +114,7 @@ const fieldModelValue = computed({
   <FormFieldSelect
     v-else-if="field.type === 'select'"
     v-model="fieldModelValue"
-    :items="field.items"
-    :searchable="field.searchable ?? false"
-    :icon="field.icon ? field.icon : (field.multiple ? 'i-lucide-list-todo' : undefined)"
-    :enable-empty-option="field.enableEmptyOption"
-    :placeholder="field.placeholder"
-    value-key="value"
-    :disabled="field.disabled"
+    v-bind="field"
   />
   <USelectMenu
     v-else-if="field.type === 'multiple-select-string'"

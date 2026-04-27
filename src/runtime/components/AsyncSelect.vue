@@ -114,6 +114,13 @@ const onSelect = (values: AsyncSelectValue) => {
   }
 }
 
+const ui = computed(() => ({
+  root: ['min-w-32', props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
+  base: 'peer',
+  content: 'min-w-fit',
+  tagsInput: 'min-w-4 w-0'
+}))
+
 const dropdownOpen = ref(false)
 const searchTerm = ref('')
 const onDebounceFetchItems = useDebounceFn(onFetchItems, 512)
@@ -156,12 +163,7 @@ defineExpose({
     open-on-focus
     trailing
     ignore-filter
-    :ui="{
-      root: 'min-w-32',
-      base: 'peer',
-      content: 'min-w-fit',
-      tagsInput: 'min-w-4 w-0'
-    }"
+    :ui="ui"
     :content="{
       align: 'start'
     }"

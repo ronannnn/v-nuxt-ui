@@ -1,6 +1,6 @@
 import { computed, shallowRef, h, type Ref, type ShallowRef, type ComputedRef } from 'vue'
 import type { ColumnPinningState } from '@tanstack/table-core'
-import type { VColumn, OrderQuery, OrderQueryOpr, TableSettings, Column, SelectOption, WhereQueryColumnOption } from '#v/types'
+import type { VColumn, OrderQuery, OrderQueryOpr, TableSettings, Column, WhereQueryColumnOption } from '#v/types'
 import TableColumnActionHeader from '#v/components/table/column/ActionHeader.vue'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import UCheckbox from '@nuxt/ui/components/Checkbox.vue'
@@ -131,7 +131,7 @@ export function useTableColumns<T>(props: {
           return {
             ...col,
             cell: ({ cell }) => {
-              const item = selectOption.items.find((item: SelectOption) => item.value === cell.getValue())
+              const item: any = selectOption.items.find((item: any) => item.value === cell.getValue())
               return item
                 ? h(UBadge, {
                     color: item?.color ?? 'neutral',

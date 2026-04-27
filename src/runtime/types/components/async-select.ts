@@ -31,6 +31,8 @@ export type VAsyncSelectProps<T> = {
   canCreate?: boolean
   createModalComponent?: Component
   createModalOpenProps?: Record<string, any>
+
+  roundedNone?: boolean // TODO:
 }
 
 export type AsyncSelectValue = string[] | number[] | string | number | undefined
