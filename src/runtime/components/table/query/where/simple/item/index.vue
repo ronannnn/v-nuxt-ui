@@ -16,9 +16,10 @@ const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { requir
 const option = computed(() => props.options.find(option => option.field === whereQueryItem.value.field))
 
 watch(
-  () => whereQueryItem.value.custom,
-  () => {
-    whereQueryItem.value = { ...whereQueryItem.value, custom: option.value?.custom }
+  () => option.value?.custom,
+  (newCustom) => {
+    if (whereQueryItem.value.custom === newCustom) return
+    whereQueryItem.value = { ...whereQueryItem.value, custom: newCustom }
   },
   { immediate: true }
 )

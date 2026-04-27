@@ -19,9 +19,10 @@ const option = computed<WhereQueryOption<T>>(() =>
   ?? { type: 'unknown', field: 'unknown', label: '未知字段' })
 
 watch(
-  () => whereQueryItem.value.custom,
-  () => {
-    whereQueryItem.value = { ...whereQueryItem.value, custom: option.value?.custom }
+  () => option.value?.custom,
+  (newCustom) => {
+    if (whereQueryItem.value.custom === newCustom) return
+    whereQueryItem.value = { ...whereQueryItem.value, custom: newCustom }
   },
   { immediate: true }
 )

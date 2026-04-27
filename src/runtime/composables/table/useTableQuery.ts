@@ -104,7 +104,9 @@ export function useTableQuery<T>(props: {
     if (itemsWithOprNoValues.length > 0) {
       return false
     }
+    const defaultKeys = whereQueryInitValues.value.items?.map(query => query.field) ?? []
     return !items
+      .filter(item => !defaultKeys.includes(item.field))
       .filter(item => !noValueOprList.includes(item.opr))
       .some(item => item.value !== null && item.value !== undefined && item.value !== '')
   }

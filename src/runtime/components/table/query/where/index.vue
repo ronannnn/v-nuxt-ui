@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T">
 import type { ComponentPublicInstance } from 'vue'
-import type { WhereQueryProps } from '#v/types'
+import type { WhereQueryItem, WhereQueryProps } from '#v/types'
 import { computed, ref, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
 import { useToast } from '@nuxt/ui/composables'
@@ -69,6 +69,15 @@ const isWhereQueryEmpty = computed(() => {
     )
 })
 
+const whereQueryWithoutDefault = computed<WhereQueryItem<T>[]>(() => {
+  if (!props.whereQuery) return []
+  const defaultKeys = props.defaultWhereQuery?.items?.map(query => query.field) ?? []
+  return props.whereQuery.items?.filter((query) => {
+    const field = query.field as string
+    return !defaultKeys.includes(field)
+  }) ?? []
+})
+
 // 从列头筛选触发的聚焦
 const focusField = (field: string): boolean => {
   const item = itemRefMap.value.get(field)
@@ -88,7 +97,7 @@ defineExpose({ focusField })
       <!-- key如果是field，那么field修改后，不能聚焦后面的组件，所以这里的key用idx代替 -->
       <template v-if="!isWhereQueryEmpty">
         <TableQueryWhereSimpleItem
-          v-for="(item, idx) in whereQuery?.items"
+          v-for="(item, idx) in whereQueryWithoutDefault"
           :ref="(el) => setItemRef(item.field as string, el)"
           :key="idx"
           :where-query-item="item"
@@ -97,8 +106,11 @@ defineExpose({ focusField })
           :trigger-fetching="() => triggerFetching(true)"
           @remove="onRemoveFilter"
           @update:where-query-item="newWhereQueryItem => {
-            const updatedItems = [...props.whereQuery?.items ?? []]
-            updatedItems[idx] = newWhereQueryItem
+            const items = props.whereQuery?.items ?? []
+            const realIdx = items.findIndex(q => q.field === item.field)
+            if (realIdx === -1) return
+            const updatedItems = [...items]
+            updatedItems[realIdx] = newWhereQueryItem
             onUpdateWhereQuery({
               ...whereQuery,
               items: updatedItems
