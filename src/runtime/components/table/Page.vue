@@ -44,7 +44,7 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
 <template>
   <div class="flex-1 flex flex-col overflow-hidden">
     <!-- header -->
-    <div class="h-(--ui-header-height) flex items-center pl-2.5 pr-2.5 border-b border-default">
+    <div class="h-(--ui-header-height) flex items-center pl-2.5 pr-2.5 border-b border-default z-1">
       <div class="flex items-center gap-1">
         <LayoutButtonCollapse />
         <span class="font-bold">{{ cnName }}</span>
