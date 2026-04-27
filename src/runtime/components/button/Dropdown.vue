@@ -47,7 +47,7 @@ defineExpose({
         v-model:search-term="searchTerm"
         autofocus
         size="sm"
-        value-key="id"
+        value-key="value"
         :filter="{
           placeholder: '搜索...',
           icon: 'i-lucide-search'
