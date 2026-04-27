@@ -7,7 +7,8 @@ export type WhereQueryOption<T> = {
 
 export type WhereQueryProps<T> = {
   whereOptions: WhereQueryOption<T>[]
-  defaultWhereQuery?: WhereQuery<T>
+  extraWhereQueryInitValues?: WhereQuery<T>
+  defaultWhereQuery?: WhereQuery<T> // extraWhereQueryInitValues + columns default values
   whereQuery: WhereQuery<T> | undefined
   onUpdateWhereQuery: (query: WhereQuery<T> | undefined) => void
   whereQueryOpen?: boolean

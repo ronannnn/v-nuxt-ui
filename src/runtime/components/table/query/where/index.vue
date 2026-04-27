@@ -69,9 +69,9 @@ const isWhereQueryEmpty = computed(() => {
     )
 })
 
-const whereQueryWithoutDefault = computed<WhereQueryItem<T>[]>(() => {
+const whereQueryWithoutInitValues = computed<WhereQueryItem<T>[]>(() => {
   if (!props.whereQuery) return []
-  const defaultKeys = props.defaultWhereQuery?.items?.map(query => query.field) ?? []
+  const defaultKeys = props.extraWhereQueryInitValues?.items?.map(query => query.field) ?? []
   return props.whereQuery.items?.filter((query) => {
     const field = query.field as string
     return !defaultKeys.includes(field)
@@ -97,7 +97,7 @@ defineExpose({ focusField })
       <!-- key如果是field，那么field修改后，不能聚焦后面的组件，所以这里的key用idx代替 -->
       <template v-if="!isWhereQueryEmpty">
         <TableQueryWhereSimpleItem
-          v-for="(item, idx) in whereQueryWithoutDefault"
+          v-for="(item, idx) in whereQueryWithoutInitValues"
           :ref="(el) => setItemRef(item.field as string, el)"
           :key="idx"
           :where-query-item="item"

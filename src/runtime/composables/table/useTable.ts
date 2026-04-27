@@ -324,6 +324,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
 
   const tblWhereQueryProps = computed<WhereQueryProps<T>>(() => ({
     whereOptions: whereQueryOptions.value,
+    extraWhereQueryInitValues: extraWhereQueryInitValues,
     defaultWhereQuery: whereQueryInitValues.value,
     whereQuery: whereQuery.value,
     onUpdateWhereQuery: query => whereQuery.value = query,

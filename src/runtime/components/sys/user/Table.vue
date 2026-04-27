@@ -48,6 +48,7 @@ const columns: VColumn<User>[] = [
       labelField: 'name',
       valueField: 'id',
       multiple: true,
+      initHide: false,
       defaultOpr: 'in'
     }
   },
