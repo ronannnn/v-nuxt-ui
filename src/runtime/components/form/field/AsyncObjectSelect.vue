@@ -12,15 +12,31 @@ const modelValueWithValueField = ref(modelValue.value?.map(item => item[props.va
 watch(
   [() => props.initModel, modelValueWithValueField],
   () => {
+    const ids = modelValueWithValueField.value
+    if (!ids || ids.length === 0) {
+      if (modelValue.value && modelValue.value.length > 0) {
+        modelValue.value = []
+      }
+      return
+    }
+
+    const initModelArray = Array.isArray(props.initModel)
+      ? props.initModel
+      : [props.initModel].filter(Boolean)
+
     const newModelValue: T[] = []
-    modelValueWithValueField.value?.forEach((value) => {
-      const initModelArray = Array.isArray(props.initModel) ? props.initModel : [props.initModel].filter(Boolean)
+    ids.forEach((value) => {
       const item = initModelArray.find(innerItem => (innerItem as T)[props.valueField] === value)
       if (item) {
         newModelValue.push(item as T)
       }
     })
-    modelValue.value = newModelValue
+
+    const currentIds = modelValue.value?.map(v => (v as T)[props.valueField]) ?? []
+    const newIds = newModelValue.map(v => (v as T)[props.valueField])
+    if (currentIds.length !== newIds.length || currentIds.some((id, i) => id !== newIds[i])) {
+      modelValue.value = newModelValue
+    }
   },
   { immediate: true }
 )
