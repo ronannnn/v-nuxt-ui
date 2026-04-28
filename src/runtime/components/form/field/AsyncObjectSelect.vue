@@ -10,7 +10,7 @@ const modelValue = defineModel<T[] | undefined>('modelValue', { required: true }
 const modelValueWithValueField = ref(modelValue.value?.map(item => item[props.valueField]) as (string[] | number[] | undefined))
 
 watch(
-  [props.initModel, modelValueWithValueField],
+  [() => props.initModel, modelValueWithValueField],
   () => {
     const newModelValue: T[] = []
     modelValueWithValueField.value?.forEach((value) => {
