@@ -1,8 +1,9 @@
 <script setup lang="ts" generic="T">
-import { computed, h } from 'vue'
+import { markRaw } from 'vue'
 import { defu } from 'defu'
 import { useOverlay } from '@nuxt/ui/composables'
 import type { TableHeaderProps, VColumn } from '#v/types'
+import type { ButtonProps } from '@nuxt/ui'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UChip from '@nuxt/ui/components/Chip.vue'
 import UKbd from '@nuxt/ui/components/Kbd.vue'
@@ -17,201 +18,192 @@ const props = withDefaults(defineProps<TableHeaderProps<T>>(), {
   oprOrder: () => ['create', 'refresh', 'whereQuery', 'orderQuery', 'settings', 'exportExcel', 'batchDelete']
 })
 
-/** 默认新建行模板，T 保证 { id: 0 } 是合法赋值 */
 const defaultNewRow = { id: 0 } as Record<string, any> as T
 
 const overlay = useOverlay()
-const deleteModal = overlay.create(DeleteModal)
-const settingsModal = overlay.create(TableHeaderSettings)
-const excelExportModal = overlay.create(TableExcelExportModal)
+const deleteModal = markRaw(overlay.create(DeleteModal))
+const settingsModal = markRaw(overlay.create(TableHeaderSettings))
+const excelExportModal = markRaw(overlay.create(TableExcelExportModal))
 
-const oprButtons = computed(() => {
-  const defaultButtons = props.oprOrder.map((opr) => {
-    switch (opr) {
-      case 'create':
-        if (props.disableCreation) return null
-        return h(
-          UButton,
-          {
-            icon: 'i-lucide-plus',
-            size: props.size,
-            onClick: async () => {
-              const result = await props.onEditRowFromModal?.(props.onNew?.() ?? defaultNewRow)
-              if (result) {
-                props.fetchList()
-              }
-            }
-          },
-          () => '新增'
-        )
-      case 'refresh':
-        return h(
-          UButton,
-          {
-            icon: 'i-lucide-refresh-ccw',
-            size: props.size,
-            color: 'neutral',
-            loading: props.fetching,
-            variant: 'outline',
-            onClick: () => props.fetchList()
-          },
-          () => '刷新'
-        )
-      case 'whereQuery':
-        if (props.disableWhereQuery) return null
-        return h(
-          UChip,
-          { show: !props.whereQueryProps.isWhereQueryValueEmpty },
-          () => h(
-            UButton,
-            {
-              icon: 'i-lucide-list-filter',
-              size: props.size,
-              color: props.whereQueryProps.whereQueryOpen ? 'primary' : 'neutral',
-              loading: props.fetching,
-              variant: 'outline',
-              onClick: () => {
-                props.whereQueryProps.onUpdateWhereQueryOpen?.(!props.whereQueryProps.whereQueryOpen)
-              }
-            },
-            () => '查询'
-          )
-        )
-      case 'orderQuery':
-        if (props.disableOrderQuery) return null
-        return h(
-            TableQueryOrder<T>,
-            { ...props.orderQueryProps, size: props.size }
-        )
-      case 'settings':
-        if (props.disableSettings) return null
-        return props.rawBizColumns && props.rawBizColumns.length > 0 && props.onUpdateBizColumns && h(
-          UButton,
-          {
-            icon: 'i-lucide-settings',
-            size: props.size,
-            color: 'neutral',
-            variant: 'outline',
-            onClick: async () => {
-              if (!props.onUpdateBizColumns) return
-              const updateFn = props.onUpdateBizColumns
-              await settingsModal.open({
-                tblName: props.name,
-                rawBizColumns: props.rawBizColumns as any,
-                // 列数据由父组件创建（VColumn<T>），模态框仅重排顺序后返回，运行时类型不变
-                onUpdateBizColumns: ((cols: VColumn<T>[]) => updateFn(cols)) as any
-              })
-            }
-          },
-          () => '设置'
-        )
-      case 'exportExcel': {
-        if (!props.exportExcel) return null
-        const exportButton = h(
-          UButton,
-          {
-            icon: 'i-lucide-sheet',
-            size: props.size,
-            color: 'neutral',
-            variant: 'outline',
-            onClick: async () => {
-              await excelExportModal.open({
-                columns: props.rawBizColumns as any,
-                filename: props.exportExcel!.filename,
-                filenameWithDateTime: props.exportExcel!.filenameWithDateTime,
-                listFn: props.apiGroup?.().countAndList,
-                whereQueryOptions: props.whereQueryProps.whereOptions as any,
-                extraWhereQueryInitValues: defu(props.extraWhereQueryInitValues, props.exportExcel!.extraWhereQueryInitValues)
-              })
-            }
-          },
-          () => '导出'
-        )
-        if (!props.exportExcel.permissionKey) {
-          return exportButton
-        }
-        return h(PermissionWrapper, { permission: props.exportExcel.permissionKey }, {
-          default: () => exportButton
-        })
-      }
-      case 'batchDelete':
-        if (props.disableBatchDeletion) return null
-        return props.selectedIds && props.selectedIds.length > 0 && h(
-          UButton,
-          {
-            icon: 'i-lucide-trash-2',
-            size: props.size,
-            color: 'error',
-            variant: 'outline',
-            onClick: async () => {
-              const result = await deleteModal.open({
-                ids: props.selectedIds!,
-                onDelete: (ids: number[]) => props.apiGroup?.().batchDelete({ ids })
-              }).result
-              if (result) {
-                await props.fetchList()
-              }
-            }
-          },
-          {
-            default: () => '批量删除',
-            trailing: () => h(UKbd, { size: 'sm' }, () => props.selectedIds?.length ?? 0)
-          }
-        )
-      default:
-        return null
-    }
+function omitOnClick(button: ButtonProps): Omit<ButtonProps, 'onClick'> {
+  const { onClick: _, ...rest } = button
+  return rest
+}
+
+async function handleCreate() {
+  const result = await props.onEditRowFromModal?.(props.onNew?.() ?? defaultNewRow)
+  if (result) {
+    props.fetchList()
+  }
+}
+
+async function handleSettings() {
+  if (!props.onUpdateBizColumns) return
+  const updateFn = props.onUpdateBizColumns
+  await settingsModal.open({
+    tblName: props.name,
+    rawBizColumns: props.rawBizColumns as any,
+    onUpdateBizColumns: ((cols: VColumn<T>[]) => updateFn(cols)) as any
   })
-  const buttons = [
-    ...(props.extraButtons
-      ?.filter(btn => btn.appendTo === 'left')
-      ?.filter(btn => btn.withBatchData ? (props.selectedIds && props.selectedIds.length > 0) : true)
-      .map(btn => h(
-        UButton,
-        {
-          ...btn.button,
-          onClick: async (e) => {
-            if (btn.withBatchData && props.selectedIds && btn.batchFn) {
-              await btn.batchFn(props.selectedIds)
-              await props.fetchList()
-            }
-            if (Array.isArray(btn.button.onClick)) {
-              btn.button.onClick.forEach(fn => fn?.(e))
-            } else {
-              btn.button.onClick?.(e)
-            }
-          }
-        }
-      )) ?? []),
-    ...defaultButtons,
-    ...(props.extraButtons
-      ?.filter(btn => btn.appendTo === 'right')
-      ?.filter(btn => btn.withBatchData ? (props.selectedIds && props.selectedIds.length > 0) : true)
-      .map(btn => h(
-        UButton,
-        {
-          ...btn.button,
-          onClick: async (e) => {
-            if (btn.withBatchData && props.selectedIds && btn.batchFn) {
-              await btn.batchFn(props.selectedIds)
-            }
-            if (Array.isArray(btn.button.onClick)) {
-              btn.button.onClick.forEach(fn => fn?.(e))
-            } else {
-              btn.button.onClick?.(e)
-            }
-          }
-        }
-      )) ?? [])
-  ]
-  return h(
-    'div',
-    { class: 'flex flex-wrap items-center gap-3' },
-    buttons
-  )
-})
+}
+
+async function handleExportExcel() {
+  await excelExportModal.open({
+    columns: props.rawBizColumns as any,
+    filename: props.exportExcel!.filename,
+    filenameWithDateTime: props.exportExcel!.filenameWithDateTime,
+    listFn: props.apiGroup?.().countAndList,
+    whereQueryOptions: props.whereQueryProps.whereOptions as any,
+    extraWhereQueryInitValues: defu(props.extraWhereQueryInitValues, props.exportExcel!.extraWhereQueryInitValues)
+  })
+}
+
+async function handleBatchDelete() {
+  const result = await deleteModal.open({
+    ids: props.selectedIds!,
+    onDelete: (ids: number[]) => props.apiGroup?.().batchDelete({ ids })
+  }).result
+  if (result) {
+    await props.fetchList()
+  }
+}
+
+async function onLeftExtraButtonClick(btn: NonNullable<typeof props.extraButtons>[number], e: MouseEvent) {
+  if (btn.withBatchData && props.selectedIds && btn.batchFn) {
+    await btn.batchFn(props.selectedIds)
+    await props.fetchList()
+  }
+  const originalOnClick = btn.button.onClick
+  if (Array.isArray(originalOnClick)) {
+    originalOnClick.forEach(fn => fn?.(e))
+  } else {
+    originalOnClick?.(e)
+  }
+}
+
+async function onRightExtraButtonClick(btn: NonNullable<typeof props.extraButtons>[number], e: MouseEvent) {
+  if (btn.withBatchData && props.selectedIds && btn.batchFn) {
+    await btn.batchFn(props.selectedIds)
+  }
+  const originalOnClick = btn.button.onClick
+  if (Array.isArray(originalOnClick)) {
+    originalOnClick.forEach(fn => fn?.(e))
+  } else {
+    originalOnClick?.(e)
+  }
+}
 </script>
 
 <template>
-  <component :is="oprButtons" />
+  <div class="flex flex-wrap items-center gap-3">
+    <template v-for="(btn, i) in extraButtons" :key="`extra-left-${i}`">
+      <UButton
+        v-if="(!btn.withBatchData || selectedIds?.length) && btn.appendTo === 'left'"
+        v-bind="omitOnClick(btn.button)"
+        @click="(e: MouseEvent) => onLeftExtraButtonClick(btn, e)"
+      />
+    </template>
+
+    <template v-for="opr in oprOrder" :key="opr">
+      <UButton
+        v-if="opr === 'create' && !disableCreation"
+        icon="i-lucide-plus"
+        :size="size"
+        @click="handleCreate"
+      >
+        新增
+      </UButton>
+
+      <UButton
+        v-if="opr === 'refresh'"
+        icon="i-lucide-refresh-ccw"
+        :size="size"
+        color="neutral"
+        :loading="fetching"
+        variant="outline"
+        @click="fetchList"
+      >
+        刷新
+      </UButton>
+
+      <UChip
+        v-if="opr === 'whereQuery' && !disableWhereQuery"
+        :show="!whereQueryProps.isWhereQueryValueEmpty"
+      >
+        <UButton
+          icon="i-lucide-list-filter"
+          :size="size"
+          :color="whereQueryProps.whereQueryOpen ? 'primary' : 'neutral'"
+          :loading="fetching"
+          variant="outline"
+          @click="whereQueryProps.onUpdateWhereQueryOpen?.(!whereQueryProps.whereQueryOpen)"
+        >
+          查询
+        </UButton>
+      </UChip>
+
+      <TableQueryOrder
+        v-if="opr === 'orderQuery' && !disableOrderQuery"
+        v-bind="orderQueryProps"
+        :size="size"
+      />
+
+      <UButton
+        v-if="opr === 'settings' && !disableSettings && rawBizColumns?.length && onUpdateBizColumns"
+        icon="i-lucide-settings"
+        :size="size"
+        color="neutral"
+        variant="outline"
+        @click="handleSettings"
+      >
+        设置
+      </UButton>
+
+      <template v-if="opr === 'exportExcel' && exportExcel">
+        <PermissionWrapper v-if="exportExcel.permissionKey" :permission="exportExcel.permissionKey">
+          <UButton
+            icon="i-lucide-sheet"
+            :size="size"
+            color="neutral"
+            variant="outline"
+            @click="handleExportExcel"
+          >
+            导出
+          </UButton>
+        </PermissionWrapper>
+        <UButton
+          v-else
+          icon="i-lucide-sheet"
+          :size="size"
+          color="neutral"
+          variant="outline"
+          @click="handleExportExcel"
+        >
+          导出
+        </UButton>
+      </template>
+
+      <UButton
+        v-if="opr === 'batchDelete' && !disableBatchDeletion && selectedIds?.length"
+        icon="i-lucide-trash-2"
+        :size="size"
+        color="error"
+        variant="outline"
+        @click="handleBatchDelete"
+      >
+        批量删除
+        <template #trailing>
+          <UKbd size="sm">{{ selectedIds?.length ?? 0 }}</UKbd>
+        </template>
+      </UButton>
+    </template>
+
+    <template v-for="(btn, i) in extraButtons" :key="`extra-right-${i}`">
+      <UButton
+        v-if="(!btn.withBatchData || selectedIds?.length) && btn.appendTo === 'right'"
+        v-bind="omitOnClick(btn.button)"
+        @click="(e: MouseEvent) => onRightExtraButtonClick(btn, e)"
+      />
+    </template>
+  </div>
 </template>
