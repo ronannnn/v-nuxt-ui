@@ -196,6 +196,7 @@ const columns: VColumn<User>[] = [
     :extra-order-query-options="[
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
+    :display-fn-in-delete-modal="model => model.nickname"
     @edit-row-from-modal="async (row: User) => await createModal.open({ model: row }).result"
   />
 </template>

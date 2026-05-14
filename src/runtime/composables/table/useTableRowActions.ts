@@ -16,6 +16,7 @@ export function useTableRowActions<T>(props: {
   extraRowActions?: any[]
   useApiGroup?: (...args: any[]) => any
   customRowCopyFn?: (...args: any[]) => any
+  displayFnInDeleteModal?: (model: T) => string | undefined
   fetchList: () => Promise<void>
 }) {
   const {
@@ -28,6 +29,7 @@ export function useTableRowActions<T>(props: {
     extraRowActions,
     useApiGroup,
     customRowCopyFn,
+    displayFnInDeleteModal,
     fetchList
   } = props
 
@@ -128,6 +130,8 @@ export function useTableRowActions<T>(props: {
         onSelect: async () => {
           const result = await deleteModal.open({
             ids: [row.original[rowKey] as number],
+            models: [row.original],
+            displayFn: displayFnInDeleteModal,
             onDelete: (ids: number[]) => apiGroup?.batchDelete({ ids })
           }).result
           if (result) {

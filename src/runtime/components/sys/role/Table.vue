@@ -67,6 +67,7 @@ const columns: VColumn<Role>[] = [
     cn-name="角色信息"
     :use-api-group="useRoleApi"
     :biz-columns="columns"
+    :display-fn-in-delete-modal="model => model.name"
     @edit-row-from-modal="async (row: Role) => await createModal.open({ model: row }).result"
   />
 </template>

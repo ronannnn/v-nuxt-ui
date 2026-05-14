@@ -95,6 +95,7 @@ const columns: VColumn<Menu>[] = [
       label: '以此作为父菜单复制',
       fnWithModal: async raw => await createModal.open({ model: useMenuApi().copyAsParent?.(raw) ?? { id: 0 } }).result
     }]"
+    :display-fn-in-delete-modal="model => `${model.name} ${model.staticRouteKeys?.join(',')}`"
     @edit-row-from-modal="async (row: Menu) => await createModal.open({ model: row }).result"
   />
 </template>

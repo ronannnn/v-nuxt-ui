@@ -61,6 +61,8 @@ async function handleExportExcel() {
 async function handleBatchDelete() {
   const result = await deleteModal.open({
     ids: props.selectedIds!,
+    models: props.selectedModels,
+    displayFn: props.displayFnInDeleteModal,
     onDelete: (ids: number[]) => props.apiGroup?.().batchDelete({ ids })
   }).result
   if (result) {
@@ -193,7 +195,9 @@ async function onRightExtraButtonClick(btn: NonNullable<typeof props.extraButton
       >
         批量删除
         <template #trailing>
-          <UKbd size="sm">{{ selectedIds?.length ?? 0 }}</UKbd>
+          <UKbd size="sm">
+            {{ selectedIds?.length ?? 0 }}
+          </UKbd>
         </template>
       </UButton>
     </template>

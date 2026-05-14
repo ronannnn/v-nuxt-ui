@@ -30,6 +30,7 @@ const columns: VColumn<IssueRecord>[] = [
     :extra-order-query-options="[
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
+    :display-fn-in-delete-modal="model => model.description"
     @edit-row-from-modal="async (row: IssueRecord) => await createModal.open({ model: row }).result"
   />
 </template>

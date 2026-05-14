@@ -157,8 +157,10 @@ const componentMeta: Record<string, ComponentMetaEntry> = {
 
   ProDeleteModal: {
     props: [
-      { name: 'ids', type: 'number[]', required: true, description: 'IDs of items to delete' },
-      { name: 'onDelete', type: '(ids: number[]) => Promise<T>', required: true, description: 'Delete handler function' }
+      { name: 'ids', type: 'number[]', required: false, description: 'IDs of items to delete' },
+      { name: 'models', type: 'any[]', required: false, description: 'Model objects to display in the delete confirmation list' },
+      { name: 'displayFn', type: '(model: any) => string | undefined', required: false, description: 'Function to render each model as a display string, falls back to model.id when returns undefined' },
+      { name: 'onDelete', type: '(ids: number[]) => Promise<T>', required: false, description: 'Delete handler function' }
     ],
     slots: [],
     events: [

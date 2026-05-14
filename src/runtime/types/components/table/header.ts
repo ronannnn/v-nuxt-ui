@@ -14,6 +14,8 @@ export type TableHeaderProps<T> = {
   fetchList: () => Promise<void>
   onEditRowFromModal?: (row: T) => Promise<boolean>
   selectedIds?: number[]
+  selectedModels?: T[]
+  displayFnInDeleteModal?: (model: T) => string | undefined
   disableCreation?: boolean
   disableWhereQuery?: boolean
   whereQueryProps: WhereQueryProps<T>

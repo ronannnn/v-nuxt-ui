@@ -89,4 +89,5 @@ export type VTableProps<T> = {
   expandVNode?: (row: T) => VNode
   rowSpanColumns?: (keyof T)[]
   customRowCopyFn?: (model: T) => T
+  displayFnInDeleteModal?: (model: T) => string | undefined
 }

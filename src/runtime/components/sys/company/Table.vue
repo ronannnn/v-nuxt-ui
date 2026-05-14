@@ -51,6 +51,7 @@ const columns: VColumn<Company>[] = [
     :extra-order-query-options="[
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
+    :display-fn-in-delete-modal="model => model.fullname"
     @edit-row-from-modal="async (row: Company) => await createModal.open({ model: row }).result"
   />
 </template>

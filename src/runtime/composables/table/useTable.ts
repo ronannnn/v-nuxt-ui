@@ -75,7 +75,8 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     disableRowSelection,
     expandable,
     rowSpanColumns,
-    customRowCopyFn
+    customRowCopyFn,
+    displayFnInDeleteModal
   } = props
 
   // Query (where & order)
@@ -137,6 +138,11 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
   // Row Selection
   const rowSelectionComposable = useTableRowSelection(data, rowKey)
   const { rowSelection, selectedIds, clearRowSelection: _clearRowSelection } = rowSelectionComposable
+
+  // Selected models for DeleteModal display
+  const selectedModels = computed<T[]>(() =>
+    data.value.filter(row => selectedIds.value.includes(row[rowKey] as number))
+  )
 
   // Filter focus (triggered from column header dropdown)
   const whereQueryRef = useTemplateRef<{ focusField: (field: string) => void }>('proTableQueryWhere')
@@ -208,6 +214,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     extraRowActions,
     useApiGroup,
     customRowCopyFn,
+    displayFnInDeleteModal,
     fetchList
   })
 
@@ -359,6 +366,8 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     fetchList,
     onEditRowFromModal,
     selectedIds: selectedIds.value,
+    selectedModels: selectedModels.value,
+    displayFnInDeleteModal,
     disableCreation,
     disableWhereQuery,
     whereQueryProps: tblWhereQueryProps.value,

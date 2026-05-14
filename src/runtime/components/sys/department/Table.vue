@@ -59,6 +59,7 @@ const columns: VColumn<Department>[] = [
         await createModal.open({ model: useDepartmentApi().copyAsParent?.(raw) ?? { id: 0 } })
       }
     }]"
+    :display-fn-in-delete-modal="model => model.name"
     @edit-row-from-modal="async (row: Department) => await createModal.open({ model: row }).result"
   />
 </template>

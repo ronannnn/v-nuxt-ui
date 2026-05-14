@@ -102,6 +102,7 @@ function getExpandVNode(row: Flow) {
     :biz-columns="columns"
     expandable
     :expand-v-node="getExpandVNode"
+    :display-fn-in-delete-modal="model => model.name"
     @edit-row-from-modal="async (row: Flow) => Boolean(await createModal.open({ model: { ...row } }).result)"
   />
 </template>
