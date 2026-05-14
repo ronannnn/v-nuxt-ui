@@ -1,10 +1,10 @@
 <script setup lang="ts" generic="T extends BaseModel">
 import { toRef } from 'vue'
 import { useFormSubmission, useFormValues } from '#v/composables/useForm'
-import type { BaseModel, CreateModalFormTemplatePropsWithApi } from '#v/types'
-import FormCreateModalTemplate from './index.vue'
+import type { BaseModel, SaveModalFormTemplatePropsWithApi } from '#v/types'
+import FormSaveModelTemplate from './index.vue'
 
-const props = defineProps<CreateModalFormTemplatePropsWithApi<T>>()
+const props = defineProps<SaveModalFormTemplatePropsWithApi<T>>()
 
 const { oldValues, newValues } = useFormValues(toRef(props.modelValue), props.defaultModelValue)
 
@@ -18,7 +18,7 @@ const { onSubmit } = useFormSubmission(
 </script>
 
 <template>
-  <FormCreateModalTemplate
+  <FormSaveModelTemplate
     v-model:model-value="newValues"
     :title="title"
     :description="description"

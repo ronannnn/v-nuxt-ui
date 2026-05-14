@@ -5,13 +5,13 @@ import { useOverlay } from '@nuxt/ui/composables'
 import { isEmptyString } from '#v/utils'
 import { useDepartmentApi, useRoleApi, useUserApi } from '#v/composables'
 import { booleanOptions, dateFormat, genderOptions, loginTypeOptions } from '#v/constants'
-import SysUsersCreateModal from './CreateModal.vue'
+import SysUsersSaveModal from './SaveModal.vue'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import TablePage from '#v/components/table/Page.vue'
 import { h } from 'vue'
 
 const overlay = useOverlay()
-const createModal = overlay.create(SysUsersCreateModal)
+const saveModal = overlay.create(SysUsersSaveModal)
 
 const columns: VColumn<User>[] = [
   {
@@ -197,6 +197,6 @@ const columns: VColumn<User>[] = [
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
     :display-fn-in-delete-modal="model => model.nickname"
-    @edit-row-from-modal="async (row: User) => await createModal.open({ model: row }).result"
+    @edit-row-from-modal="async (row: User) => await saveModal.open({ model: row }).result"
   />
 </template>

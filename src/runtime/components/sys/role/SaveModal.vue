@@ -2,7 +2,7 @@
 import type { TreeItem } from '@nuxt/ui'
 import type { VFormFieldProps, Menu, Role, TablePermission } from '#v/types'
 import * as z from 'zod'
-import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
+import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
 import TablePermissionTab from '#v/components/table/permission/TablePermissionTab.vue'
 import { useFormSubmission, useFormValues, useMenuApi, useRoleApi } from '#v/composables'
 import { computed, onMounted, ref, toRef } from 'vue'
@@ -100,7 +100,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <FormCreateModalTemplate
+  <FormSaveModelTemplate
     title="角色信息"
     :on-close="ok => emit('close', ok)"
     :fields="fields"
@@ -110,9 +110,11 @@ onMounted(async () => {
   >
     <template #after-form>
       <div class="border-t pt-4 mt-4">
-        <div class="font-semibold mb-2">Table 权限</div>
+        <div class="font-semibold mb-2">
+          Table 权限
+        </div>
         <TablePermissionTab v-model="tablePermissions" />
       </div>
     </template>
-  </FormCreateModalTemplate>
+  </FormSaveModelTemplate>
 </template>

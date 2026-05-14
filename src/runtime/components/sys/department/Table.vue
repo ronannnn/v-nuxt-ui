@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useOverlay } from '@nuxt/ui/composables'
 import { useDepartmentApi } from '#v/composables'
-import SysDepartmentsCreateModal from './CreateModal.vue'
+import SysDepartmentsSaveModal from './SaveModal.vue'
 import { getOprColumns } from '#v/constants'
 import TablePage from '#v/components/table/Page.vue'
 import type { Department, VColumn } from '#v/types'
 
 const overlay = useOverlay()
-const createModal = overlay.create(SysDepartmentsCreateModal)
+const saveModal = overlay.create(SysDepartmentsSaveModal)
 
 const columns: VColumn<Department>[] = [
   {
@@ -56,10 +56,10 @@ const columns: VColumn<Department>[] = [
       icon: 'i-lucide-clipboard-plus',
       label: '以此作为父部门复制',
       asyncFn: async raw => {
-        await createModal.open({ model: useDepartmentApi().copyAsParent?.(raw) ?? { id: 0 } })
+        await saveModal.open({ model: useDepartmentApi().copyAsParent?.(raw) ?? { id: 0 } })
       }
     }]"
     :display-fn-in-delete-modal="model => model.name"
-    @edit-row-from-modal="async (row: Department) => await createModal.open({ model: row }).result"
+    @edit-row-from-modal="async (row: Department) => await saveModal.open({ model: row }).result"
   />
 </template>

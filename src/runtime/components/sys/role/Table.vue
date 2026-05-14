@@ -2,14 +2,14 @@
 import type { VColumn, Role } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { useRoleApi } from '#v/composables'
-import SysRolesCreateModal from './CreateModal.vue'
+import SysRolesSaveModal from './SaveModal.vue'
 import { booleanOptions, getOprColumns } from '#v/constants'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import TablePage from '#v/components/table/Page.vue'
 import { h } from 'vue'
 
 const overlay = useOverlay()
-const createModal = overlay.create(SysRolesCreateModal)
+const saveModal = overlay.create(SysRolesSaveModal)
 
 const columns: VColumn<Role>[] = [
   {
@@ -68,6 +68,6 @@ const columns: VColumn<Role>[] = [
     :use-api-group="useRoleApi"
     :biz-columns="columns"
     :display-fn-in-delete-modal="model => model.name"
-    @edit-row-from-modal="async (row: Role) => await createModal.open({ model: row }).result"
+    @edit-row-from-modal="async (row: Role) => await saveModal.open({ model: row }).result"
   />
 </template>

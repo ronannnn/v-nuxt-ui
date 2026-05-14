@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useOverlay } from '@nuxt/ui/composables'
 import { useJobTitleApi } from '#v/composables'
-import SysJobTitlesCreateModal from './CreateModal.vue'
+import SysJobTitlesSaveModal from './SaveModal.vue'
 import { getOprColumns, booleanOptions } from '#v/constants'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import { h } from 'vue'
@@ -9,7 +9,7 @@ import TablePage from '#v/components/table/Page.vue'
 import type { VColumn, JobTitle } from '#v/types'
 
 const overlay = useOverlay()
-const createModal = overlay.create(SysJobTitlesCreateModal)
+const saveModal = overlay.create(SysJobTitlesSaveModal)
 
 const columns: VColumn<JobTitle>[] = [
   {
@@ -66,6 +66,6 @@ const columns: VColumn<JobTitle>[] = [
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
     :display-fn-in-delete-modal="model => model.name"
-    @edit-row-from-modal="async (row: JobTitle) => await createModal.open({ model: row }).result"
+    @edit-row-from-modal="async (row: JobTitle) => await saveModal.open({ model: row }).result"
   />
 </template>

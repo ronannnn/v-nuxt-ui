@@ -10,7 +10,7 @@
 │     - Table 列表（行展开显示列数，action 进入 Modal 编辑）       │
 │     - TableColumn 配置 Modal（增删改查列）                     │
 ├─────────────────────────────────────────────────────────────┤
-│  2. 列权限配置（内嵌在 Role/User CreateModal）                 │
+│  2. 列权限配置（内嵌在 Role/User SaveModal）                 │
 │     - Role: Tab 权限 Modal → 配置角色 Table 权限              │
 │     - User: Tab 权限 Modal → 继承 Role + 用户额外配置          │
 ├─────────────────────────────────────────────────────────────┤
@@ -150,7 +150,7 @@ Table 列表
 ### 5.2 Role/User 权限配置（Modal 模式）
 
 ```
-Role CreateModal
+Role SaveModal
 ├── Tab: [基本信息] [菜单权限] [Table 权限]
 │   └── Table 权限 Tab:
 │       ├── [选择 Table] 下拉框
@@ -214,4 +214,4 @@ UserTableColumn[] → POST /table-columns/user-config
 5. **TablePermission 配置组件** - TablePermissionConfig.vue + TablePermissionTab.vue
 6. **用户 Table 设置组件** - TableSettings.vue + UserTableColumnModal.vue
 7. **Playground 测试页面** - table-settings.vue 集成所有功能
-8. **Role/User 集成** - 在 Role/User CreateModal 中嵌入 TablePermissionTab
+8. **Role/User 集成** - 在 Role/User SaveModal 中嵌入 TablePermissionTab

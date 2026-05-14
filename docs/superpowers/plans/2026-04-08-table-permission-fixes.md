@@ -26,7 +26,7 @@
   playground/server/api/v1/table-permissions/effective.get.ts  # 基于当前用户角色计算
   src/runtime/components/table/settings/TableSettings.vue      # 修复双 script 块
   src/runtime/components/sys/table/Table.vue                   # 修复 count 调用
-  src/runtime/components/sys/table/CreateModal.vue             # 修复 cell 渲染
+  src/runtime/components/sys/table/SaveModal.vue             # 修复 cell 渲染
   src/runtime/composables/api/sys/useRoleApi.ts               # prune 处理 tablePermissions
   src/runtime/composables/api/sys/useUserApi.ts               # prune 处理 tablePermissions
 ```
@@ -536,10 +536,10 @@ git commit -m "fix(sys/table): use list total instead of count for table meta"
 
 ---
 
-## Task 7: 修复 sys/table/CreateModal.vue - cell 渲染
+## Task 7: 修复 sys/table/SaveModal.vue - cell 渲染
 
 **Files:**
-- Modify: `src/runtime/components/sys/table/CreateModal.vue`
+- Modify: `src/runtime/components/sys/table/SaveModal.vue`
 
 - [ ] **Step 1: 修复 tableColumns 的 actions cell 渲染**
 
@@ -607,8 +607,8 @@ const tableColumns: VColumn<ColumnRow>[] = [
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/runtime/components/sys/table/CreateModal.vue
-git commit -m "fix(sys/table/CreateModal): fix cell rendering to use VNode and row.original"
+git add src/runtime/components/sys/table/SaveModal.vue
+git commit -m "fix(sys/table/SaveModal): fix cell rendering to use VNode and row.original"
 ```
 
 ---
@@ -780,7 +780,7 @@ Task 2 (Role API) + Task 3 (User API)  [parallel]
     ↓
 Task 4 (prune/copy fixes)
     ↓
-Task 5 (TableSettings fix) + Task 6 (Table.vue fix) + Task 7 (CreateModal fix) + Task 8 (effective fix)  [parallel]
+Task 5 (TableSettings fix) + Task 6 (Table.vue fix) + Task 7 (SaveModal fix) + Task 8 (effective fix)  [parallel]
     ↓
 Task 9 (验证)
 ```

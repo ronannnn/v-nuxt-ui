@@ -707,25 +707,25 @@ git commit -m "feat(playground): add table settings test page"
 
 ---
 
-## Task 8: Role/User CreateModal 集成 TablePermissionTab
+## Task 8: Role/User SaveModal 集成 TablePermissionTab
 
 **Files:**
-- Modify: `src/runtime/components/sys/role/CreateModal.vue`
-- Modify: `src/runtime/components/sys/user/CreateModal.vue`
+- Modify: `src/runtime/components/sys/role/SaveModal.vue`
+- Modify: `src/runtime/components/sys/user/SaveModal.vue`
 
-- [ ] **Step 1: 在 Role CreateModal 中添加 Tab**
+- [ ] **Step 1: 在 Role SaveModal 中添加 Tab**
 
-参考现有 Role CreateModal 结构，添加 Table 权限 Tab
+参考现有 Role SaveModal 结构，添加 Table 权限 Tab
 
-- [ ] **Step 2: 在 User CreateModal 中添加 Tab**
+- [ ] **Step 2: 在 User SaveModal 中添加 Tab**
 
-参考现有 User CreateModal 结构，添加 Table 权限 Tab
+参考现有 User SaveModal 结构，添加 Table 权限 Tab
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add src/runtime/components/sys/role/CreateModal.vue src/runtime/components/sys/user/CreateModal.vue
-git commit -m "feat(sys): integrate TablePermissionTab in Role/User CreateModal"
+git add src/runtime/components/sys/role/SaveModal.vue src/runtime/components/sys/user/SaveModal.vue
+git commit -m "feat(sys): integrate TablePermissionTab in Role/User SaveModal"
 ```
 
 ---
@@ -744,8 +744,8 @@ pnpm dev
 - 验证展开行显示
 
 - [ ] **Step 3: 测试 Role/User 权限配置**
-- 在 Role CreateModal 中添加 Table 权限
-- 在 User CreateModal 中验证继承和覆盖
+- 在 Role SaveModal 中添加 Table 权限
+- 在 User SaveModal 中验证继承和覆盖
 
 - [ ] **Step 4: 测试用户 Table 设置**
 - 选择 Table

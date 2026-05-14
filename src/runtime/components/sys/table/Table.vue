@@ -4,11 +4,11 @@ import { useOverlay } from '@nuxt/ui/composables'
 import { useTableApi, useTableColumnApi, useTablePermissionApi } from '#v/composables/api'
 import { getOprColumns } from '#v/constants'
 import TablePage from '#v/components/table/Page.vue'
-import CreateModal from './CreateModal.vue'
+import SaveModal from './SaveModal.vue'
 import { h, ref, watch } from 'vue'
 
 const overlay = useOverlay()
-const createModal = overlay.create(CreateModal)
+const saveModal = overlay.create(SaveModal)
 
 interface TableMeta {
   columnCount: number
@@ -116,7 +116,7 @@ watch(
     :expandable="true"
     :expand-v-node="getExpandVNode"
     @edit-row-from-modal="async (row: Table) => {
-      const result = await createModal.open({ model: { ...row } }).result
+      const result = await saveModal.open({ model: { ...row } }).result
       return result === true
     }"
   />

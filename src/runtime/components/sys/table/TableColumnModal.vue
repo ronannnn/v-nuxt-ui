@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { VFormFieldProps, TableColumn } from '#v/types'
-import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
+import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
 import { useFormValues } from '#v/composables'
 import { computed, toRef } from 'vue'
 
@@ -33,7 +33,7 @@ const fields = computed<VFormFieldProps[]>(() => [
 </script>
 
 <template>
-  <FormCreateModalTemplate
+  <FormSaveModelTemplate
     title="列配置"
     :on-close="ok => emit('close', ok)"
     :fields="fields"

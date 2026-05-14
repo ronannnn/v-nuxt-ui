@@ -11,7 +11,7 @@ export type FormTemplateProps<T> = {
   onTriggerSubmit?: (e: Event) => void
 }
 
-export type CreateModalFormTemplateProps<T> = {
+export type SaveModalFormTemplateProps<T> = {
   title: string
   description?: string
   onClose: (ok: boolean) => void
@@ -23,9 +23,9 @@ export type CreateModalFormTemplateProps<T> = {
   fullscreen?: ModalProps['fullscreen']
 }
 
-export type CreateModalFormTemplatePropsWithApi<T> = {
+export type SaveModalFormTemplatePropsWithApi<T> = {
   apiGroup: () => ApiGroup<T>
   valuePruneFn?: (value: T) => T
   defaultModelValue?: Partial<T>
   onSave: (model: T) => void
-} & Pick<CreateModalFormTemplateProps<T>, 'title' | 'description' | 'fields' | 'onClose' | 'modelValue' | 'onUpdateModelValue'>
+} & Pick<SaveModalFormTemplateProps<T>, 'title' | 'description' | 'fields' | 'onClose' | 'modelValue' | 'onUpdateModelValue'>

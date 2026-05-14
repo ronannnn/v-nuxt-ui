@@ -6,11 +6,11 @@ import { getCreateAtColumn } from '#v/constants'
 import { useFlowApi, useFlowNodeApi, useFlowEdgeApi } from '#v/composables'
 import TablePage from '#v/components/table/Page.vue'
 import FlowEditor from '#v/components/flow/FlowEditor.client.vue'
-import CreateModal from './CreateModal.vue'
+import SaveModal from './SaveModal.vue'
 import EditNodeModal from './EditNodeModal.vue'
 
 const overlay = useOverlay()
-const createModal = overlay.create(CreateModal)
+const saveModal = overlay.create(SaveModal)
 const editNodeModal = overlay.create(EditNodeModal)
 
 const tablePageRef = ref<any>(null)
@@ -103,6 +103,6 @@ function getExpandVNode(row: Flow) {
     expandable
     :expand-v-node="getExpandVNode"
     :display-fn-in-delete-modal="model => model.name"
-    @edit-row-from-modal="async (row: Flow) => Boolean(await createModal.open({ model: { ...row } }).result)"
+    @edit-row-from-modal="async (row: Flow) => Boolean(await saveModal.open({ model: { ...row } }).result)"
   />
 </template>

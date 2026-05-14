@@ -46,7 +46,7 @@ const fields: VFormFieldProps[] = [
 </script>
 
 <template>
-  <ProFormCreateModalTemplateWithApi
+  <ProFormSaveModalTemplateWithApi
     :title="title"
     :fields="fields"
     :model-value="model"

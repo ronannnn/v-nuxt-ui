@@ -3,11 +3,11 @@ import { getOprColumns } from '#v/constants'
 import type { IssueRecord, VColumn } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { useIssueRecordApi } from '#v/composables'
-import SysIssueRecordsCreateModal from './CreateModal.vue'
+import SysIssueRecordsSaveModal from './SaveModal.vue'
 import TablePage from '#v/components/table/Page.vue'
 
 const overlay = useOverlay()
-const createModal = overlay.create(SysIssueRecordsCreateModal)
+const saveModal = overlay.create(SysIssueRecordsSaveModal)
 
 const columns: VColumn<IssueRecord>[] = [
   {
@@ -31,6 +31,6 @@ const columns: VColumn<IssueRecord>[] = [
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
     :display-fn-in-delete-modal="model => model.description"
-    @edit-row-from-modal="async (row: IssueRecord) => await createModal.open({ model: row }).result"
+    @edit-row-from-modal="async (row: IssueRecord) => await saveModal.open({ model: row }).result"
   />
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as z from 'zod'
-import FormCreateModalTemplateWithApi from '#v/components/form/create-modal-template/WithApi.vue'
+import FormSaveModelTemplateWithApi from '#v/components/form/save-model-template/WithApi.vue'
 import { useCompanyApi } from '#v/composables'
 import type { Company } from '#v/types'
 
@@ -14,7 +14,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <FormCreateModalTemplateWithApi
+  <FormSaveModelTemplateWithApi
     title="公司信息"
     :on-close="ok => emit('close', ok)"
     :on-save="model => emit('save', model)"

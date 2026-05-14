@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { Flow } from '#v/types'
-import FormCreateModalTemplate from '#v/components/form/create-modal-template/index.vue'
+import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
 import { useFlowApi, useFormSubmission, useFormValues } from '#v/composables'
 import { toRef } from 'vue'
 
@@ -26,7 +26,7 @@ const { onSubmit } = useFormSubmission(
 </script>
 
 <template>
-  <FormCreateModalTemplate
+  <FormSaveModelTemplate
     title="流程信息"
     :on-close="ok => emit('close', ok)"
     :fields="[

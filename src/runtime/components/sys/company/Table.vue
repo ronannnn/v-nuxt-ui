@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useOverlay } from '@nuxt/ui/composables'
 import { useCompanyApi } from '#v/composables'
-import SysCompaniesCreateModal from './CreateModal.vue'
+import SysCompaniesSaveModal from './SaveModal.vue'
 import { getOprColumns } from '#v/constants'
 import TablePage from '#v/components/table/Page.vue'
 import type { VColumn, Company } from '#v/types'
 
 const overlay = useOverlay()
-const createModal = overlay.create(SysCompaniesCreateModal)
+const saveModal = overlay.create(SysCompaniesSaveModal)
 
 const columns: VColumn<Company>[] = [
   {
@@ -52,6 +52,6 @@ const columns: VColumn<Company>[] = [
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
     :display-fn-in-delete-modal="model => model.fullname"
-    @edit-row-from-modal="async (row: Company) => await createModal.open({ model: row }).result"
+    @edit-row-from-modal="async (row: Company) => await saveModal.open({ model: row }).result"
   />
 </template>
