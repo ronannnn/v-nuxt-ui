@@ -3,6 +3,16 @@ import { setGlobalSidebarMenus } from '#v/composables'
 
 const route = useRoute()
 
+// Persist <main> scroll position across keepalive page switches
+const scrollCache = new Map<string, number>()
+watch(() => route.fullPath, (to, from) => {
+  if (from) scrollCache.set(from, document.querySelector('main')?.scrollTop ?? 0)
+  nextTick(() => {
+    const y = scrollCache.get(to)
+    if (y) document.querySelector('main')?.scrollTo(0, y)
+  })
+})
+
 const { data: navigation } = await useAsyncData('navigation', () =>
   queryCollectionNavigation('docs', ['category', 'description'])
 )
@@ -79,7 +89,10 @@ useHead({
         </template>
 
         <NuxtLayout>
-          <NuxtPage />
+          <NuxtPage
+            :page-key="route => route.fullPath"
+            :keepalive="{ max: 8 }"
+          />
         </NuxtLayout>
       </div>
     </div>
