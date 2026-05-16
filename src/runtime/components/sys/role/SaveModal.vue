@@ -17,7 +17,7 @@ const emit = defineEmits<{
   save: [Role]
 }>()
 
-const { oldValues, newValues } = useFormValues(toRef(props.model), { id: 0, disabled: false, isAdmin: false })
+const { oldValues, newValues } = useFormValues(toRef(props.model), { id: 0, disabled: false, isAdmin: false, menus: [] })
 
 const { onSubmit } = useFormSubmission(
   toRef(oldValues),

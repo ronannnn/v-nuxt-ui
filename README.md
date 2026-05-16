@@ -148,6 +148,12 @@ make publish-dry
 make publish
 ```
 
+## Notes
+
+  1. 在form里面某些字段类型比如tree-select-transfer第一次选择后报错`Invalid input: expected array, received undefined`，可以
+    1. 设置默认值
+    2. 设置zod类型为optional
+
 ## License
 
 MIT
