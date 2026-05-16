@@ -15,7 +15,14 @@ const props = withDefaults(defineProps<VAsyncSelectProps<T>>(), {
 })
 
 const modelValue = defineModel<AsyncSelectCombinedValue>('modelValue', { required: true })
-const treeModelValue = computed<T[] | undefined>(() => allModels.value.filter(item => item[props.valueField] === modelValue.value))
+
+const treeSelectedItems = computed(() => {
+  const flat = flattenTree(items.value)
+  if (props.multiple) {
+    return flat.filter(i => (modelValue.value.values as any[])?.includes(i.value))
+  }
+  return flat.find(i => i.value === modelValue.value.values) ?? undefined
+})
 
 const open = ref(false)
 const searchedModel = ref<T[]>([])
@@ -31,13 +38,14 @@ const allModels = computed<T[]>(() => {
       [props.labelField]: '无'
     } as T)
   }
-  newSearchedModel.push(...currentSelectedModels.value)
-  searchedModel.value.forEach((searchedItem) => {
-    const idx = newSearchedModel.findIndex(item => item[props.valueField] === (searchedItem as any)[props.valueField])
-    if (idx === -1) {
-      newSearchedModel.push(searchedItem as T)
+  // 遍历 currentSelectedModels，如果其中的项在 searchedModel 中没有，则添加到 newSearchedModel 最前面
+  currentSelectedModels.value.forEach((currentModel) => {
+    const existInSearched = searchedModel.value.some(searched => (searched as T)[props.valueField] === currentModel[props.valueField])
+    if (!existInSearched) {
+      newSearchedModel.unshift(currentModel)
     }
   })
+  newSearchedModel.push(...(searchedModel.value as T[]))
   return newSearchedModel
 })
 
@@ -56,6 +64,7 @@ const onSelect = (values: AsyncSelectValue) => {
       values: newValue,
       extraModels: newExtraModel ? [newExtraModel] : []
     }
+    open.value = false
   }
 }
 const items = computed<TreeItem[]>(() => {
@@ -129,12 +138,11 @@ const onFetchItems = async () => {
 
     <template #content>
       <UTree
-        :model-value="treeModelValue as any"
+        :model-value="treeSelectedItems"
         :items="items"
         :disabled="fetching"
         :expanded="expandedItemValues"
-        :get-key="i => i.value"
-        multiple
+        :multiple="multiple"
         class="p-1 max-h-80 overflow-auto"
       />
     </template>
