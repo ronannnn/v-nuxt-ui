@@ -1,8 +1,10 @@
-import { ref, watch, type Ref } from 'vue'
-import type { ApiGroup, BaseModel } from '#v/types'
+import { ref, watch, computed, toValue, type Ref, type MaybeRefOrGetter } from 'vue'
+import type { ApiGroup, BaseModel, VFormFieldProps } from '#v/types'
 import { defu } from 'defu'
 import { getObjWithModifiedFields } from '#v/utils'
+import { resolveDisplayValue, smartDiff } from '#v/composables'
 import { useToast } from '@nuxt/ui/composables'
+import type { ConfirmDiffItem } from '#v/components/form/save-model-template/ConfirmUpdateModal.vue'
 
 export const useFormValues = <T>(
   raw: Ref<T>,
@@ -85,4 +87,35 @@ export const useFormSubmission = <T extends BaseModel>(
   }
 
   return { onSubmit }
+}
+
+export const useConfirmDiff = (
+  fields: MaybeRefOrGetter<VFormFieldProps[]>,
+  diffItems: MaybeRefOrGetter<ConfirmDiffItem[]>,
+  oldModelValue: MaybeRefOrGetter<Record<string, unknown>>,
+  newModelValue: MaybeRefOrGetter<Record<string, unknown>>
+) => {
+  const resolvedItems = computed(() =>
+    toValue(diffItems)
+      .map(item => ({
+        ...item,
+        field: toValue(fields).find(f => f.name === item.fieldName)
+      }))
+      .filter(item => item.field != null)
+  )
+
+  const diffedItems = computed(() =>
+    resolvedItems.value.map((item) => {
+      const oldDisplay = resolveDisplayValue(item.field!, item.oldValue, toValue(oldModelValue))
+      const newDisplay = resolveDisplayValue(item.field!, item.newValue, toValue(newModelValue))
+      return {
+        ...item,
+        oldDisplay,
+        newDisplay,
+        parts: smartDiff(oldDisplay, newDisplay)
+      }
+    })
+  )
+
+  return { diffedItems }
 }

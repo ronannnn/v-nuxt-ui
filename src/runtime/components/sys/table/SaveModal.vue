@@ -56,6 +56,7 @@ function updateModelValue(newVal: Partial<Table>) {
     :on-close="ok => emit('close', ok)"
     :fields="fields"
     :model-value="newValues"
+    :old-model-value="oldValues"
     @update-model-value="updateModelValue"
     @submit="onSubmit"
   >

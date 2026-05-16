@@ -34,6 +34,7 @@ const { onSubmit } = useFormSubmission(
       { name: 'description', type: 'textarea', label: '流程描述', colSpan: '24' }
     ]"
     :model-value="newValues"
+    :old-model-value="oldValues"
     @update-model-value="newVal => newValues = { ...newValues, ...newVal }"
     @submit="onSubmit"
   />

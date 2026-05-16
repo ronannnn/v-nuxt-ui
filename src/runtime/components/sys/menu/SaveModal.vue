@@ -61,6 +61,7 @@ const { onSubmit } = useFormSubmission(
       { name: 'isAdmin', type: 'button-switch', label: '是否是系统菜单', colSpan: '12', zodType: z.boolean() }
     ]"
     :model-value="newValues"
+    :old-model-value="oldValues"
     @update-model-value="newVal => newValues = { id: 0, ...newVal }"
     @submit="onSubmit"
   />

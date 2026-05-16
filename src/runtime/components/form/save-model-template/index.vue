@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T extends BaseModel">
 import { computed, ref, useTemplateRef } from 'vue'
 import { useOverlay } from '@nuxt/ui/composables'
-import { useSubmitting } from '#v/composables/useBoolean'
+import { useSubmitting } from '#v/composables'
 import type { BaseModel, SaveModalFormTemplateProps } from '#v/types'
 import Form from '../index.vue'
 import ConfirmUpdateModal from './ConfirmUpdateModal.vue'
@@ -25,14 +25,7 @@ const initialModelValue = ref<Partial<T>>(JSON.parse(JSON.stringify(props.modelV
 const overlay = useOverlay()
 const confirmModal = overlay.create(ConfirmUpdateModal)
 
-function formatValue(val: unknown): string {
-  if (val === null || val === undefined) return '-'
-  if (typeof val === 'boolean') return val ? '是' : '否'
-  if (typeof val === 'object') return JSON.stringify(val)
-  return String(val)
-}
-
-function computeDiff() {
+function computeDiff(): ConfirmDiffItem[] {
   const items: ConfirmDiffItem[] = []
   for (const field of props.fields) {
     if (!field.name || field.hidden) continue
@@ -50,9 +43,9 @@ function computeDiff() {
     }
 
     items.push({
-      label: field.label || name,
-      oldValue: formatValue(oldVal),
-      newValue: formatValue(newVal)
+      fieldName: name,
+      oldValue: oldVal,
+      newValue: newVal
     })
   }
   return items
@@ -86,7 +79,12 @@ async function onSubmitWithValidation(e: Event) {
       await doSubmit()
       return
     }
-    const confirmed = await confirmModal.open({ diffItems: items }).result
+    const confirmed = await confirmModal.open({
+      fields: props.fields,
+      diffItems: items,
+      oldModelValue: props.oldModelValue as Record<string, unknown>,
+      newModelValue: props.modelValue as Record<string, unknown>
+    }).result
     if (confirmed) {
       await doSubmit()
     }

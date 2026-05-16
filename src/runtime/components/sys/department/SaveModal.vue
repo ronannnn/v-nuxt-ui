@@ -82,6 +82,7 @@ const { onSubmit } = useFormSubmission(
       }
     ]"
     :model-value="newValues"
+    :old-model-value="oldValues"
     @update-model-value="newVal => newValues = { id: 0, ...newVal }"
     @submit="onSubmit"
   />

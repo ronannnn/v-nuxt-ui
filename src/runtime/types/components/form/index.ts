@@ -17,6 +17,7 @@ export type SaveModalFormTemplateProps<T> = {
   onClose: (ok: boolean) => void
   onSubmit: () => Promise<void>
   fields: VFormFieldProps[]
+  oldModelValue: Partial<T>
   modelValue: Partial<T>
   onUpdateModelValue?: (newVal: Partial<T>) => void
   rowKey?: keyof T

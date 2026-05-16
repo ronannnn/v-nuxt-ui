@@ -14,7 +14,7 @@ const emit = defineEmits<{
   close: [boolean]
 }>()
 
-const { newValues } = useFormValues(toRef(props.column), { id: 0 })
+const { oldValues, newValues } = useFormValues(toRef(props.column), { id: 0 })
 
 const fixedItems = [
   { label: '不固定', value: '' },
@@ -38,6 +38,7 @@ const fields = computed<VFormFieldProps[]>(() => [
     :on-close="ok => emit('close', ok)"
     :fields="fields"
     :model-value="newValues"
+    :old-model-value="oldValues"
     @update-model-value="newVal => newValues = { id: 0, ...newVal }"
     @submit="async () => {
       props.onSaveColumn(newValues as TableColumn)

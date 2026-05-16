@@ -14,7 +14,7 @@ const emit = defineEmits<{
   save: [FlowNode]
 }>()
 
-const { newValues } = useFormValues(toRef(props.model), {
+const { oldValues, newValues } = useFormValues(toRef(props.model), {
   id: 0,
   name: ''
 })
@@ -28,6 +28,7 @@ const { newValues } = useFormValues(toRef(props.model), {
       { name: 'name', type: 'input', label: '节点名称', colSpan: '24', zodType: z.string().min(1, '请输入节点名称') }
     ]"
     :model-value="newValues"
+    :old-model-value="oldValues"
     @update-model-value="newVal => newValues = { ...props.model, ...newVal }"
     @submit="async () => {
       emit('save', newValues)

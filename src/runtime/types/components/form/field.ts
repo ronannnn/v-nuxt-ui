@@ -40,6 +40,8 @@ export type VFormFieldProps = FormFieldProps & {
   placeholder?: string
   annotation?: string
   enterKeydownSubmit?: boolean
+  /** 在确认修改弹窗中是否使用逐词 diff 高亮 */
+  diffable?: boolean
 } & (
   | { type: 'separator', separatorLabel?: string }
   | { type: 'input' } & Pick<InputProps, 'placeholder'>

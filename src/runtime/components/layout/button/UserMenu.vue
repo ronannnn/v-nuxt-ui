@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuth, useApp } from '#v/composables'
+import { useAuth } from '#v/composables'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { useRoute } from 'nuxt/app'
 import { getEmojiFlag } from '#v/utils'
@@ -11,7 +11,6 @@ defineProps<{
 }>()
 
 const auth = useAuth()
-const app = useApp()
 const route = useRoute()
 
 const items = computed<DropdownMenuItem[][]>(() => (
@@ -67,7 +66,7 @@ const items = computed<DropdownMenuItem[][]>(() => (
 
     <template #locale-leading="{ item }: { item: DropdownMenuItem }">
       <span>
-        {{ getEmojiFlag(item.locale) }}
+        {{ getEmojiFlag(item.locale as string) }}
       </span>
     </template>
     <template #chip-leading="{ item }: { item: DropdownMenuItem }">
