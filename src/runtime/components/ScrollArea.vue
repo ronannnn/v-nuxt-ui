@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, useTemplateRef, onMounted, onUnmounted } from 'vue'
+import { ref, computed, useTemplateRef, onMounted, onUnmounted, onActivated, nextTick } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import {
   ScrollAreaRoot,
@@ -57,12 +57,15 @@ const onDetectBoundary = () => {
   isAtLeft.value = scrollLeft <= 1
   isAtRight.value = scrollLeft + clientWidth >= scrollWidth - 1
 }
-const onScroll = useDebounceFn(() => {
+// Persist scroll position across keepalive page switches
+const savedScrollTop = ref(0)
+const savedScrollLeft = ref(0)
+const onScrollWithSave = useDebounceFn(() => {
   onDetectBoundary()
   const viewport = scrollArea.value?.viewport
-  if (!viewport) {
-    return
-  }
+  if (!viewport) return
+  savedScrollTop.value = viewport.scrollTop
+  savedScrollLeft.value = viewport.scrollLeft
   props.onScrollEvent?.(viewport)
 }, 128)
 
@@ -144,12 +147,22 @@ defineExpose({
 
 // 否则一开始模糊边界都会显示出来
 onMounted(() => {
-  onScroll()
-  window.addEventListener('resize', onScroll)
+  onScrollWithSave()
+  window.addEventListener('resize', onScrollWithSave)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', onScroll)
+  window.removeEventListener('resize', onScrollWithSave)
+})
+
+onActivated(() => {
+  nextTick(() => {
+    const vp = scrollArea.value?.viewport
+    if (vp) {
+      vp.scrollTop = savedScrollTop.value
+      vp.scrollLeft = savedScrollLeft.value
+    }
+  })
 })
 </script>
 
@@ -186,7 +199,7 @@ onUnmounted(() => {
       />
     </Transition>
 
-    <ScrollAreaViewport class="size-full overscroll-contain" @scroll="onScroll">
+    <ScrollAreaViewport class="size-full overscroll-contain" @scroll="onScrollWithSave">
       <slot />
     </ScrollAreaViewport>
 
