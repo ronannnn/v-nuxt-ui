@@ -118,6 +118,8 @@ const ui = computed(() => ({
   root: ['min-w-32', props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
   base: 'peer',
   content: 'min-w-fit',
+  tagsItem: 'max-w-48 inline-flex min-w-0',
+  tagsItemText: 'truncate',
   tagsInput: 'min-w-4 w-0'
 }))
 
@@ -136,6 +138,14 @@ defineExpose({
     inputMenuRef.value?.inputRef.focus()
   }
 })
+
+function findLabel(tagItem: unknown): string {
+  if (tagItem && typeof tagItem === 'object' && 'label' in tagItem) {
+    return String((tagItem as Record<string, unknown>).label ?? '')
+  }
+  const match = items.value.find(i => i != null && String((i as any).value) === String(tagItem))
+  return (match as any)?.label ?? String(tagItem ?? '')
+}
 </script>
 
 <template>
@@ -174,5 +184,11 @@ defineExpose({
     }"
     @update:model-value="onSelect"
     @create="onCreateNew"
-  />
+  >
+    <template v-if="multiple" #tags-item-text="{ item }">
+      <UTooltip :delay-duration="0" :text="findLabel(item)" :content="{ side: 'top' }">
+        <span class="truncate">{{ findLabel(item) }}</span>
+      </UTooltip>
+    </template>
+  </UInputMenu>
 </template>
