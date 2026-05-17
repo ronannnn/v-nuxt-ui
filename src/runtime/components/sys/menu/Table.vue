@@ -81,7 +81,7 @@ const columns: VColumn<Menu>[] = [
 
 <template>
   <TablePage
-    name="sys-menu"
+    name="menus"
     cn-name="菜单信息"
     :use-api-group="useMenuApi"
     :biz-columns="columns"

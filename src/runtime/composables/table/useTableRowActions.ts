@@ -3,11 +3,14 @@ import type { RowActionProps, VColumn } from '#v/types'
 import type { DropdownMenuItem, TableRow } from '@nuxt/ui'
 import { useOverlay } from '@nuxt/ui/composables'
 import DeleteModal from '#v/components/DeleteModal.vue'
+import UpdateDiffModal from '#v/components/table/UpdateDiffModal.vue'
 import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue'
 import UButton from '@nuxt/ui/components/Button.vue'
 
 export function useTableRowActions<T>(props: {
   rowKey: keyof T
+  tableName?: string
+  bizColumns?: VColumn<T>[]
   disableRowActions?: boolean
   disableRowUpdate?: boolean
   disableRowCopy?: boolean
@@ -21,6 +24,8 @@ export function useTableRowActions<T>(props: {
 }) {
   const {
     rowKey,
+    tableName,
+    bizColumns,
     disableRowActions: _disableRowActions,
     disableRowUpdate,
     disableRowCopy,
@@ -35,6 +40,7 @@ export function useTableRowActions<T>(props: {
 
   const overlay = useOverlay()
   const deleteModal = overlay.create(DeleteModal)
+  const updateDiffModal = overlay.create(UpdateDiffModal)
   const apiGroup = useApiGroup?.()
   const actionLoadingRowIdxSet = ref<Set<number>>(new Set())
 
@@ -118,6 +124,25 @@ export function useTableRowActions<T>(props: {
     extraRowActions?.forEach((action) => {
       actionItems.push(buildActionItem(action))
     })
+
+    // 变更记录
+    if (tableName) {
+      if (actionItems.length > 0 && !disableRowDeletion) {
+        actionItems.push({ type: 'separator' })
+      }
+      actionItems.push({
+        label: '变更记录',
+        icon: 'i-lucide-history',
+        onClick: () => {
+          updateDiffModal.open({
+            tableName,
+            rowId: row.original[rowKey] as number,
+            columns: bizColumns || [],
+            title: '变更记录'
+          })
+        }
+      })
+    }
 
     if (!disableRowDeletion) {
       if (actionItems.length > 0) {

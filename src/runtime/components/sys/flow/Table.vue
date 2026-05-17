@@ -96,7 +96,7 @@ function getExpandVNode(row: Flow) {
 <template>
   <TablePage
     ref="tablePageRef"
-    name="sys-flow"
+    name="flows"
     cn-name="流程列表"
     :use-api-group="useFlowApi"
     :biz-columns="columns"

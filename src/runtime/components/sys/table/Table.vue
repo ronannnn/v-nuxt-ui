@@ -109,7 +109,7 @@ watch(
 <template>
   <TablePage
     ref="tablePageRef"
-    name="sys-table"
+    name="tables"
     cn-name="Table 配置"
     :use-api-group="useTableApi"
     :biz-columns="columns"

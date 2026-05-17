@@ -63,7 +63,7 @@ const columns: VColumn<Role>[] = [
 
 <template>
   <TablePage
-    name="sys-role"
+    name="roles"
     cn-name="角色信息"
     :use-api-group="useRoleApi"
     :biz-columns="columns"

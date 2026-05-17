@@ -58,7 +58,7 @@ const columns: VColumn<JobTitle>[] = [
 
 <template>
   <TablePage
-    name="sys-job-title"
+    name="job_titles"
     cn-name="职位信息"
     :use-api-group="useJobTitleApi"
     :biz-columns="columns"

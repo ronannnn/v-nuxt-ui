@@ -1365,3 +1365,24 @@ export function saveUserTablePermissions(userId: number, permissions: any[]): vo
   if (!user) return
   user.tablePermissions = permissions.map(p => typeof p === 'number' ? p : p.id).filter(id => id > 0)
 }
+
+// ---- Row Records ----
+
+const rowRecords = [
+  { id: 1, rowId: 1, rowVersion: 1, key: 'nickname', oldValue: '', newValue: '张三', createdAt: '2025-01-15T08:00:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 2, rowId: 1, rowVersion: 1, key: 'email', oldValue: '', newValue: 'zhangsan@example.com', createdAt: '2025-01-15T08:00:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 3, rowId: 1, rowVersion: 1, key: 'departmentId', oldValue: '0', newValue: '1', createdAt: '2025-01-15T08:00:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 4, rowId: 1, rowVersion: 2, key: 'nickname', oldValue: '张三', newValue: '张三丰', createdAt: '2025-02-10T10:30:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 5, rowId: 1, rowVersion: 2, key: 'email', oldValue: 'zhangsan@example.com', newValue: 'zhangsanfeng@example.com', createdAt: '2025-02-10T10:30:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 6, rowId: 1, rowVersion: 3, key: 'isAdmin', oldValue: 'false', newValue: 'true', createdAt: '2025-03-05T14:00:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 7, rowId: 2, rowVersion: 1, key: 'name', oldValue: '', newValue: '超级管理员', createdAt: '2025-01-20T09:00:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 8, rowId: 2, rowVersion: 2, key: 'name', oldValue: '超级管理员', newValue: '超级管理', createdAt: '2025-02-15T11:00:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } },
+  { id: 9, rowId: 2, rowVersion: 2, key: 'disabled', oldValue: 'false', newValue: 'true', createdAt: '2025-02-15T11:00:00Z', createdBy: 99, creator: { id: 99, nickname: '管理员' } }
+]
+
+export function queryRowRecords(tableName: string, rowId: number) {
+  return {
+    list: rowRecords.filter(r => r.rowId === rowId).sort((a, b) => a.rowVersion - b.rowVersion),
+    total: rowRecords.filter(r => r.rowId === rowId).length
+  }
+}

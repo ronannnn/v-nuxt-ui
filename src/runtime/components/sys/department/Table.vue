@@ -43,7 +43,7 @@ const columns: VColumn<Department>[] = [
 
 <template>
   <TablePage
-    name="sys-department"
+    name="departments"
     cn-name="部门信息"
     :use-api-group="useDepartmentApi"
     :biz-columns="columns"

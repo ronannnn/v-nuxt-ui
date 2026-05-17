@@ -1,6 +1,7 @@
 import { useTimeAgo } from '@vueuse/core'
 
-export const useCnTimeAgo = (time: string | Date) => {
+export const useCnTimeAgo = (time: string | Date | undefined) => {
+  if (!time) return ''
   return useTimeAgo(time, {
     messages: {
       justNow: '刚刚',

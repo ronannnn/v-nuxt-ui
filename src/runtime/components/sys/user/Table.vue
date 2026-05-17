@@ -60,8 +60,8 @@ const columns: VColumn<User>[] = [
     filterOption: {
       type: 'async-select',
       listApi: useUserApi().list,
-      likeSearchFields: ['name'],
-      labelField: 'name',
+      likeSearchFields: ['nickname'],
+      labelField: 'nickname',
       valueField: 'id',
       multiple: true,
       defaultOpr: 'in'
@@ -189,7 +189,7 @@ const columns: VColumn<User>[] = [
 
 <template>
   <TablePage
-    name="sys-users"
+    name="users"
     cn-name="用户信息"
     :use-api-group="useUserApi"
     :biz-columns="columns"

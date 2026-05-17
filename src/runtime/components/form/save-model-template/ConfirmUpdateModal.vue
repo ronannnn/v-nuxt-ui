@@ -55,6 +55,7 @@ const { diffedItems } = useConfirmDiff(
                 class="rounded-md bg-muted px-2 py-1 text-sm text-dimmed"
                 :title="item.oldDisplay"
               >
+                <span v-if="!item.parts.filter((part: any) => !part.added).length">{{ '\xa0' }}</span>
                 <template v-for="(part, idx) in item.parts" :key="idx">
                   <span
                     v-if="!part.added"
@@ -70,6 +71,7 @@ const { diffedItems } = useConfirmDiff(
                 class="rounded-md bg-elevated px-2 py-1 text-sm text-highlighted font-bold"
                 :title="item.newDisplay"
               >
+                <span v-if="!item.parts.filter((part: any) => !part.removed).length">{{ '\xa0' }}</span>
                 <template v-for="(part, idx) in item.parts" :key="idx">
                   <span
                     v-if="!part.removed"

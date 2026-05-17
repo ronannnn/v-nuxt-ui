@@ -1,4 +1,4 @@
-export type TimeUnit = 'day' | 'week' | 'month' | 'quarter' | 'year'
+export type TimeUnit = 'day' | 'week' | 'month' | 'quarter' | 'year' | 'time'
 
 export enum CalendarEventType {
   NONE = 0,

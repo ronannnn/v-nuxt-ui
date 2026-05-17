@@ -44,7 +44,7 @@ const columns: VColumn<Company>[] = [
 
 <template>
   <TablePage
-    name="sys-company"
+    name="companies"
     cn-name="公司信息"
     :use-api-group="useCompanyApi"
     :biz-columns="columns"

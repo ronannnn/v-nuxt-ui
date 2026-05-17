@@ -23,7 +23,7 @@ const columns: VColumn<IssueRecord>[] = [
 
 <template>
   <TablePage
-    name="sys-issue-record"
+    name="issue_records"
     cn-name="改进建议"
     :use-api-group="useIssueRecordApi"
     :biz-columns="columns"

@@ -206,6 +206,8 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
   // Row Actions
   const rowActionsComposable = useTableRowActions({
     rowKey,
+    tableName: name,
+    bizColumns,
     disableRowActions,
     disableRowUpdate,
     disableRowCopy,

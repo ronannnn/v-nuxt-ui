@@ -46,6 +46,8 @@ const _useDate = () => {
       }
       case 'day':
         return date.format('YYYY-MM-DD')
+      case 'time':
+        return date.format('YYYY-MM-DD HH:mm:ss')
       default:
         throw new Error(`Unsupported time unit: ${unit}`)
     }
