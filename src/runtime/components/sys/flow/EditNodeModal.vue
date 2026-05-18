@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FlowNode } from '#v/types'
-import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
+import FormSaveModalTemplate from '#v/components/form/save-modal-template/index.vue'
 import { useFormValues } from '#v/composables'
 import { toRef } from 'vue'
 
@@ -21,7 +21,7 @@ const { oldValues, newValues } = useFormValues(toRef(props.model), {
 </script>
 
 <template>
-  <FormSaveModelTemplate
+  <FormSaveModalTemplate
     title="编辑节点"
     :on-close="ok => emit('close', ok)"
     :fields="[

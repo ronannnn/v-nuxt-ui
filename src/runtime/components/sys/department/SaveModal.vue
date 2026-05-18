@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as z from 'zod'
-import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
+import FormSaveModalTemplate from '#v/components/form/save-modal-template/index.vue'
 import { useCompanyApi, useDepartmentApi, useFormSubmission, useFormValues, useUserApi } from '#v/composables'
 import { toRef, watch } from 'vue'
 import type { Department } from '#v/types'
@@ -35,7 +35,7 @@ const { onSubmit } = useFormSubmission(
 </script>
 
 <template>
-  <FormSaveModelTemplate
+  <FormSaveModalTemplate
     title="部门信息"
     :on-close="ok => emit('close', ok)"
     :fields="[

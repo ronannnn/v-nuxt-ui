@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as z from 'zod'
-import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
+import FormSaveModalTemplate from '#v/components/form/save-modal-template/index.vue'
 import { useMenuApi, useFormSubmission, useFormValues } from '#v/composables'
 import { toRef } from 'vue'
 import { menuTypeOptions } from '#v/constants'
@@ -28,7 +28,7 @@ const { onSubmit } = useFormSubmission(
 </script>
 
 <template>
-  <FormSaveModelTemplate
+  <FormSaveModalTemplate
     title="菜单信息"
     :on-close="ok => emit('close', ok)"
     :fields="[

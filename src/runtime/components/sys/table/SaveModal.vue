@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { VFormFieldProps, Table } from '#v/types'
 import * as z from 'zod'
-import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
+import FormSaveModalTemplate from '#v/components/form/save-modal-template/index.vue'
 import TableColumnList from './TableColumnList.vue'
 import { useFormSubmission, useFormValues, useTableApi } from '#v/composables'
 import { computed, ref, toRef } from 'vue'
@@ -51,7 +51,7 @@ function updateModelValue(newVal: Partial<Table>) {
 </script>
 
 <template>
-  <FormSaveModelTemplate
+  <FormSaveModalTemplate
     title="Table"
     :on-close="ok => emit('close', ok)"
     :fields="fields"
@@ -63,5 +63,5 @@ function updateModelValue(newVal: Partial<Table>) {
     <template #after-form>
       <TableColumnList ref="columnListRef" :initial-columns="model.columns" />
     </template>
-  </FormSaveModelTemplate>
+  </FormSaveModalTemplate>
 </template>

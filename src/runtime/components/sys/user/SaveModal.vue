@@ -4,7 +4,7 @@ import { treeifyOptions } from '#v/utils'
 import type { TreeItem } from '@nuxt/ui'
 import type { Menu, Role, TablePermission, User, VFormFieldProps } from '#v/types'
 import { toRef, ref, computed, onMounted } from 'vue'
-import FormSaveModelTemplate from '#v/components/form/save-model-template/index.vue'
+import FormSaveModalTemplate from '#v/components/form/save-modal-template/index.vue'
 import TablePermissionTab from '#v/components/table/permission/TablePermissionTab.vue'
 import { loginTypeOptions, genderOptions, Gender } from '#v/constants'
 import * as z from 'zod'
@@ -206,7 +206,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <FormSaveModelTemplate
+  <FormSaveModalTemplate
     title="用户信息"
     :on-close="ok => emit('close', ok)"
     :fields="fields"
@@ -223,5 +223,5 @@ onMounted(async () => {
         <TablePermissionTab v-model="tablePermissions" />
       </div>
     </template>
-  </FormSaveModelTemplate>
+  </FormSaveModalTemplate>
 </template>

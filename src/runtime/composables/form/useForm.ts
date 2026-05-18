@@ -4,7 +4,7 @@ import { defu } from 'defu'
 import { getObjWithModifiedFields } from '#v/utils'
 import { resolveDisplayValue, smartDiff } from '#v/composables'
 import { useToast } from '@nuxt/ui/composables'
-import type { ConfirmDiffItem } from '#v/components/form/save-model-template/ConfirmUpdateModal.vue'
+import type { ConfirmDiffItem } from '#v/components/form/save-modal-template/ConfirmUpdateModal.vue'
 
 export const useFormValues = <T>(
   raw: Ref<T>,

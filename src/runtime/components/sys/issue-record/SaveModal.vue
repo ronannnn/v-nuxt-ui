@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IssueRecord } from '#v/types'
 import * as z from 'zod'
-import FormSaveModelTemplateWithApi from '#v/components/form/save-model-template/WithApi.vue'
+import FormSaveModalTemplateWithApi from '#v/components/form/save-modal-template/WithApi.vue'
 import { useIssueRecordApi } from '#v/composables'
 
 defineProps<{
@@ -14,7 +14,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <FormSaveModelTemplateWithApi
+  <FormSaveModalTemplateWithApi
     title="改进建议"
     description="您可以针对该网页提出任何改进建议或直接联系chenrn@mail.veken.com"
     :on-close="ok => emit('close', ok)"

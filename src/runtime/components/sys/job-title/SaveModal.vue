@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as z from 'zod'
-import FormSaveModelTemplateWithApi from '#v/components/form/save-model-template/WithApi.vue'
+import FormSaveModalTemplateWithApi from '#v/components/form/save-modal-template/WithApi.vue'
 import { useJobTitleApi } from '#v/composables'
 import type { JobTitle } from '#v/types'
 
@@ -14,7 +14,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <FormSaveModelTemplateWithApi
+  <FormSaveModalTemplateWithApi
     title="职位信息"
     :on-close="ok => emit('close', ok)"
     :on-save="model => emit('save', model)"
