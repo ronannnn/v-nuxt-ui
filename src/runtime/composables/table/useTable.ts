@@ -30,6 +30,7 @@ export interface UseTableReturn<T> {
   tblHeaderProps: ComputedRef<TableHeaderProps<T>>
   tblPaginationProps: ComputedRef<TablePaginationProps<T>>
   tblContextMenuItems: Ref<ContextMenuItem[]>
+  deletingRowKey: Ref<number | null>
 }
 
 export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
@@ -220,7 +221,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     fetchList
   })
 
-  const { getRowActions, generateActionColumn } = rowActionsComposable
+  const { getRowActions, generateActionColumn, deletingRowKey } = rowActionsComposable
 
   // Generate final columns with all processing
   const columns = computed<VColumn<T>[]>(() => {
@@ -310,6 +311,21 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
       newCols.push(generateActionColumn())
     }
 
+    // 删除确认弹窗打开时，将待删除行的背景色设置为红色
+    newCols.forEach((col) => {
+      const existingTdClass = col.meta?.class?.td
+      col.meta = col.meta || {}
+      col.meta.class = col.meta.class || {}
+      col.meta.class.td = (cell) => {
+        const rowKeyValue = cell.row.original[rowKey] as number
+        const deletingClass = deletingRowKey.value !== null && deletingRowKey.value === rowKeyValue
+          ? '!bg-(--ui-color-error-50) dark:!bg-(--ui-color-error-900)'
+          : ''
+        const existingClass = typeof existingTdClass === 'function' ? existingTdClass(cell) : (existingTdClass || '')
+        return [existingClass, deletingClass].filter(Boolean).join(' ')
+      }
+    })
+
     return newCols
   })
 
@@ -396,7 +412,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
   }))
 
   return {
-    // data
+  // data
     data,
     createRow,
     updateRow,
@@ -421,6 +437,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     tblHeaderProps,
     tblPaginationProps,
     // others
-    tblContextMenuItems
+    tblContextMenuItems,
+    deletingRowKey
   } as UseTableReturn<T>
 }

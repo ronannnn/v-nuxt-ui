@@ -43,6 +43,7 @@ export function useTableRowActions<T>(props: {
   const updateDiffModal = overlay.create(UpdateDiffModal)
   const apiGroup = useApiGroup?.()
   const actionLoadingRowIdxSet = ref<Set<number>>(new Set())
+  const deletingRowKey = ref<number | null>(null)
 
   function getRowActions(row: TableRow<T>) {
     const actionItems: DropdownMenuItem[] = []
@@ -153,14 +154,19 @@ export function useTableRowActions<T>(props: {
         icon: 'i-lucide-trash-2',
         color: 'error',
         onSelect: async () => {
-          const result = await deleteModal.open({
-            ids: [row.original[rowKey] as number],
-            models: [row.original],
-            displayFn: displayFnInDeleteModal,
-            onDelete: (ids: number[]) => apiGroup?.batchDelete({ ids })
-          }).result
-          if (result) {
-            await fetchList()
+          deletingRowKey.value = row.original[rowKey] as number
+          try {
+            const result = await deleteModal.open({
+              ids: [row.original[rowKey] as number],
+              models: [row.original],
+              displayFn: displayFnInDeleteModal,
+              onDelete: (ids: number[]) => apiGroup?.batchDelete({ ids })
+            }).result
+            if (result) {
+              await fetchList()
+            }
+          } finally {
+            deletingRowKey.value = null
           }
         }
       })
@@ -222,6 +228,7 @@ export function useTableRowActions<T>(props: {
   return {
     getRowActions,
     generateActionColumn,
-    actionLoadingRowIdxSet
+    actionLoadingRowIdxSet,
+    deletingRowKey
   }
 }

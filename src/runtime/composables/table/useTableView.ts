@@ -40,6 +40,7 @@ export interface UseProTableViewReturn<T> {
   updateTableWidth: () => void
   tblClasses: ComputedRef<(string | boolean | (string | boolean)[])[]>
   tblUi: ComputedRef<{ root: string, th: string, td: string }>
+  deletingRowKey: Ref<number | null>
 }
 
 export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn<T> {
@@ -56,7 +57,8 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     tblWhereQueryProps,
     tblHeaderProps,
     tblPaginationProps,
-    tblContextMenuItems
+    tblContextMenuItems,
+    deletingRowKey
   } = useTable<T>(props)
 
   // tr td class
@@ -199,6 +201,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     tableWidth,
     updateTableWidth,
     tblClasses,
-    tblUi
+    tblUi,
+    deletingRowKey
   } as UseProTableViewReturn<T>
 }
