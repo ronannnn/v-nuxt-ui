@@ -44,6 +44,7 @@ export function useTableRowActions<T>(props: {
   const apiGroup = useApiGroup?.()
   const actionLoadingRowIdxSet = ref<Set<number>>(new Set())
   const deletingRowKey = ref<number | null>(null)
+  const editingRowKey = ref<number | null>(null)
 
   function getRowActions(row: TableRow<T>) {
     const actionItems: DropdownMenuItem[] = []
@@ -53,9 +54,14 @@ export function useTableRowActions<T>(props: {
         label: '编辑',
         icon: 'i-lucide-clipboard-pen-line',
         onClick: async () => {
-          const result = await onEditRowFromModal(row.original)
-          if (result) {
-            await fetchList()
+          editingRowKey.value = row.original[rowKey] as number
+          try {
+            const result = await onEditRowFromModal(row.original)
+            if (result) {
+              await fetchList()
+            }
+          } finally {
+            editingRowKey.value = null
           }
         }
       })
@@ -229,6 +235,7 @@ export function useTableRowActions<T>(props: {
     getRowActions,
     generateActionColumn,
     actionLoadingRowIdxSet,
-    deletingRowKey
+    deletingRowKey,
+    editingRowKey
   }
 }

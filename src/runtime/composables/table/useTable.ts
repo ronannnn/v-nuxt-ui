@@ -31,6 +31,7 @@ export interface UseTableReturn<T> {
   tblPaginationProps: ComputedRef<TablePaginationProps<T>>
   tblContextMenuItems: Ref<ContextMenuItem[]>
   deletingRowKey: Ref<number | null>
+  editingRowKey: Ref<number | null>
 }
 
 export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
@@ -221,7 +222,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     fetchList
   })
 
-  const { getRowActions, generateActionColumn, deletingRowKey } = rowActionsComposable
+  const { getRowActions, generateActionColumn, deletingRowKey, editingRowKey } = rowActionsComposable
 
   // Generate final columns with all processing
   const columns = computed<VColumn<T>[]>(() => {
@@ -311,18 +312,21 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
       newCols.push(generateActionColumn())
     }
 
-    // 删除确认弹窗打开时，将待删除行的背景色设置为红色
+    // 删除/编辑弹窗打开时，将对应行的背景色设置为对应的颜色
     newCols.forEach((col) => {
       const existingTdClass = col.meta?.class?.td
       col.meta = col.meta || {}
       col.meta.class = col.meta.class || {}
       col.meta.class.td = (cell) => {
         const rowKeyValue = cell.row.original[rowKey] as number
-        const deletingClass = deletingRowKey.value !== null && deletingRowKey.value === rowKeyValue
-          ? '!bg-(--ui-color-error-50) dark:!bg-(--ui-color-error-900)'
-          : ''
+        let highlightClass = ''
+        if (deletingRowKey.value !== null && deletingRowKey.value === rowKeyValue) {
+          highlightClass = '!bg-(--ui-color-error-50) dark:!bg-(--ui-color-error-900)'
+        } else if (editingRowKey.value !== null && editingRowKey.value === rowKeyValue) {
+          highlightClass = '!bg-(--ui-color-primary-50) dark:!bg-(--ui-color-primary-900)'
+        }
         const existingClass = typeof existingTdClass === 'function' ? existingTdClass(cell) : (existingTdClass || '')
-        return [existingClass, deletingClass].filter(Boolean).join(' ')
+        return [existingClass, highlightClass].filter(Boolean).join(' ')
       }
     })
 
@@ -438,6 +442,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     tblPaginationProps,
     // others
     tblContextMenuItems,
-    deletingRowKey
+    deletingRowKey,
+    editingRowKey
   } as UseTableReturn<T>
 }
