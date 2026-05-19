@@ -61,13 +61,15 @@ const exportExcel = async () => {
   >
     <template #body>
       <UFormField label="筛选条件">
-        <TableQueryWhere
-          :where-query="whereQuery"
-          :where-options="whereQueryOptions"
-          :trigger-fetching="async () => {}"
-          hide-query-button
-          @update-where-query="newWhereQuery => whereQuery = newWhereQuery"
-        />
+        <div class="ring ring-default rounded-md">
+          <TableQueryWhere
+            :where-query="whereQuery"
+            :where-options="whereQueryOptions"
+            :trigger-fetching="async () => {}"
+            hide-query-button
+            @update-where-query="newWhereQuery => whereQuery = newWhereQuery"
+          />
+        </div>
       </UFormField>
     </template>
     <template #footer>
