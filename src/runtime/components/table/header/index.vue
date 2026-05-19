@@ -54,7 +54,8 @@ async function handleExportExcel() {
     filenameWithDateTime: props.exportExcel!.filenameWithDateTime,
     listFn: props.apiGroup?.().countAndList,
     whereQueryOptions: props.whereQueryProps.whereOptions as any,
-    extraWhereQueryInitValues: defu(props.extraWhereQueryInitValues, props.exportExcel!.extraWhereQueryInitValues)
+    extraWhereQueryInitValues: defu(props.extraWhereQueryInitValues, props.exportExcel!.extraWhereQueryInitValues),
+    initWhereQuery: props.whereQueryProps.whereQuery
   })
 }
 

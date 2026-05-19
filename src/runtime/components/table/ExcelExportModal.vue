@@ -7,7 +7,7 @@ import { defu } from 'defu'
 import { useExporting } from '#v/composables/useBoolean'
 import { useDate } from '#v/composables/useDate'
 import { dateFormat, TIME_ZONE } from '#v/constants'
-import { genTableExcel } from '#v/utils'
+import { cloneJson, genTableExcel } from '#v/utils'
 import TableQueryWhere from '#v/components/table/query/where/index.vue'
 
 const props = defineProps<{
@@ -16,10 +16,11 @@ const props = defineProps<{
   columns: VColumn<T>[]
   whereQueryOptions: WhereQueryOption<T>[]
   extraWhereQueryInitValues?: WhereQuery<T>
+  initWhereQuery?: WhereQuery<T>
   listFn?(payload: Omit<QueryTemplate<T>, 'selectQuery'>, ...args: unknown[]): Promise<{ data: Ref<RequestResult<PageResult<T>>> }>
 }>()
 
-const whereQuery = ref<WhereQuery<T>>()
+const whereQuery = ref<WhereQuery<T> | undefined>(props.initWhereQuery)
 
 const emit = defineEmits<{
   close: [boolean]
@@ -61,6 +62,20 @@ const exportExcel = async () => {
   >
     <template #body>
       <UFormField label="筛选条件">
+        <template #label>
+          <div class="flex items-center gap-1">
+            <span>筛选条件</span>
+            <UTooltip text="同步查询条件" :delay="0" :content="{ side: 'top' }">
+              <UButton
+                variant="ghost"
+                color="neutral"
+                size="xs"
+                icon="i-lucide-refresh-ccw"
+                @click="whereQuery = cloneJson(initWhereQuery)"
+              />
+            </UTooltip>
+          </div>
+        </template>
         <div class="ring ring-default rounded-md">
           <TableQueryWhere
             :where-query="whereQuery"
