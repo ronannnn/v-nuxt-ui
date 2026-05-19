@@ -85,6 +85,7 @@ export type VTableProps<T> = {
   disableRowCopy?: boolean
   disableRowDeletion?: boolean
   disableRowSelection?: boolean
+  disableRowDiff?: boolean
   expandable?: boolean
   expandVNode?: (row: T) => VNode
   rowSpanColumns?: (keyof T)[]

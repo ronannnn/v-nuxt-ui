@@ -15,6 +15,7 @@ export function useTableRowActions<T>(props: {
   disableRowUpdate?: boolean
   disableRowCopy?: boolean
   disableRowDeletion?: boolean
+  disableRowDiff?: boolean
   onEditRowFromModal?: (...args: any[]) => any
   extraRowActions?: any[]
   useApiGroup?: (...args: any[]) => any
@@ -30,6 +31,7 @@ export function useTableRowActions<T>(props: {
     disableRowUpdate,
     disableRowCopy,
     disableRowDeletion,
+    disableRowDiff,
     onEditRowFromModal,
     extraRowActions,
     useApiGroup,
@@ -133,7 +135,7 @@ export function useTableRowActions<T>(props: {
     })
 
     // 变更记录
-    if (tableName) {
+    if (tableName && !disableRowDiff) {
       if (actionItems.length > 0 && !disableRowDeletion) {
         actionItems.push({ type: 'separator' })
       }
