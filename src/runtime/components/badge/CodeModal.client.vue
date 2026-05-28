@@ -7,9 +7,11 @@ const props = withDefaults(defineProps<{
   data: string | Record<string, any> | undefined | null
   lang?: 'json' | 'sql' | 'text'
   title?: string
+  btnTxt?: string
 }>(), {
   lang: 'text',
-  title: '查看'
+  title: '查看',
+  btnTxt: '查看'
 })
 
 const open = ref(false)
@@ -55,7 +57,7 @@ watch([codeText, () => colorMode.value], updateHighlight, { immediate: true })
       icon="i-lucide-expand"
       color="neutral"
       variant="subtle"
-      label="查看"
+      :label="btnTxt"
       class="cursor-pointer"
       @click="open = true"
     />

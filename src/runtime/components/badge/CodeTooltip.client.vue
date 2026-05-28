@@ -6,8 +6,10 @@ import { codeToHtml } from 'shiki'
 const props = withDefaults(defineProps<{
   data: string | Record<string, any> | undefined | null
   lang?: 'json' | 'sql' | 'text'
+  btnTxt?: string
 }>(), {
-  lang: 'text'
+  lang: 'text',
+  btnTxt: '查看'
 })
 
 const colorMode = useColorMode()
@@ -51,7 +53,7 @@ watch([codeText, () => colorMode.value], updateHighlight, { immediate: true })
       icon="i-lucide-eye"
       color="neutral"
       variant="subtle"
-      label="查看"
+      :label="btnTxt"
       class="cursor-pointer"
     />
     <template #content>
