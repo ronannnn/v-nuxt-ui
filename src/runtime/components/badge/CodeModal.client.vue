@@ -59,7 +59,11 @@ watch([codeText, () => colorMode.value], updateHighlight, { immediate: true })
       variant="subtle"
       :label="btnTxt"
       class="cursor-pointer"
-      @click="open = true"
+      @click="(e: MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        open = true
+      }"
     />
     <template #body>
       <div class="overflow-hidden text-sm">
