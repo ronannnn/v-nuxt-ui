@@ -1,8 +1,8 @@
 import type { SelectOption } from '#v/types'
 
 export const booleanOptions: SelectOption[] = [
-  { label: 'Yes', value: true },
-  { label: 'No', value: false }
+  { label: '是', value: true },
+  { label: '否', value: false }
 ]
 
 export enum Gender {
