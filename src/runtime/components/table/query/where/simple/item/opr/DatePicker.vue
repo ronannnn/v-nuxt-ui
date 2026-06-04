@@ -213,6 +213,7 @@ const dateRangeShortcuts: DateShortcut[] = [
       v-else
       class="w-full"
     >
+      <div />
       <DatePickerInput
         ref="singleDateStrValueInput"
         v-model:value="singleDateStrValue"
@@ -222,6 +223,7 @@ const dateRangeShortcuts: DateShortcut[] = [
         @focus="onOpenCalendar"
         @blur="onCloseCalendar"
       />
+      <div />
     </div>
 
     <template #content>
