@@ -193,6 +193,28 @@ const onResetAll = () => {
   props.onUpdateWhereQuery(props.defaultWhereQuery)
 }
 
+// 补全字段：将可查询但未出现的字段追加到列表后面（常用优先）
+const onFillMissingFields = () => {
+  const currentFields = new Set((props.whereQuery?.items ?? []).map(item => item.field as string))
+  const missingOptions = props.whereOptions.filter(opt => !currentFields.has(opt.field as string))
+  if (missingOptions.length === 0) return
+
+  const preferred = missingOptions.filter(opt => opt.preferred !== false)
+  const other = missingOptions.filter(opt => opt.preferred === false)
+
+  const newItems: WhereQueryItem<T>[] = [...preferred, ...other].map(opt => ({
+    field: opt.field,
+    opr: opt.defaultOpr ?? useTableOpr().getDefaultOprByType(opt.type),
+    value: null,
+    custom: opt.custom
+  }))
+
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items: [...(props.whereQuery?.items ?? []), ...newItems]
+  })
+}
+
 // 从列头筛选触发的聚焦
 const focusField = (field: string): boolean => {
   const item = itemRefMap.value.get(field)
@@ -287,7 +309,17 @@ defineExpose({ focusField })
           清空
         </UButton>
       </div>
-      <div class="flex-1 flex justify-end">
+      <div class="flex-1 flex justify-end items-center gap-2.5">
+        <UButton
+          color="neutral"
+          variant="subtle"
+          size="sm"
+          icon="i-lucide-list-plus"
+          :disabled="fetching"
+          @click="onFillMissingFields"
+        >
+          补全字段
+        </UButton>
         <UButton
           color="neutral"
           variant="subtle"
@@ -296,7 +328,7 @@ defineExpose({ focusField })
           :disabled="fetching"
           @click="onResetAll"
         >
-          重置
+          还原默认
         </UButton>
       </div>
     </div>
