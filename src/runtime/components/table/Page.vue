@@ -45,9 +45,9 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
 </script>
 
 <template>
-  <div class="flex-1 flex flex-col overflow-hidden">
+  <div class="flex-1 flex flex-col overflow-hidden divide-y divide-default">
     <!-- header -->
-    <div class="h-(--ui-header-height) flex items-center pl-2.5 pr-2.5 border-b border-default z-1 bg-default">
+    <div class="h-(--ui-header-height) flex items-center pl-2.5 pr-2.5 z-3 bg-default">
       <div class="flex items-center gap-1">
         <LayoutButtonCollapse />
         <span class="font-bold">{{ cnName }}</span>
@@ -56,7 +56,7 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
     </div>
 
     <!-- table -->
-    <div :id="tablePortalId" ref="table" class="relative flex-1 flex flex-col h-full overflow-hidden border-b border-default">
+    <div :id="tablePortalId" ref="table" class="relative flex-1 flex flex-col h-full overflow-hidden">
       <!-- table -->
       <UContextMenu :items="tblContextMenuItems">
         <ScrollArea class="flex-1">
@@ -85,6 +85,9 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
       </UContextMenu>
     </div>
 
+    <!-- pagination -->
+    <TablePagination v-bind="tblPaginationProps" />
+
     <!-- query where (slideover from top, portalled into table) -->
     <USlideover
       :open="tblHeaderProps.whereQueryProps.whereQueryOpen"
@@ -92,8 +95,9 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
       :close="false"
       :portal="`#${tablePortalId}`"
       :ui="{
-        content: '!absolute inset-x-0 top-0 max-h-full w-full z-20',
-        body: 'p-0 sm:p-0'
+        content: '!absolute z-2',
+        body: 'p-0 sm:p-0',
+        overlay: 'z-1'
       }"
       @update:open="tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen"
     >
@@ -108,8 +112,5 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
         />
       </template>
     </USlideover>
-
-    <!-- pagination -->
-    <TablePagination v-bind="tblPaginationProps" />
   </div>
 </template>
