@@ -255,12 +255,12 @@ defineExpose({ focusField })
 
 <template>
   <div class="divide-y divide-default">
-    <div class="@container p-2.5 space-y-2.5">
+    <div class="@container p-2.5 space-y-4">
       <div
         v-for="section in sections"
         :key="section.key"
       >
-        <div class="font-bold text-xs text-dimmed mb-1">
+        <div class="font-bold text-xs text-dimmed mb-1.5">
           {{ section.label }}
         </div>
         <Dnd
