@@ -42,7 +42,6 @@ defineExpose({
     color="neutral"
     :increment="false"
     :decrement="false"
-    class="max-w-16"
     @keyup.enter="async () => {
       await triggerFetching?.()
     }"
