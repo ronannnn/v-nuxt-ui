@@ -1,9 +1,12 @@
 <script setup lang="ts" generic="T">
 import type { ComponentPublicInstance } from 'vue'
 import type { WhereQueryItem, WhereQueryProps } from '#v/types'
+import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, ref, reactive, watch, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
 import { useToast } from '@nuxt/ui/composables'
+import UFieldGroup from '@nuxt/ui/components/FieldGroup.vue'
+import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue'
 import Dnd from '#v/components/Dnd.client.vue'
 import TableQueryWhereSimpleItem from '#v/components/table/query/where/simple/item/index.vue'
 import TableQueryWhereNewer from '#v/components/table/query/where/Newer.vue'
@@ -215,6 +218,21 @@ const onFillMissingFields = () => {
   })
 }
 
+// 删除所有字段：仅保留 init 值
+const onRemoveAllFields = () => {
+  const defaultKeys = props.extraWhereQueryInitValues?.items?.map(q => q.field) ?? []
+  const initItems = props.whereQuery?.items?.filter(q => defaultKeys.includes(q.field as string)) ?? []
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items: initItems.map(item => ({ ...item, value: null }))
+  })
+}
+
+const moreActions = computed<DropdownMenuItem[]>(() => [
+  { label: '补全字段', icon: 'i-lucide-list-plus', onSelect: onFillMissingFields },
+  { label: '删除所有字段', icon: 'i-lucide-trash-2', onSelect: onRemoveAllFields }
+])
+
 // 从列头筛选触发的聚焦
 const focusField = (field: string): boolean => {
   const item = itemRefMap.value.get(field)
@@ -271,9 +289,9 @@ defineExpose({ focusField })
           </div>
           <div class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6">
             <TableQueryWhereNewer
-              v-if="section.unselectedFields.length > 0"
+              v-if="unselectedWhereFields.length > 0"
               :options="whereOptions"
-              :unselected-fields="section.unselectedFields"
+              :unselected-fields="unselectedWhereFields"
               :biz-columns="bizColumns ?? []"
               size="sm"
               @new="onNewField"
@@ -309,27 +327,26 @@ defineExpose({ focusField })
           清空
         </UButton>
       </div>
-      <div class="flex-1 flex justify-end items-center gap-2.5">
-        <UButton
-          color="neutral"
-          variant="subtle"
-          size="sm"
-          icon="i-lucide-list-plus"
-          :disabled="fetching"
-          @click="onFillMissingFields"
-        >
-          补全字段
-        </UButton>
-        <UButton
-          color="neutral"
-          variant="subtle"
-          size="sm"
-          icon="i-lucide-timer-reset"
-          :disabled="fetching"
-          @click="onResetAll"
-        >
-          还原默认
-        </UButton>
+      <div class="flex-1 flex justify-end items-center">
+        <UFieldGroup size="sm">
+          <UButton
+            color="neutral"
+            variant="subtle"
+            icon="i-lucide-timer-reset"
+            :disabled="fetching"
+            @click="onResetAll"
+          >
+            还原默认
+          </UButton>
+          <UDropdownMenu :items="moreActions">
+            <UButton
+              color="neutral"
+              variant="subtle"
+              icon="i-lucide-ellipsis"
+              :disabled="fetching"
+            />
+          </UDropdownMenu>
+        </UFieldGroup>
       </div>
     </div>
   </div>
