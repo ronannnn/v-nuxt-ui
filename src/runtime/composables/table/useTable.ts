@@ -55,6 +55,8 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
 
     // where query
     disableWhereQuery,
+    whereQueryMode,
+    whereQueryPopoverWidth,
     extraWhereQueryOptions,
     extraWhereQueryInitValues,
 
@@ -394,6 +396,8 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     displayFnInDeleteModal,
     disableCreation,
     disableWhereQuery,
+    whereQueryMode,
+    whereQueryPopoverWidth,
     whereQueryProps: tblWhereQueryProps.value,
     disableOrderQuery,
     orderQueryProps: tblOrderQueryProps.value,

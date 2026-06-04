@@ -26,7 +26,7 @@ const filteredItems = computed(() => {
 })
 
 const ui = computed(() => ({
-  root: ['min-w-32', props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
+  root: [props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
   base: 'peer',
   content: 'min-w-fit',
   tagsInput: 'min-w-4 w-0'

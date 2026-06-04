@@ -57,6 +57,7 @@ const columns: VColumn<User>[] = [
     header: '直属上级',
     sortOption: true,
     cell: ({ row }) => row.original.supervisor?.nickname,
+    preferred: false,
     filterOption: {
       type: 'async-select',
       listApi: useUserApi().list,
@@ -119,6 +120,7 @@ const columns: VColumn<User>[] = [
     filterOption: {
       type: 'select',
       items: booleanOptions,
+      multiple: true,
       empty: {
         label: '否',
         variant: 'outline',

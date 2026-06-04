@@ -17,6 +17,7 @@ export type Column = {
   checked?: boolean
   width?: string | number
   fixed: 'left' | 'right' | 'unfixed'
+  preferred?: boolean
 }
 
 export type TableSettings<T> = {

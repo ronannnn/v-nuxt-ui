@@ -60,15 +60,7 @@ const onNewField = (field: string) => {
   })
 }
 
-const isWhereQueryEmpty = computed(() => {
-  return !props.whereQuery || Object.keys(props.whereQuery ?? {}).length === 0
-    || (
-      // 仅检查有对应option的item的值是否为空
-      (props.whereQuery?.items?.filter(query => props.whereOptions.find(option => option.field === query.field)).length ?? 0) === 0
-      && (props.whereQuery?.groups?.length ?? 0) === 0
-    )
-})
-
+// 从列头筛选触发的聚焦
 const whereQueryWithoutInitValues = computed<WhereQueryItem<T>[]>(() => {
   if (!props.whereQuery) return []
   const defaultKeys = props.extraWhereQueryInitValues?.items?.map(query => query.field) ?? []
@@ -77,6 +69,38 @@ const whereQueryWithoutInitValues = computed<WhereQueryItem<T>[]>(() => {
     return !defaultKeys.includes(field)
   }) ?? []
 })
+
+const preferredItems = computed<WhereQueryItem<T>[]>(() =>
+  whereQueryWithoutInitValues.value.filter(item =>
+    props.whereOptions.find(opt => opt.field === item.field)?.preferred ?? true
+  )
+)
+
+const otherItems = computed<WhereQueryItem<T>[]>(() =>
+  whereQueryWithoutInitValues.value.filter(item =>
+    !(props.whereOptions.find(opt => opt.field === item.field)?.preferred ?? true)
+  )
+)
+
+const rangeOprList = ['range_gt_lt', 'range_gt_lte', 'range_gte_lt', 'range_gte_lte']
+const isDateRangeQueryItem = (item: WhereQueryItem<T>) => {
+  const option = props.whereOptions.find(option => option.field === item.field)
+  return option?.type === 'date-picker' && rangeOprList.includes(item.opr as string)
+}
+
+// 清空数据：保留字段，值置空
+const onClearValues = () => {
+  if (!props.whereQuery?.items) return
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items: props.whereQuery.items.map(item => ({ ...item, value: null }))
+  })
+}
+
+// 重置：清空数据 + 重置为默认字段
+const onResetAll = () => {
+  props.onUpdateWhereQuery(props.defaultWhereQuery)
+}
 
 // 从列头筛选触发的聚焦
 const focusField = (field: string): boolean => {
@@ -91,63 +115,125 @@ defineExpose({ focusField })
 </script>
 
 <template>
-  <div class="flex items-start gap-2 pl-4 pr-2.5 py-2.5">
-    <!-- conditions -->
-    <div class="flex flex-wrap items-center gap-2.5">
-      <!-- key如果是field，那么field修改后，不能聚焦后面的组件，所以这里的key用idx代替 -->
-      <template v-if="!isWhereQueryEmpty">
-        <TableQueryWhereSimpleItem
-          v-for="(item, idx) in whereQueryWithoutInitValues"
-          :ref="(el) => setItemRef(item.field as string, el)"
-          :key="idx"
-          :where-query-item="item"
-          :options="whereOptions"
-          :fetching="fetching"
-          :trigger-fetching="() => triggerFetching(true)"
-          @remove="onRemoveFilter"
-          @update:where-query-item="newWhereQueryItem => {
-            const items = props.whereQuery?.items ?? []
-            const realIdx = items.findIndex(q => q.field === item.field)
-            if (realIdx === -1) return
-            const updatedItems = [...items]
-            updatedItems[realIdx] = newWhereQueryItem
-            onUpdateWhereQuery({
-              ...whereQuery,
-              items: updatedItems
-            })
+  <div class="divide-y divide-default">
+    <div class="@container p-2.5 space-y-2.5">
+      <!-- preferred conditions -->
+      <div v-if="unselectedWhereFields.length > 0 || preferredItems.length > 0">
+        <div class="font-bold text-xs text-dimmed mb-1">
+          常用条件
+        </div>
+        <div class="grid grid-flow-dense grid-cols-1 @2xl:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 gap-2.5">
+          <TableQueryWhereSimpleItem
+            v-for="(item, idx) in preferredItems"
+            :ref="(el) => setItemRef(item.field as string, el)"
+            :key="idx"
+            :where-query-item="item"
+            :options="whereOptions"
+            :fetching="fetching"
+            :trigger-fetching="() => triggerFetching(true)"
+            :class="isDateRangeQueryItem(item) ? '@2xl:col-span-2' : undefined"
+            @remove="onRemoveFilter"
+            @update:where-query-item="newWhereQueryItem => {
+              const items = props.whereQuery?.items ?? []
+              const realIdx = items.findIndex(q => q.field === item.field)
+              if (realIdx === -1) return
+              const updatedItems = [...items]
+              updatedItems[realIdx] = newWhereQueryItem
+              onUpdateWhereQuery({
+                ...whereQuery,
+                items: updatedItems
+              })
+            }"
+          />
+          <TableQueryWhereNewer
+            v-if="unselectedWhereFields.length > 0"
+            :options="whereOptions"
+            :unselected-fields="unselectedWhereFields"
+            :biz-columns="bizColumns ?? []"
+            size="sm"
+            @new="onNewField"
+          />
+        </div>
+      </div>
+
+      <!-- other conditions -->
+      <div v-if="unselectedWhereFields.length > 0 || otherItems.length > 0">
+        <div class="font-bold text-xs text-dimmed mb-1">
+          其他条件
+        </div>
+        <div class="grid grid-flow-dense grid-cols-1 @2xl:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 gap-2.5">
+          <TableQueryWhereSimpleItem
+            v-for="(item, idx) in otherItems"
+            :ref="(el) => setItemRef(item.field as string, el)"
+            :key="idx"
+            :where-query-item="item"
+            :options="whereOptions"
+            :fetching="fetching"
+            :trigger-fetching="() => triggerFetching(true)"
+            :class="isDateRangeQueryItem(item) ? '@2xl:col-span-2' : undefined"
+            @remove="onRemoveFilter"
+            @update:where-query-item="newWhereQueryItem => {
+              const items = props.whereQuery?.items ?? []
+              const realIdx = items.findIndex(q => q.field === item.field)
+              if (realIdx === -1) return
+              const updatedItems = [...items]
+              updatedItems[realIdx] = newWhereQueryItem
+              onUpdateWhereQuery({
+                ...whereQuery,
+                items: updatedItems
+              })
+            }"
+          />
+          <TableQueryWhereNewer
+            v-if="unselectedWhereFields.length > 0"
+            :options="whereOptions"
+            :unselected-fields="unselectedWhereFields"
+            :biz-columns="bizColumns ?? []"
+            size="sm"
+            @new="onNewField"
+          />
+        </div>
+      </div>
+    </div>
+    <!-- action bar -->
+    <div class="flex items-center gap-2.5 p-2.5">
+      <div class="flex-1" />
+      <div class="flex items-center gap-2.5">
+        <UButton
+          v-if="!hideQueryButton"
+          label="查询"
+          color="neutral"
+          variant="subtle"
+          size="sm"
+          :loading="fetching"
+          icon="i-lucide-search"
+          @click="async () => {
+            await triggerFetching(true)
           }"
         />
-      </template>
-      <TableQueryWhereNewer
-        :options="whereOptions"
-        :unselected-fields="unselectedWhereFields"
-        :biz-columns="bizColumns ?? []"
-        size="sm"
-        @new="onNewField"
-      />
-      <USeparator orientation="vertical" class="h-4" />
-      <UButton
-        v-if="!hideQueryButton"
-        label="查询"
-        color="neutral"
-        variant="subtle"
-        size="sm"
-        :loading="fetching"
-        icon="i-lucide-search"
-        @click="async () => {
-          await triggerFetching(true)
-        }"
-      />
-      <UButton
-        color="neutral"
-        variant="subtle"
-        size="sm"
-        icon="i-lucide-timer-reset"
-        :disabled="fetching"
-        @click="() => onUpdateWhereQuery(defaultWhereQuery)"
-      >
-        重置
-      </UButton>
+        <UButton
+          color="neutral"
+          variant="subtle"
+          size="sm"
+          icon="i-lucide-eraser"
+          :disabled="fetching"
+          @click="onClearValues"
+        >
+          清空
+        </UButton>
+      </div>
+      <div class="flex-1 flex justify-end">
+        <UButton
+          color="neutral"
+          variant="subtle"
+          size="sm"
+          icon="i-lucide-timer-reset"
+          :disabled="fetching"
+          @click="onResetAll"
+        >
+          重置
+        </UButton>
+      </div>
     </div>
   </div>
 </template>

@@ -180,14 +180,16 @@ const dateRangeShortcuts: DateShortcut[] = [
     <!-- 输入框直接暴露 -->
     <template v-if="isNoCalendarOpr" />
 
-    <template v-else-if="isRangeOpr">
-      <!-- 必须加这个div，不然第一个输入框无法正确渲染 -->
+    <UFieldGroup
+      v-else-if="isRangeOpr"
+      class="w-full"
+    >
       <div />
       <DatePickerInput
         ref="startDateStrValueInput"
         v-model:value="startDateStrValue"
         icon=""
-        input-class="w-32"
+        input-class="min-w-28 flex-1"
         placeholder="YYYY-MM-DD"
         @focus="onOpenCalendar"
         @blur="onCloseCalendar"
@@ -199,25 +201,28 @@ const dateRangeShortcuts: DateShortcut[] = [
         ref="endDateStrValueInput"
         v-model:value="endDateStrValue"
         icon=""
-        input-class="w-32"
+        input-class="min-w-28 flex-1"
         placeholder="YYYY-MM-DD"
         @focus="onOpenCalendar"
         @blur="onCloseCalendar"
       />
-    </template>
-
-    <template v-else>
       <div />
+    </UFieldGroup>
+
+    <div
+      v-else
+      class="w-full"
+    >
       <DatePickerInput
         ref="singleDateStrValueInput"
         v-model:value="singleDateStrValue"
         icon=""
-        input-class="w-32"
+        input-class="w-full min-w-32"
         placeholder="YYYY-MM-DD"
         @focus="onOpenCalendar"
         @blur="onCloseCalendar"
       />
-    </template>
+    </div>
 
     <template #content>
       <div

@@ -115,7 +115,7 @@ const onSelect = (values: AsyncSelectValue) => {
 }
 
 const ui = computed(() => ({
-  root: ['min-w-32', props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
+  root: [props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
   base: 'peer',
   content: 'min-w-fit',
   tagsItem: 'max-w-48 inline-flex min-w-0',

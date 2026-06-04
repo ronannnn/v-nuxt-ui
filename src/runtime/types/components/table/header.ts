@@ -18,6 +18,9 @@ export type TableHeaderProps<T> = {
   displayFnInDeleteModal?: (model: T) => string | undefined
   disableCreation?: boolean
   disableWhereQuery?: boolean
+  whereQueryMode?: 'inline' | 'popover'
+  whereQueryPopoverWidth?: string | number
+  tableWidth?: number
   whereQueryProps: WhereQueryProps<T>
   disableOrderQuery?: boolean
   orderQueryProps: OrderQueryProps<T>

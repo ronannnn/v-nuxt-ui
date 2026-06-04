@@ -69,6 +69,8 @@ export type VTableProps<T> = {
   extraButtons?: TableHeaderProps<T>['extraButtons']
   onNew?: TableHeaderProps<T>['onNew']
   disableWhereQuery?: TableHeaderProps<T>['disableWhereQuery']
+  whereQueryMode?: 'inline' | 'popover'
+  whereQueryPopoverWidth?: string | number
   whereQueryOpen?: boolean
   onUpdateWhereQueryOpen?: (open: boolean) => void
   extraWhereQueryOptions?: WhereQueryOption<T>[]

@@ -31,11 +31,12 @@ defineExpose({
 </script>
 
 <template>
-  <UFieldGroup size="sm">
+  <UFieldGroup size="sm" class="w-full">
     <TableQueryWhereSimpleItemColumnPicker
       v-model:where-query-item="whereQueryItem"
       :options="options"
       :fetching="fetching"
+      disabled
       :focus="() => oprRef?.focus()"
     />
     <TableQueryWhereSimpleItemOprPicker
@@ -51,6 +52,7 @@ defineExpose({
       :options="options"
       :fetching="fetching"
       :trigger-fetching="triggerFetching"
+      class="w-full"
     />
     <UButton
       color="neutral"

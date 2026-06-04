@@ -87,7 +87,6 @@ defineExpose({
     v-model="inputBuffer"
     v-maska="'####-##-##'"
     size="sm"
-    class="font-semibold"
     :class="inputClass"
     :icon="icon"
     :placeholder="placeholder"

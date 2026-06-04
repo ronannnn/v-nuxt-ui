@@ -3,6 +3,7 @@ import type { VColumn, WhereQuery, WhereQueryColumnOption, WhereQueryItemGroup }
 export type WhereQueryOption<T> = {
   field: string & keyof T | string
   label: string
+  preferred?: boolean
 } & WhereQueryColumnOption<T>
 
 export type WhereQueryProps<T> = {

@@ -42,6 +42,9 @@ defineExpose({
     :placeholder="`请输入${label.toString()}`"
     :disabled="disabled"
     color="neutral"
+    :ui="{
+      base: 'h-full'
+    }"
     @keyup.enter="async () => {
       await triggerFetching?.()
     }"

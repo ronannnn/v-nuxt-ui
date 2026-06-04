@@ -9,7 +9,8 @@ import LayoutButtonCollapse from '#v/components/layout/button/Collapse.vue'
 
 const props = withDefaults(defineProps<VTableProps<T>>(), {
   singleRow: true,
-  singleColumn: false
+  singleColumn: false,
+  whereQueryMode: 'inline'
 })
 const {
   // data
@@ -49,13 +50,13 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
         <LayoutButtonCollapse />
         <span class="font-bold">{{ cnName }}</span>
       </div>
-      <TableHeader v-bind="tblHeaderProps" class="ml-auto" />
+      <TableHeader v-bind="tblHeaderProps" :table-width="tableWidth" class="ml-auto" />
     </div>
 
-    <!-- query where -->
-    <UCollapsible :open="tblHeaderProps.whereQueryProps.whereQueryOpen">
+    <!-- query where (inline mode only; popover mode renders in header) -->
+    <UCollapsible v-if="whereQueryMode === 'inline'" :open="tblHeaderProps.whereQueryProps.whereQueryOpen">
       <template #content>
-        <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="bg-muted border-b border-default" />
+        <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default" />
       </template>
     </UCollapsible>
 

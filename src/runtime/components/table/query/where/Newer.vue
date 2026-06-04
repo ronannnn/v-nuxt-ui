@@ -17,7 +17,7 @@ const emit = defineEmits<{
 
 const popoverOpen = ref(false)
 
-const unselectedOptions = computed<ListboxItem[]>(() => props.unselectedFields.map((field) => {
+function buildFieldItem(field: string): ListboxItem {
   const option = props.options.find(option => option.field === field)
   const column = props.bizColumns.find(column => (column as any)['accessorKey'] === field)
   return {
@@ -28,12 +28,39 @@ const unselectedOptions = computed<ListboxItem[]>(() => props.unselectedFields.m
       popoverOpen.value = false
     }
   }
-}))
+}
+
+const unselectedOptions = computed<ListboxItem[]>(() => {
+  const commonFields: string[] = []
+  const otherFields: string[] = []
+  props.unselectedFields.forEach((field) => {
+    const option = props.options.find(opt => opt.field === field)
+    if (option?.preferred !== false) {
+      commonFields.push(field)
+    } else {
+      otherFields.push(field)
+    }
+  })
+
+  const items: ListboxItem[] = []
+  if (commonFields.length > 0) {
+    items.push({ type: 'label', label: '常用条件' })
+    commonFields.forEach(field => items.push(buildFieldItem(field)))
+  }
+  if (otherFields.length > 0) {
+    if (items.length > 0) {
+      items.push({ type: 'separator' })
+    }
+    items.push({ type: 'label', label: '其他条件' })
+    otherFields.forEach(field => items.push(buildFieldItem(field)))
+  }
+  return items
+})
 </script>
 
 <template>
   <!-- NOTE: 自己实现DropdownMenu, 原生DropdownMenu的Focus有问题，会让查询字段打开的Popover关闭 -->
-  <ButtonDropdown :items="unselectedOptions">
+  <ButtonDropdown :items="unselectedOptions" class="w-fit">
     <UButton
       label="新增"
       :size="size"

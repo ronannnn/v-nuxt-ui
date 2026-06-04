@@ -34,6 +34,7 @@ export type VColumn<T> = {
   sortOption?: OrderQueryColumnOption | true
   initHide?: boolean
   checked?: boolean
+  preferred?: boolean
   // 使用方法签名以保持 T 的双变，允许 VColumn<Sub> 赋值给 VColumn<Record<string, any>>
   exportCell?(row: T): string | string[]
 } & TableColumn<T>

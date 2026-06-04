@@ -14,17 +14,43 @@ const props = defineProps<{
 
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
-const items = computed<ListboxItem[]>(() => props.options.map(option => ({
-  label: option.label,
-  value: option.field,
-  icon: tableWhereQueryItemIconMap.get(option.type) || 'field',
-  onSelect: () => {
-    modelValue.value = option.field as string
-    nextTick(() => {
-      props.focus?.()
-    })
+const items = computed<ListboxItem[]>(() => {
+  const commonItems: ListboxItem[] = []
+  const otherItems: ListboxItem[] = []
+
+  props.options.forEach((option) => {
+    const item: ListboxItem = {
+      label: option.label,
+      value: option.field,
+      icon: tableWhereQueryItemIconMap.get(option.type) || 'field',
+      onSelect: () => {
+        modelValue.value = option.field as string
+        nextTick(() => {
+          props.focus?.()
+        })
+      }
+    }
+    if (option.preferred === true) {
+      commonItems.push(item)
+    } else {
+      otherItems.push(item)
+    }
+  })
+
+  const result: ListboxItem[] = []
+  if (commonItems.length > 0) {
+    result.push({ type: 'label', label: '常用条件' })
+    result.push(...commonItems)
   }
-})))
+  if (otherItems.length > 0) {
+    if (result.length > 0) {
+      result.push({ type: 'separator' })
+    }
+    result.push({ type: 'label', label: '其他条件' })
+    result.push(...otherItems)
+  }
+  return result
+})
 
 const modelValue = computed({
   get() {
