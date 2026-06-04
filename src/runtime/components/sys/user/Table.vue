@@ -70,7 +70,8 @@ const columns: VColumn<User>[] = [
   },
   {
     accessorKey: 'roles',
-    header: '系统权限角色',
+    header: '权限角色',
+    preferred: false,
     cell: ({ row }) => row.original.roles?.map(role => role.name).join(', '),
     filterOption: {
       type: 'async-select',
@@ -101,6 +102,7 @@ const columns: VColumn<User>[] = [
       type: 'select',
       items: loginTypeOptions
     },
+    preferred: false,
     meta: {
       class: {
         td: 'min-w-24'
@@ -117,6 +119,7 @@ const columns: VColumn<User>[] = [
   {
     accessorKey: 'needFillWh',
     header: '是否需要填写工时',
+    preferred: false,
     filterOption: {
       type: 'select',
       items: booleanOptions,
@@ -151,6 +154,7 @@ const columns: VColumn<User>[] = [
     accessorKey: 'entryDate',
     header: '入职时间',
     sortOption: true,
+    preferred: false,
     filterOption: {
       type: 'date-picker'
     },
@@ -159,6 +163,7 @@ const columns: VColumn<User>[] = [
   {
     accessorKey: 'resignDate',
     header: '离职时间',
+    preferred: false,
     filterOption: {
       type: 'date-picker'
     },
@@ -181,6 +186,7 @@ const columns: VColumn<User>[] = [
     accessorKey: 'isAdmin',
     header: '是否是系统管理员',
     sortOption: true,
+    preferred: false,
     filterOption: {
       type: 'select',
       items: booleanOptions
