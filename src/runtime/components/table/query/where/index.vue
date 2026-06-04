@@ -1,9 +1,10 @@
 <script setup lang="ts" generic="T">
 import type { ComponentPublicInstance } from 'vue'
 import type { WhereQueryItem, WhereQueryProps } from '#v/types'
-import { computed, ref, nextTick } from 'vue'
+import { computed, ref, reactive, watch, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
 import { useToast } from '@nuxt/ui/composables'
+import Dnd from '#v/components/Dnd.client.vue'
 import TableQueryWhereSimpleItem from '#v/components/table/query/where/simple/item/index.vue'
 import TableQueryWhereNewer from '#v/components/table/query/where/Newer.vue'
 
@@ -15,6 +16,17 @@ const selectedWhereFields = computed<string[]>(() => {
 const unselectedWhereFields = computed<string[]>(() => {
   return props.whereOptions.map(option => option.field as string).filter(field => !selectedWhereFields.value.includes(field))
 })
+
+const unselectedPreferredFields = computed<string[]>(() =>
+  unselectedWhereFields.value.filter(field =>
+    props.whereOptions.find(opt => opt.field === field)?.preferred !== false
+  )
+)
+const unselectedOtherFields = computed<string[]>(() =>
+  unselectedWhereFields.value.filter(field =>
+    props.whereOptions.find(opt => opt.field === field)?.preferred === false
+  )
+)
 
 // simple query: item ref map & helpers (merged from simple/index.vue)
 const itemRefMap = ref<Map<string, { focus: () => void }>>(new Map())
@@ -60,27 +72,106 @@ const onNewField = (field: string) => {
   })
 }
 
+const getDefaultKeys = () => props.extraWhereQueryInitValues?.items?.map(query => query.field) ?? []
+
 // 从列头筛选触发的聚焦
 const whereQueryWithoutInitValues = computed<WhereQueryItem<T>[]>(() => {
   if (!props.whereQuery) return []
-  const defaultKeys = props.extraWhereQueryInitValues?.items?.map(query => query.field) ?? []
+  const defaultKeys = getDefaultKeys()
   return props.whereQuery.items?.filter((query) => {
     const field = query.field as string
     return !defaultKeys.includes(field)
   }) ?? []
 })
 
+type WhereQuerySection = 'preferred' | 'other'
+const whereQuerySectionExtraDataKey = '__whereQuerySection'
+
+function getBaseItemSection(item: WhereQueryItem<T>): WhereQuerySection {
+  return props.whereOptions.find(opt => opt.field === item.field)?.preferred === false ? 'other' : 'preferred'
+}
+
+function getItemSectionOverride(item: WhereQueryItem<T>): WhereQuerySection | undefined {
+  if (!item.extraData || typeof item.extraData !== 'object' || Array.isArray(item.extraData)) return undefined
+  const section = (item.extraData as Record<string, unknown>)[whereQuerySectionExtraDataKey]
+  return section === 'preferred' || section === 'other' ? section : undefined
+}
+
+function getItemSection(item: WhereQueryItem<T>): WhereQuerySection {
+  return getItemSectionOverride(item) ?? getBaseItemSection(item)
+}
+
+function isPreferredItem(item: WhereQueryItem<T>) {
+  return getItemSection(item) === 'preferred'
+}
+
+function setItemSection(item: WhereQueryItem<T>, section: WhereQuerySection): WhereQueryItem<T> {
+  const baseSection = getBaseItemSection(item)
+  if (item.extraData && (typeof item.extraData !== 'object' || Array.isArray(item.extraData))) {
+    return item
+  }
+
+  const extraData = item.extraData ? { ...item.extraData } : {}
+
+  if (section === baseSection) {
+    const { [whereQuerySectionExtraDataKey]: _section, ...restExtraData } = extraData as Record<string, unknown>
+    return {
+      ...item,
+      extraData: Object.keys(restExtraData).length > 0 ? restExtraData : undefined
+    }
+  } else {
+    ;(extraData as Record<string, unknown>)[whereQuerySectionExtraDataKey] = section
+  }
+
+  return {
+    ...item,
+    extraData: Object.keys(extraData).length > 0 ? extraData : undefined
+  }
+}
+
 const preferredItems = computed<WhereQueryItem<T>[]>(() =>
-  whereQueryWithoutInitValues.value.filter(item =>
-    props.whereOptions.find(opt => opt.field === item.field)?.preferred ?? true
-  )
+  whereQueryWithoutInitValues.value.filter(isPreferredItem)
 )
 
 const otherItems = computed<WhereQueryItem<T>[]>(() =>
-  whereQueryWithoutInitValues.value.filter(item =>
-    !(props.whereOptions.find(opt => opt.field === item.field)?.preferred ?? true)
-  )
+  whereQueryWithoutInitValues.value.filter(item => !isPreferredItem(item))
 )
+
+const preferredDndItems = ref<WhereQueryItem<T>[]>([])
+const otherDndItems = ref<WhereQueryItem<T>[]>([])
+
+watch([preferredItems, otherItems], () => {
+  preferredDndItems.value = [...preferredItems.value]
+  otherDndItems.value = [...otherItems.value]
+}, { immediate: true })
+
+function onDndEnd() {
+  const defaultKeys = getDefaultKeys()
+  const initItems = props.whereQuery?.items?.filter(q => defaultKeys.includes(q.field as string)) ?? []
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items: [
+      ...initItems,
+      ...preferredDndItems.value.map(item => setItemSection(item, 'preferred')),
+      ...otherDndItems.value.map(item => setItemSection(item, 'other'))
+    ]
+  })
+}
+
+function onUpdateWhereQueryItem(field: string, newWhereQueryItem: WhereQueryItem<T>) {
+  const items = props.whereQuery?.items ?? []
+  const realIdx = items.findIndex(query => query.field === field)
+  if (realIdx === -1) return
+  const currentItem = items[realIdx]
+  if (!currentItem) return
+  const currentSection = getItemSection(currentItem)
+  const updatedItems = [...items]
+  updatedItems[realIdx] = setItemSection(newWhereQueryItem, currentSection)
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items: updatedItems
+  })
+}
 
 const rangeOprList = ['range_gt_lt', 'range_gt_lte', 'range_gte_lt', 'range_gte_lte']
 const isDateRangeQueryItem = (item: WhereQueryItem<T>) => {
@@ -111,88 +202,62 @@ const focusField = (field: string): boolean => {
   }
   return false
 }
+
+const conditionListClass = 'grid grid-cols-24 gap-3'
+
+const sections = reactive([
+  { key: 'preferred' as const, label: '常用条件', dndItems: preferredDndItems, unselectedFields: unselectedPreferredFields },
+  { key: 'other' as const, label: '其他条件', dndItems: otherDndItems, unselectedFields: unselectedOtherFields }
+])
+
 defineExpose({ focusField })
 </script>
 
 <template>
   <div class="divide-y divide-default">
     <div class="@container p-2.5 space-y-2.5">
-      <!-- preferred conditions -->
-      <div v-if="unselectedWhereFields.length > 0 || preferredItems.length > 0">
+      <div
+        v-for="section in sections"
+        :key="section.key"
+      >
         <div class="font-bold text-xs text-dimmed mb-1">
-          常用条件
+          {{ section.label }}
         </div>
-        <div class="grid grid-flow-dense grid-cols-1 @2xl:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 gap-2.5">
-          <TableQueryWhereSimpleItem
-            v-for="(item, idx) in preferredItems"
-            :ref="(el) => setItemRef(item.field as string, el)"
-            :key="idx"
-            :where-query-item="item"
-            :options="whereOptions"
-            :fetching="fetching"
-            :trigger-fetching="() => triggerFetching(true)"
-            :class="isDateRangeQueryItem(item) ? '@2xl:col-span-2' : undefined"
-            @remove="onRemoveFilter"
-            @update:where-query-item="newWhereQueryItem => {
-              const items = props.whereQuery?.items ?? []
-              const realIdx = items.findIndex(q => q.field === item.field)
-              if (realIdx === -1) return
-              const updatedItems = [...items]
-              updatedItems[realIdx] = newWhereQueryItem
-              onUpdateWhereQuery({
-                ...whereQuery,
-                items: updatedItems
-              })
-            }"
-          />
-          <TableQueryWhereNewer
-            v-if="unselectedWhereFields.length > 0"
-            :options="whereOptions"
-            :unselected-fields="unselectedWhereFields"
-            :biz-columns="bizColumns ?? []"
-            size="sm"
-            @new="onNewField"
-          />
-        </div>
-      </div>
-
-      <!-- other conditions -->
-      <div v-if="unselectedWhereFields.length > 0 || otherItems.length > 0">
-        <div class="font-bold text-xs text-dimmed mb-1">
-          其他条件
-        </div>
-        <div class="grid grid-flow-dense grid-cols-1 @2xl:grid-cols-2 @3xl:grid-cols-3 @4xl:grid-cols-4 gap-2.5">
-          <TableQueryWhereSimpleItem
-            v-for="(item, idx) in otherItems"
-            :ref="(el) => setItemRef(item.field as string, el)"
-            :key="idx"
-            :where-query-item="item"
-            :options="whereOptions"
-            :fetching="fetching"
-            :trigger-fetching="() => triggerFetching(true)"
-            :class="isDateRangeQueryItem(item) ? '@2xl:col-span-2' : undefined"
-            @remove="onRemoveFilter"
-            @update:where-query-item="newWhereQueryItem => {
-              const items = props.whereQuery?.items ?? []
-              const realIdx = items.findIndex(q => q.field === item.field)
-              if (realIdx === -1) return
-              const updatedItems = [...items]
-              updatedItems[realIdx] = newWhereQueryItem
-              onUpdateWhereQuery({
-                ...whereQuery,
-                items: updatedItems
-              })
-            }"
-          />
-          <TableQueryWhereNewer
-            v-if="unselectedWhereFields.length > 0"
-            :options="whereOptions"
-            :unselected-fields="unselectedWhereFields"
-            :biz-columns="bizColumns ?? []"
-            size="sm"
-            @new="onNewField"
-          />
-        </div>
+        <Dnd
+          v-model="section.dndItems"
+          group="where-query"
+          handle=".where-query-handle"
+          :on-end="onDndEnd"
+          :class="conditionListClass"
+        >
+          <div
+            v-for="item in section.dndItems"
+            :key="item.field"
+            class="flex items-center gap-1 col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6"
+            :class="isDateRangeQueryItem(item) ? '@3xl:col-span-24 @5xl:col-span-12 @7xl:col-span-8' : undefined"
+          >
+            <TableQueryWhereSimpleItem
+              :ref="(el) => setItemRef(item.field as string, el)"
+              :where-query-item="item"
+              :options="whereOptions"
+              :fetching="fetching"
+              :trigger-fetching="() => triggerFetching(true)"
+              handle-class-name="where-query-handle"
+              @remove="onRemoveFilter"
+              @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
+            />
+          </div>
+          <div class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6">
+            <TableQueryWhereNewer
+              v-if="section.unselectedFields.length > 0"
+              :options="whereOptions"
+              :unselected-fields="section.unselectedFields"
+              :biz-columns="bizColumns ?? []"
+              size="sm"
+              @new="onNewField"
+            />
+          </div>
+        </Dnd>
       </div>
     </div>
     <!-- action bar -->

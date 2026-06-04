@@ -10,6 +10,7 @@ const props = defineProps<{
   fetching?: boolean
   triggerFetching?: () => Promise<void>
   onRemove: (field: string) => void
+  handleClassName?: string
 }>()
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
 
@@ -32,6 +33,12 @@ defineExpose({
 
 <template>
   <UFieldGroup size="sm" class="w-full">
+    <UButton
+      variant="outline"
+      icon="i-lucide-grip-vertical"
+      color="neutral"
+      :class="handleClassName"
+    />
     <TableQueryWhereSimpleItemColumnPicker
       v-model:where-query-item="whereQueryItem"
       :options="options"

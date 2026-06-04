@@ -60,7 +60,7 @@ const unselectedOptions = computed<ListboxItem[]>(() => {
 
 <template>
   <!-- NOTE: 自己实现DropdownMenu, 原生DropdownMenu的Focus有问题，会让查询字段打开的Popover关闭 -->
-  <ButtonDropdown :items="unselectedOptions" class="w-fit">
+  <ButtonDropdown :items="unselectedOptions" class="w-fit h-fit">
     <UButton
       label="新增"
       :size="size"
