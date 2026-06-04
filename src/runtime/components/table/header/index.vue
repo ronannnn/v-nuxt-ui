@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import { markRaw, computed } from 'vue'
+import { markRaw } from 'vue'
 import { defu } from 'defu'
 import { useOverlay } from '@nuxt/ui/composables'
 import type { TableHeaderProps, VColumn } from '#v/types'
@@ -7,10 +7,8 @@ import type { ButtonProps } from '@nuxt/ui'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UChip from '@nuxt/ui/components/Chip.vue'
 import UKbd from '@nuxt/ui/components/Kbd.vue'
-import UPopover from '@nuxt/ui/components/Popover.vue'
 import PermissionWrapper from '#v/components/PermissionWrapper.vue'
 import TableQueryOrder from '#v/components/table/query/order/index.vue'
-import TableQueryWhere from '#v/components/table/query/where/index.vue'
 import DeleteModal from '#v/components/DeleteModal.vue'
 import TableHeaderSettings from '#v/components/table/header/settings/index.vue'
 import TableExcelExportModal from '#v/components/table/ExcelExportModal.vue'
@@ -21,28 +19,6 @@ const props = withDefaults(defineProps<TableHeaderProps<T>>(), {
 })
 
 const defaultNewRow = { id: 0 } as Record<string, any> as T
-
-// popover mode for where query
-const isWhereQueryPopoverMode = computed(() => props.whereQueryMode === 'popover')
-const wherePopoverOpen = computed({
-  get: () => props.whereQueryProps.whereQueryOpen ?? false,
-  set: (val: boolean) => props.whereQueryProps.onUpdateWhereQueryOpen?.(val)
-})
-
-const popoverWidth = computed(() => {
-  const w = props.whereQueryPopoverWidth
-  if (w === undefined) {
-    return { style: { width: `${props.tableWidth || 560}px` } as Record<string, string>, class: undefined as string | undefined }
-  }
-  if (typeof w === 'number') {
-    return { style: { width: `${w}px` } as Record<string, string>, class: undefined as string | undefined }
-  }
-  // string: Tailwind class (w-*) or CSS value
-  if (/^w-/.test(w)) {
-    return { style: undefined as Record<string, string> | undefined, class: w }
-  }
-  return { style: { width: w } as Record<string, string>, class: undefined as string | undefined }
-})
 
 const overlay = useOverlay()
 const deleteModal = markRaw(overlay.create(DeleteModal))
@@ -153,43 +129,9 @@ async function onRightExtraButtonClick(btn: NonNullable<typeof props.extraButton
         刷新
       </UButton>
 
-      <!-- whereQuery: popover mode -->
-      <UPopover
-        v-if="opr === 'whereQuery' && !disableWhereQuery && isWhereQueryPopoverMode"
-        v-model:open="wherePopoverOpen"
-        mode="click"
-      >
-        <UChip :show="!whereQueryProps.isWhereQueryValueEmpty">
-          <UButton
-            icon="i-lucide-list-filter"
-            :size="size"
-            :color="wherePopoverOpen ? 'primary' : 'neutral'"
-            :loading="fetching"
-            variant="outline"
-          >
-            查询
-          </UButton>
-        </UChip>
-        <template #content>
-          <div
-            class="max-h-[70vh] overflow-auto p-0.5"
-            :class="popoverWidth.class"
-            :style="popoverWidth.style"
-          >
-            <TableQueryWhere
-              v-bind="whereQueryProps"
-              :trigger-fetching="async (fromStart: boolean) => {
-                await whereQueryProps.triggerFetching(fromStart)
-                wherePopoverOpen = false
-              }"
-            />
-          </div>
-        </template>
-      </UPopover>
-
-      <!-- whereQuery: inline mode -->
+      <!-- whereQuery: toggle panel -->
       <UChip
-        v-if="opr === 'whereQuery' && !disableWhereQuery && !isWhereQueryPopoverMode"
+        v-if="opr === 'whereQuery' && !disableWhereQuery"
         :show="!whereQueryProps.isWhereQueryValueEmpty"
       >
         <UButton

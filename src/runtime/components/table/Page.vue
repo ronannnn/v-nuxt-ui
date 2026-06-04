@@ -1,6 +1,8 @@
 <script setup lang="ts" generic="T">
+import { useId } from 'vue'
 import type { VTableProps } from '#v/types'
 import { useProTableView } from '#v/composables/table/useTableView'
+import USlideover from '@nuxt/ui/components/Slideover.vue'
 import TableHeader from '#v/components/table/header/index.vue'
 import TableQueryWhere from '#v/components/table/query/where/index.vue'
 import TablePagination from '#v/components/table/Pagination.vue'
@@ -9,9 +11,9 @@ import LayoutButtonCollapse from '#v/components/layout/button/Collapse.vue'
 
 const props = withDefaults(defineProps<VTableProps<T>>(), {
   singleRow: true,
-  singleColumn: false,
-  whereQueryMode: 'inline'
+  singleColumn: false
 })
+const tablePortalId = `v-table-portal-${useId().replace(/[^A-Za-z0-9_-]/g, '-')}`
 const {
   // data
   data,
@@ -45,23 +47,16 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
 <template>
   <div class="flex-1 flex flex-col overflow-hidden">
     <!-- header -->
-    <div class="h-(--ui-header-height) flex items-center pl-2.5 pr-2.5 border-b border-default z-1">
+    <div class="h-(--ui-header-height) flex items-center pl-2.5 pr-2.5 border-b border-default z-1 bg-default">
       <div class="flex items-center gap-1">
         <LayoutButtonCollapse />
         <span class="font-bold">{{ cnName }}</span>
       </div>
-      <TableHeader v-bind="tblHeaderProps" :table-width="tableWidth" class="ml-auto" />
+      <TableHeader v-bind="tblHeaderProps" class="ml-auto" />
     </div>
 
-    <!-- query where (inline mode only; popover mode renders in header) -->
-    <UCollapsible v-if="whereQueryMode === 'inline'" :open="tblHeaderProps.whereQueryProps.whereQueryOpen">
-      <template #content>
-        <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default" />
-      </template>
-    </UCollapsible>
-
     <!-- table -->
-    <div ref="table" class="flex-1 flex flex-col h-full overflow-hidden border-b border-default">
+    <div :id="tablePortalId" ref="table" class="relative flex-1 flex flex-col h-full overflow-hidden border-b border-default">
       <!-- table -->
       <UContextMenu :items="tblContextMenuItems">
         <ScrollArea class="flex-1">
@@ -89,6 +84,30 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
         </ScrollArea>
       </UContextMenu>
     </div>
+
+    <!-- query where (slideover from top, portalled into table) -->
+    <USlideover
+      :open="tblHeaderProps.whereQueryProps.whereQueryOpen"
+      side="top"
+      :close="false"
+      :portal="`#${tablePortalId}`"
+      :ui="{
+        content: '!absolute inset-x-0 top-0 max-h-full w-full z-20',
+        body: 'p-0 sm:p-0'
+      }"
+      @update:open="tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen"
+    >
+      <template #body>
+        <TableQueryWhere
+          ref="proTableQueryWhere"
+          v-bind="tblWhereQueryProps"
+          :trigger-fetching="async (fromStart: boolean) => {
+            await tblWhereQueryProps.triggerFetching(fromStart)
+            tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen?.(false)
+          }"
+        />
+      </template>
+    </USlideover>
 
     <!-- pagination -->
     <TablePagination v-bind="tblPaginationProps" />

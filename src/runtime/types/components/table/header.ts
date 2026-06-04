@@ -20,7 +20,6 @@ export type TableHeaderProps<T> = {
   disableWhereQuery?: boolean
   whereQueryMode?: 'inline' | 'popover'
   whereQueryPopoverWidth?: string | number
-  tableWidth?: number
   whereQueryProps: WhereQueryProps<T>
   disableOrderQuery?: boolean
   orderQueryProps: OrderQueryProps<T>

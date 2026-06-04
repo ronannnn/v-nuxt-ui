@@ -37,6 +37,7 @@ export interface UseProTableViewReturn<T> {
   tblPaginationProps: ComputedRef<TablePaginationProps<T>>
   tblContextMenuItems: Ref<ContextMenuItem[]>
   tableWidth: Ref<number>
+  tableDiv: Ref<HTMLDivElement | null>
   updateTableWidth: () => void
   tblClasses: ComputedRef<(string | boolean | (string | boolean)[])[]>
   tblUi: ComputedRef<{ root: string, th: string, td: string }>
@@ -201,6 +202,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     tblContextMenuItems,
     // view
     tableWidth,
+    tableDiv,
     updateTableWidth,
     tblClasses,
     tblUi,

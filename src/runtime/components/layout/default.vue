@@ -54,7 +54,8 @@ watch(
         body: 'px-0 sm:px-0',
         footer: 'h-(--ui-footer-height)',
         container: 'ease-in-out duration-360',
-        gap: 'ease-in-out duration-360'
+        gap: 'ease-in-out duration-360',
+        inner: 'bg-default'
       }"
     >
       <template #header="{ state }">
