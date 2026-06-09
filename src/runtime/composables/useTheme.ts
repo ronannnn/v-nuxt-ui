@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { createSharedComposable, useColorMode } from '@vueuse/core'
+import { createSharedComposable, useColorMode, usePreferredDark } from '@vueuse/core'
 import type { I18nLocale } from '#v/types'
 import { en, zh_cn } from '@nuxt/ui/locale'
 import { useApp } from './useApp'
@@ -16,8 +16,17 @@ const twNeutralColorNames = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe
 
 const _useTheme = () => {
   const appConfig = useAppConfig()
-  const colorMode = useColorMode()
+  const colorMode = useColorMode({ emitAuto: true })
   const app = useApp()
+  const isDark = usePreferredDark()
+
+  // 解析后的实际颜色模式：当选择 'auto' 时跟随系统
+  const resolvedColorMode = computed<'light' | 'dark'>(() => {
+    if (colorMode.value === 'auto') {
+      return isDark.value ? 'dark' : 'light'
+    }
+    return colorMode.value as 'light' | 'dark'
+  })
 
   const neutral = computed({
     get() {
@@ -51,7 +60,7 @@ const _useTheme = () => {
   })
 
   const chartColorVars = computed(() => ['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5'].map(c => `var(--${c})`))
-  const primaryColorVars = computed(() => twPrimaryColorNames.map(c => `var(--color-${c}-${colorMode.value === 'light' ? '400' : '500'})`))
+  const primaryColorVars = computed(() => twPrimaryColorNames.map(c => `var(--color-${c}-${resolvedColorMode.value === 'light' ? '400' : '500'})`))
 
   const radiuses = [0, 0.125, 0.25, 0.375, 0.5]
   const radius = computed({

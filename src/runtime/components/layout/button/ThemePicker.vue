@@ -7,7 +7,7 @@ const neutralColorOptions = theme.neutralColors.map(c => ({ color: c, chip: c ==
 </script>
 
 <template>
-  <UPopover :ui="{ content: 'px-6 py-4 flex flex-col gap-4' }">
+  <UPopover :open-delay="0" :ui="{ content: 'px-6 py-4 flex flex-col gap-4' }">
     <template #default="{ open }">
       <UButton
         icon="i-lucide-swatch-book"
@@ -92,7 +92,7 @@ const neutralColorOptions = theme.neutralColors.map(c => ({ color: c, chip: c ==
             v-for="m in theme.modes.value"
             :key="m.label"
             v-bind="m"
-            :selected="theme.mode.value === m.label"
+            :selected="theme.mode.value === m.value"
             @click="theme.mode.value = m.value"
           />
         </div>
