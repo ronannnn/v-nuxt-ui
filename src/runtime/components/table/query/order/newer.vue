@@ -7,6 +7,7 @@ const props = defineProps<{
   options: OrderQueryOption<T>[]
   unselectedFields: string[]
   bizColumns: VColumn<T>[]
+  disabled?: boolean
 }>()
 const emit = defineEmits<{
   new: [string]
@@ -43,6 +44,7 @@ const unselectedOptions = computed(() => {
       icon="i-lucide-plus"
       variant="ghost"
       square
+      :disabled="disabled"
     >
       新增排序条件
     </UButton>

@@ -81,6 +81,7 @@ const open = ref(false)
             :opr="item.order"
             :order-options="orderOptions"
             :unselected-fields="unselectedOrderFields"
+            :disabled="fetching"
             handle-class-name="order-query-handle"
             @change="(newField, orderType) => onChangeField(item.field as string, newField, orderType)"
             @remove="onRemoveField(item.field as string)"
@@ -91,6 +92,7 @@ const open = ref(false)
             :options="orderOptions"
             :unselected-fields="unselectedOrderFields"
             :biz-columns="bizColumns"
+            :disabled="fetching"
             @new="onNewField"
           />
           <UButton

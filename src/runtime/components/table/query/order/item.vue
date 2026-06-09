@@ -10,6 +10,7 @@ const props = defineProps<{
   orderOptions: OrderQueryOption<T>[]
   unselectedFields: string[]
   handleClassName?: string
+  disabled?: boolean
 }>()
 const emit = defineEmits<{
   change: [string, OrderQueryOpr]
@@ -61,16 +62,19 @@ const onToggleOrderType = () => {
       color="neutral"
       class="cursor-move hover:bg-default active:bg-default"
       :class="handleClassName"
+      :disabled="disabled"
     />
     <UDropdownMenu
       :items="unselectedOptions"
       size="sm"
       :ui="{ content: 'w-54' }"
+      :disabled="disabled"
     >
       <UButton
         variant="outline"
         color="neutral"
         size="sm"
+        :disabled="disabled"
       >
         {{ selectedLabel }}
       </UButton>
@@ -80,6 +84,7 @@ const onToggleOrderType = () => {
       color="neutral"
       variant="outline"
       size="sm"
+      :disabled="disabled"
       @click="onToggleOrderType"
     >
       {{ props.opr === 'asc' ? '升序' : '降序' }}
@@ -90,6 +95,7 @@ const onToggleOrderType = () => {
       variant="outline"
       color="neutral"
       class="ml-auto"
+      :disabled="disabled"
       @click="emit('remove')"
     />
   </UFieldGroup>
