@@ -38,6 +38,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
   const {
     // table-level props
     name,
+    cnName,
     disableCreation,
     disableRefresh,
     disableBatchDeletion,
@@ -380,7 +381,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
   }))
 
   const tblHeaderProps = computed<TableHeaderProps<T>>(() => ({
-    name,
+    name: cnName,
     fetching: fetching.value,
     rawBizColumns: bizColumns,
     onUpdateBizColumns: (columns: VColumn<T>[]) => {
