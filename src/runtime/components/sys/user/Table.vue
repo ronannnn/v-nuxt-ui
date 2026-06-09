@@ -57,9 +57,9 @@ const columns: VColumn<User>[] = [
     header: '直属上级',
     sortOption: true,
     cell: ({ row }) => row.original.supervisor?.nickname,
-    preferred: false,
     filterOption: {
       type: 'async-select',
+      preferred: false,
       listApi: useUserApi().list,
       likeSearchFields: ['nickname'],
       labelField: 'nickname',
@@ -71,10 +71,11 @@ const columns: VColumn<User>[] = [
   {
     accessorKey: 'roles',
     header: '权限角色',
-    preferred: false,
     cell: ({ row }) => row.original.roles?.map(role => role.name).join(', '),
     filterOption: {
       type: 'async-select',
+      preferred: false,
+      initHide: true,
       listApi: useRoleApi().list,
       likeSearchFields: ['name'],
       labelField: 'name',
@@ -100,9 +101,10 @@ const columns: VColumn<User>[] = [
     header: '登录方式',
     filterOption: {
       type: 'select',
-      items: loginTypeOptions
+      items: loginTypeOptions,
+      preferred: false,
+      initHide: true
     },
-    preferred: false,
     meta: {
       class: {
         td: 'min-w-24'
@@ -113,15 +115,17 @@ const columns: VColumn<User>[] = [
     accessorKey: 'email',
     header: '邮箱',
     filterOption: {
-      type: 'input'
+      type: 'input',
+      initHide: true
     }
   },
   {
     accessorKey: 'needFillWh',
-    header: '是否需要填写工时',
-    preferred: false,
+    header: '工时填报',
     filterOption: {
       type: 'select',
+      preferred: false,
+      initHide: true,
       items: booleanOptions,
       multiple: true,
       empty: {
@@ -154,18 +158,20 @@ const columns: VColumn<User>[] = [
     accessorKey: 'entryDate',
     header: '入职时间',
     sortOption: true,
-    preferred: false,
     filterOption: {
-      type: 'date-picker'
+      type: 'date-picker',
+      preferred: false,
+      initHide: true
     },
     cell: ({ row }) => dayjs(row.getValue('entryDate')).format(dateFormat)
   },
   {
     accessorKey: 'resignDate',
     header: '离职时间',
-    preferred: false,
     filterOption: {
-      type: 'date-picker'
+      type: 'date-picker',
+      preferred: false,
+      initHide: true
     },
     sortOption: true,
     cell: ({ row }) => dayjs(row.getValue('resignDate')).format(dateFormat)
@@ -174,7 +180,8 @@ const columns: VColumn<User>[] = [
     accessorKey: 'telNo',
     header: '电话',
     filterOption: {
-      type: 'input'
+      type: 'input',
+      initHide: true
     },
     meta: {
       class: {
@@ -184,12 +191,13 @@ const columns: VColumn<User>[] = [
   },
   {
     accessorKey: 'isAdmin',
-    header: '是否是系统管理员',
+    header: '系统管理员',
     sortOption: true,
-    preferred: false,
     filterOption: {
       type: 'select',
-      items: booleanOptions
+      items: booleanOptions,
+      preferred: false,
+      initHide: true
     }
   }
 ]

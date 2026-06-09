@@ -7,9 +7,9 @@ export const getCreateAtColumn = <T extends BaseModel>(createdAtSortOpr: OrderQu
   accessorKey: 'createdAt',
   header: '创建时间',
   cell: ({ row }) => dayjs(row.original.createdAt).format(dateTimeFormat),
-  preferred: false,
   filterOption: {
-    type: 'date-picker'
+    type: 'date-picker',
+    preferred: false
   },
   sortOption: {
     defaultOpr: createdAtSortOpr
@@ -21,9 +21,9 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     accessorKey: 'createdBy',
     header: '创建人',
     cell: ({ row }) => row.original.creator?.nickname || '/',
-    preferred: false,
     filterOption: {
       type: 'async-select',
+      preferred: false,
       listApi: useUserApi().list,
       likeSearchFields: ['nickname'],
       labelField: 'nickname',
@@ -37,9 +37,9 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     accessorKey: 'updatedBy',
     header: '更新人',
     cell: ({ row }) => row.original.updater?.nickname || '/',
-    preferred: false,
     filterOption: {
       type: 'async-select',
+      preferred: false,
       listApi: useUserApi().list,
       likeSearchFields: ['nickname'],
       labelField: 'nickname',
@@ -52,9 +52,9 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     accessorKey: 'updatedAt',
     header: '更新时间',
     cell: ({ row }) => dayjs(row.original.updatedAt).format(dateTimeFormat),
-    preferred: false,
     filterOption: {
-      type: 'date-picker'
+      type: 'date-picker',
+      preferred: false
     },
     sortOption: true
   }

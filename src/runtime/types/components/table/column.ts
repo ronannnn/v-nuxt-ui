@@ -8,7 +8,9 @@ export type WhereQueryColumnOption<T> = {
   defaultOpr?: WhereQueryOpr
   custom?: boolean
   initValues?: any
+  /** 查询条件是否默认隐藏（initHide=true 时不在 where 面板显示） */
   initHide?: boolean
+  preferred?: boolean
   disableOprSelector?: boolean
 } & (
   | { type: 'input' }
@@ -32,9 +34,9 @@ export type OrderQueryColumnOption = {
 export type VColumn<T> = {
   filterOption?: WhereQueryColumnOption<any> // 这里不能是T，因为 filterOption 的配置可能与 T 无关，例如一个T是user，这里是查询部门
   sortOption?: OrderQueryColumnOption | true
+  /** 列是否默认隐藏（控制表格列可见性） */
   initHide?: boolean
   checked?: boolean
-  preferred?: boolean
   // 使用方法签名以保持 T 的双变，允许 VColumn<Sub> 赋值给 VColumn<Record<string, any>>
   exportCell?(row: T): string | string[]
 } & TableColumn<T>

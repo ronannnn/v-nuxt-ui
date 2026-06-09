@@ -22,7 +22,6 @@ export function useTableQuery<T>(props: {
       .map((col: any) => ({
         field: col.accessorKey as string,
         label: col.header as string,
-        preferred: col.preferred,
         ...col.filterOption
       }))
     extraWhereQueryOptions?.forEach((option) => {
@@ -34,6 +33,7 @@ export function useTableQuery<T>(props: {
   const whereQueryInitValues = computed<WhereQuery<T>>(() => {
     const initValues: WhereQuery<T> = {
       items: whereQueryOptions.value
+        .filter(option => option.initHide !== true)
         .map(option => ({
           field: option.field,
           opr: option.defaultOpr ?? useTableOpr().getDefaultOprByType(option.type),
@@ -71,7 +71,7 @@ export function useTableQuery<T>(props: {
       accessorKey: (col as any)['accessorKey'],
       fixed: 'unfixed' as const,
       checked: !col.initHide,
-      preferred: col.preferred
+      preferred: (col.filterOption as any)?.preferred
     }))
   )
 

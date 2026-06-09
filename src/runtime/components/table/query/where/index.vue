@@ -191,9 +191,28 @@ const onClearValues = () => {
   })
 }
 
-// 重置：清空数据 + 重置为默认字段
+// 还原默认：补全 initHide 不为 true 的字段，值全部置空，不删除已有字段
 const onResetAll = () => {
-  props.onUpdateWhereQuery(props.defaultWhereQuery)
+  const currentItems = props.whereQuery?.items ?? []
+  const currentFields = new Set(currentItems.map(item => item.field as string))
+
+  // 补全缺失的默认显示字段（initHide 不为 true）
+  const missingOptions = props.whereOptions.filter(opt => !opt.initHide && !currentFields.has(opt.field as string))
+  const newItems: WhereQueryItem<T>[] = missingOptions.map(opt => ({
+    field: opt.field,
+    opr: opt.defaultOpr ?? useTableOpr().getDefaultOprByType(opt.type),
+    value: null,
+    custom: opt.custom
+  }))
+
+  // 保留现有字段、值置空、追加缺失字段
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items: [
+      ...currentItems.map(item => ({ ...item, value: null })),
+      ...newItems
+    ]
+  })
 }
 
 // 补全字段：将可查询但未出现的字段追加到列表后面（常用优先）
@@ -229,8 +248,8 @@ const onRemoveAllFields = () => {
 }
 
 const moreActions = computed<DropdownMenuItem[]>(() => [
-  { label: '补全字段', icon: 'i-lucide-list-plus', onSelect: onFillMissingFields },
-  { label: '删除所有字段', icon: 'i-lucide-trash-2', onSelect: onRemoveAllFields }
+  { label: '补全全部字段', icon: 'i-lucide-list-plus', onSelect: onFillMissingFields },
+  { label: '清空全部字段', icon: 'i-lucide-trash-2', onSelect: onRemoveAllFields }
 ])
 
 // 从列头筛选触发的聚焦
@@ -324,7 +343,7 @@ defineExpose({ focusField })
           :disabled="fetching"
           @click="onClearValues"
         >
-          清空
+          清空值
         </UButton>
       </div>
       <div class="flex-1 flex justify-end items-center">
@@ -336,7 +355,7 @@ defineExpose({ focusField })
             :disabled="fetching"
             @click="onResetAll"
           >
-            还原默认
+            恢复默认条件
           </UButton>
           <UDropdownMenu :items="moreActions">
             <UButton
