@@ -72,6 +72,7 @@ const extraRowActions: RowActionProps<SimpleUser>[] = [
     :data="data"
     :biz-columns="columns"
     :extra-row-actions="extraRowActions"
+    hide-last-row-border
     class="border border-default rounded-md"
   />
 </template>
