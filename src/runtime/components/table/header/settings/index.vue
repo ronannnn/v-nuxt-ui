@@ -16,7 +16,7 @@ const emit = defineEmits<{
 <template>
   <USlideover
     :title="`${tblName}设置`"
-    description="配置表格列的显示与顺序"
+    description="通过拖拽调整顺序，使用右侧按钮固定或隐藏列"
     inset
     :close="{ onClick: () => emit('close', false) }"
   >
@@ -29,7 +29,7 @@ const emit = defineEmits<{
     </template>
     <template #footer>
       <UButton
-        label="取消"
+        label="关闭"
         color="neutral"
         variant="subtle"
         icon="i-lucide-x"
