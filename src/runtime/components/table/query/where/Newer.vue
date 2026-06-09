@@ -44,14 +44,14 @@ const unselectedOptions = computed<ListboxItem[]>(() => {
 
   const items: ListboxItem[] = []
   if (commonFields.length > 0) {
-    items.push({ type: 'label', label: '常用条件' })
+    items.push({ type: 'label', label: '常用查询条件' })
     commonFields.forEach(field => items.push(buildFieldItem(field)))
   }
   if (otherFields.length > 0) {
     if (items.length > 0) {
       items.push({ type: 'separator' })
     }
-    items.push({ type: 'label', label: '其他条件' })
+    items.push({ type: 'label', label: '其他查询条件' })
     otherFields.forEach(field => items.push(buildFieldItem(field)))
   }
   return items

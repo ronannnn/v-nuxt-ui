@@ -265,8 +265,8 @@ const focusField = (field: string): boolean => {
 const conditionListClass = 'grid grid-cols-24 gap-3'
 
 const sections = reactive([
-  { key: 'preferred' as const, label: '常用条件', dndItems: preferredDndItems, unselectedFields: unselectedPreferredFields },
-  { key: 'other' as const, label: '其他条件', dndItems: otherDndItems, unselectedFields: unselectedOtherFields }
+  { key: 'preferred' as const, label: '常用查询条件', dndItems: preferredDndItems, unselectedFields: unselectedPreferredFields },
+  { key: 'other' as const, label: '其他查询条件', dndItems: otherDndItems, unselectedFields: unselectedOtherFields }
 ])
 
 defineExpose({ focusField })

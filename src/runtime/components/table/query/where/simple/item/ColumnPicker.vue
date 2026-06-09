@@ -39,14 +39,14 @@ const items = computed<ListboxItem[]>(() => {
 
   const result: ListboxItem[] = []
   if (commonItems.length > 0) {
-    result.push({ type: 'label', label: '常用条件' })
+    result.push({ type: 'label', label: '常用查询条件' })
     result.push(...commonItems)
   }
   if (otherItems.length > 0) {
     if (result.length > 0) {
       result.push({ type: 'separator' })
     }
-    result.push({ type: 'label', label: '其他条件' })
+    result.push({ type: 'label', label: '其他查询条件' })
     result.push(...otherItems)
   }
   return result
