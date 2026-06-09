@@ -63,7 +63,7 @@ watch(
         footer: 'h-(--ui-footer-height)',
         container: 'ease-in-out duration-360',
         gap: 'ease-in-out duration-360',
-        inner: 'bg-default'
+        inner: ['sidebar', 'floating'].includes(theme.sidebarVariant.value as string) && 'bg-default'
       }"
     >
       <template #header="{ state }">
