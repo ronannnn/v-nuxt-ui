@@ -357,7 +357,7 @@ defineExpose({ focusField })
           >
             恢复默认条件
           </UButton>
-          <UDropdownMenu :items="moreActions">
+          <UDropdownMenu :items="moreActions" size="sm">
             <UButton
               color="neutral"
               variant="subtle"
