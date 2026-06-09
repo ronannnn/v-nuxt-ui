@@ -37,6 +37,7 @@ defineExpose({
       variant="outline"
       icon="i-lucide-grip-vertical"
       color="neutral"
+      class="cursor-move hover:bg-default active:bg-default"
       :class="handleClassName"
     />
     <TableQueryWhereSimpleItemColumnPicker

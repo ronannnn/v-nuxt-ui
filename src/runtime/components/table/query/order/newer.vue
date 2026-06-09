@@ -42,13 +42,18 @@ const unselectedOptions = computed(() => {
       size="sm"
       icon="i-lucide-plus"
       variant="ghost"
+      square
     >
       新增排序条件
     </UButton>
 
     <template #content>
       <UCommandPalette
+        size="sm"
         :groups="unselectedOptions"
+        :input="{
+          size: 'xs'
+        }"
         :ui="{ input: '[&>input]:h-8 [&>input]:text-sm' }"
         placeholder="搜索未选字段"
       />

@@ -9,6 +9,7 @@ const props = defineProps<{
   opr: OrderQueryOpr
   orderOptions: OrderQueryOption<T>[]
   unselectedFields: string[]
+  handleClassName?: string
 }>()
 const emit = defineEmits<{
   change: [string, OrderQueryOpr]
@@ -53,19 +54,23 @@ const onToggleOrderType = () => {
 </script>
 
 <template>
-  <div class="flex items-center gap-3 px-2.5">
-    <div class="order-query-handle cursor-move flex">
-      <UIcon name="i-lucide-grip-vertical" />
-    </div>
+  <UFieldGroup size="sm">
+    <UButton
+      variant="outline"
+      icon="i-lucide-grip-vertical"
+      color="neutral"
+      class="cursor-move hover:bg-default active:bg-default"
+      :class="handleClassName"
+    />
     <UDropdownMenu
       :items="unselectedOptions"
+      size="sm"
       :ui="{ content: 'w-54' }"
     >
       <UButton
         variant="outline"
         color="neutral"
         size="sm"
-        trailing-icon="i-lucide-chevron-down"
       >
         {{ selectedLabel }}
       </UButton>
@@ -79,15 +84,13 @@ const onToggleOrderType = () => {
     >
       {{ props.opr === 'asc' ? '升序' : '降序' }}
     </UButton>
-    <UTooltip text="删除该排序条件" :content="{ side: 'top' }">
-      <UButton
-        size="xs"
-        icon="i-lucide-x"
-        variant="ghost"
-        color="neutral"
-        class="ml-auto"
-        @click="emit('remove')"
-      />
-    </UTooltip>
-  </div>
+    <UButton
+      size="xs"
+      icon="i-lucide-x"
+      variant="outline"
+      color="neutral"
+      class="ml-auto"
+      @click="emit('remove')"
+    />
+  </UFieldGroup>
 </template>

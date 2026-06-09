@@ -64,7 +64,8 @@ const open = ref(false)
       </UButton>
     </UChip>
     <template #content>
-      <div class="flex flex-col gap-2 p-2">
+      <div class="flex flex-col gap-2.5 py-2.5 px-3">
+        <span class="font-bold text-xs text-dimmed">排序条件</span>
         <!-- items -->
         <Dnd
           v-if="dragOrderQuery.length > 0"
@@ -80,6 +81,7 @@ const open = ref(false)
             :opr="item.order"
             :order-options="orderOptions"
             :unselected-fields="unselectedOrderFields"
+            handle-class-name="order-query-handle"
             @change="(newField, orderType) => onChangeField(item.field as string, newField, orderType)"
             @remove="onRemoveField(item.field as string)"
           />
@@ -97,6 +99,7 @@ const open = ref(false)
             variant="ghost"
             :disabled="isOrderQueryDefault || fetching"
             icon="i-lucide-timer-reset"
+            square
             @click="() => onUpdateAndTriggerFetching(defaultOrderQuery ?? [])"
           >
             重置
