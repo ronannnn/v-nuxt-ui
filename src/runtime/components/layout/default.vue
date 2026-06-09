@@ -8,7 +8,7 @@ import LayoutModuleMenu from '#v/components/layout/button/ModuleMenu.vue'
 import LayoutThemePicker from '#v/components/layout/button/ThemePicker.vue'
 import LayoutUserMenu from '#v/components/layout/button/UserMenu.vue'
 import Watermark from '#v/components/Watermark.vue'
-import { watch } from 'vue'
+import { watch, computed } from 'vue'
 
 const app = useApp()
 const theme = useTheme()
@@ -18,6 +18,14 @@ const loginUser = useAuth().loginUser
 const route = useRoute()
 // initialize global sidebar menus (library consumers can set real menus here)
 const { sidebarMenus, expandSidebarMenu, breadcrumbs, getBreadcrumbs } = useSidebarMenus()
+
+// sidebarCollapsed 与 USidebar 的 open 语义相反，取反
+const sidebarOpen = computed({
+  get: () => !app.sidebarCollapsed.value,
+  set: (val: boolean) => {
+    app.sidebarCollapsed.value = !val
+  }
+})
 
 // 直接在路由变化时同步更新菜单状态
 watch(() => route.path, (newPath) => {
@@ -46,7 +54,7 @@ watch(
   >
     <!-- sidebar -->
     <USidebar
-      v-model:open="app.sidebarCollapsed.value"
+      v-model:open="sidebarOpen"
       :variant="theme.sidebarVariant.value"
       :collapsible="theme.sidebarCollapsible.value"
       :side="theme.sidebarSide.value"
