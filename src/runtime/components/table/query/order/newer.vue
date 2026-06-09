@@ -18,7 +18,7 @@ const unselectedOptions = computed(() => {
   const options: CommandPaletteGroup<any>[] = [
     {
       id: 'unselected-fields',
-      label: '新增查询字段',
+      label: '新增排序字段',
       items: props.unselectedFields.map((field) => {
         const option = props.options.find(option => option.field === field)
         const column = props.bizColumns.find(column => (column as any)['accessorKey'] === field)
