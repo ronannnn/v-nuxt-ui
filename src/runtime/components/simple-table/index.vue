@@ -1,13 +1,15 @@
 <script setup lang="ts" generic="T">
 import { computed, ref, useTemplateRef, h, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import type { VColumn, VTableProps } from '#v/types'
+import type { VColumn, VTableProps, RowActionProps } from '#v/types'
+import type { DropdownMenuItem } from '@nuxt/ui'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UBadge from '@nuxt/ui/components/Badge.vue'
+import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue'
 
 const props = withDefaults(defineProps<
   Pick<
     VTableProps<T>,
-  'singleRow' | 'singleColumn' | 'hideLastRowBorder' | 'bizColumns'
+  'singleRow' | 'singleColumn' | 'hideLastRowBorder' | 'bizColumns' | 'extraRowActions' | 'disableRowActions'
   >
   & {
     data: T[]
@@ -156,8 +158,76 @@ const columnsWithHeader = computed(() => props.bizColumns.map(col => ({
   }
 } as VColumn<T>)) || [])
 
+function buildActionItem(action: RowActionProps<T>): DropdownMenuItem {
+  const item: DropdownMenuItem = {
+    label: action.label,
+    icon: action.icon,
+    type: action.type,
+    color: action.color
+  }
+  if (action.children && action.children.length > 0) {
+    item.children = action.children.map(buildActionItem)
+    return item
+  }
+  item.onClick = () => {
+    // row 在 cell render 时注入，这里 onClick 会被 cell 中实际绑定覆盖
+  }
+  return item
+}
+
+function getActionColumn(): VColumn<T> {
+  return {
+    id: 'actions',
+    accessorKey: 'actions',
+    header: '操作',
+    meta: {
+      class: {
+        th: 'w-15 min-w-15 px-4'
+      }
+    },
+    cell: ({ row }) => {
+      const items = (props.extraRowActions || []).map((action) => {
+        const item = buildActionItem(action)
+        // override onClick with the actual row data
+        if (!action.children?.length) {
+          item.onClick = async () => {
+            if (action.fn) {
+              action.fn(row.original)
+            }
+            if (action.asyncFn) {
+              await action.asyncFn(row.original)
+            }
+            if (action.fnWithModal) {
+              await action.fnWithModal(row.original)
+            }
+          }
+        }
+        return item
+      })
+      return h(
+        'div',
+        { class: 'text-center' },
+        h(
+          UDropdownMenu,
+          { content: { align: 'end' }, items },
+          {
+            'default': () => h(UButton, { icon: 'i-lucide-ellipsis', color: 'neutral', variant: 'ghost', size: 'sm', class: 'ml-auto' }),
+            'item': () => null,
+            'item-leading': () => null,
+            'item-label': () => null,
+            'item-description': () => null,
+            'item-trailing': () => null,
+            'content-top': () => null,
+            'content-bottom': () => null
+          }
+        )
+      )
+    }
+  }
+}
+
 const columnsWithFilterOptions = computed<VColumn<T>[]>(() => {
-  return columnsWithHeader.value.map((col) => {
+  const cols = columnsWithHeader.value.map((col) => {
     if (!col.filterOption) {
       return col
     }
@@ -175,6 +245,12 @@ const columnsWithFilterOptions = computed<VColumn<T>[]>(() => {
         return col
     }
   }) as VColumn<T>[]
+
+  if (!props.disableRowActions && props.extraRowActions?.length) {
+    cols.push(getActionColumn())
+  }
+
+  return cols
 })
 </script>
 

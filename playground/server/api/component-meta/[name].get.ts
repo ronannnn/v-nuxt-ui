@@ -222,7 +222,9 @@ const componentMeta: Record<string, ComponentMetaEntry> = {
       { name: 'bizColumns', type: 'VColumn<T>[]', required: true, description: 'Column definitions' },
       { name: 'singleRow', type: 'boolean', default: 'true', description: 'Single row mode' },
       { name: 'singleColumn', type: 'boolean', default: 'false', description: 'Single column mode' },
-      { name: 'hideLastRowBorder', type: 'boolean | undefined', required: false, description: 'Hide the last row border' }
+      { name: 'hideLastRowBorder', type: 'boolean | undefined', required: false, description: 'Hide the last row border' },
+      { name: 'extraRowActions', type: 'RowActionProps<T>[]', required: false, description: 'Extra row action buttons' },
+      { name: 'disableRowActions', type: 'boolean', required: false, description: 'Disable all row actions' }
     ],
     slots: [],
     events: []
