@@ -94,7 +94,6 @@ const onToggleOrderType = () => {
       icon="i-lucide-x"
       variant="outline"
       color="neutral"
-      class="ml-auto"
       :disabled="disabled"
       @click="emit('remove')"
     />

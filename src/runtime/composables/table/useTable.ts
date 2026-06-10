@@ -104,6 +104,7 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     whereQuery,
     whereQueryOpen,
     orderQuery,
+    orderQueryOpen,
     isWhereQueryValueEmpty,
     pruneWhereQuery
   } = queryComposable
@@ -375,6 +376,8 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
     defaultOrderQuery: orderQueryInitValues.value,
     orderQuery: orderQuery.value,
     onUpdateOrderQuery: query => orderQuery.value = query,
+    orderQueryOpen: orderQueryOpen.value,
+    onUpdateOrderQueryOpen: (open: boolean) => orderQueryOpen.value = open,
     fetching: fetching.value,
     triggerFetching: debouncedFetchList,
     bizColumns: bizColumns

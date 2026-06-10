@@ -262,7 +262,7 @@ const focusField = (field: string): boolean => {
   return false
 }
 
-const conditionListClass = 'grid grid-cols-24 gap-3'
+const conditionListClass = 'grid grid-cols-24 gap-2.5'
 
 const sections = reactive([
   { key: 'preferred' as const, label: '常用查询条件', dndItems: preferredDndItems, unselectedFields: unselectedPreferredFields },
@@ -274,12 +274,12 @@ defineExpose({ focusField })
 
 <template>
   <div class="divide-y divide-default">
-    <div class="@container p-2.5 space-y-4">
+    <div class="@container p-4 space-y-6">
       <div
         v-for="section in sections"
         :key="section.key"
       >
-        <div class="font-bold text-xs text-dimmed mb-1.5">
+        <div class="font-bold text-xs text-dimmed mb-2.5">
           {{ section.label }}
         </div>
         <Dnd
@@ -320,7 +320,7 @@ defineExpose({ focusField })
       </div>
     </div>
     <!-- action bar -->
-    <div class="flex items-center gap-2.5 p-2.5">
+    <div class="flex items-center gap-2.5 p-4">
       <div class="flex-1" />
       <div class="flex items-center gap-2.5">
         <UButton
@@ -343,7 +343,7 @@ defineExpose({ focusField })
           :disabled="fetching"
           @click="onClearValues"
         >
-          清空值
+          清空
         </UButton>
       </div>
       <div class="flex-1 flex justify-end items-center">

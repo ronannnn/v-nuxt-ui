@@ -11,6 +11,8 @@ export type OrderQueryProps<T> = {
   defaultOrderQuery?: OrderQuery<T>
   orderQuery: OrderQuery<T>
   onUpdateOrderQuery: (query: OrderQuery<T>) => void
+  orderQueryOpen?: boolean
+  onUpdateOrderQueryOpen?: (open: boolean) => void
   fetching?: boolean
   triggerFetching: () => Promise<void>
   bizColumns: VColumn<T>[]

@@ -25,5 +25,6 @@ export type TableSettings<T> = {
   pageSize?: number
   whereQuery?: import('./query').WhereQuery<T>
   whereQueryOpen?: boolean
+  orderQueryOpen?: boolean
   orderQuery?: import('./query').OrderQuery<T>
 }

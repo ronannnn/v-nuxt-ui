@@ -5,6 +5,7 @@ import { useProTableView } from '#v/composables/table/useTableView'
 import USlideover from '@nuxt/ui/components/Slideover.vue'
 import TableHeader from '#v/components/table/header/index.vue'
 import TableQueryWhere from '#v/components/table/query/where/index.vue'
+import TableQueryOrder from '#v/components/table/query/order/index.vue'
 import TablePagination from '#v/components/table/Pagination.vue'
 import ScrollArea from '#v/components/ScrollArea.vue'
 import LayoutButtonCollapse from '#v/components/layout/button/Collapse.vue'
@@ -92,16 +93,16 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
     <USlideover
       :open="tblHeaderProps.whereQueryProps.whereQueryOpen"
       side="top"
+      inset
       :close="false"
       :portal="`#${tablePortalId}`"
       :ui="{
         content: '!absolute z-2',
-        body: 'p-0 sm:p-0',
         overlay: 'z-1'
       }"
       @update:open="tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen"
     >
-      <template #body>
+      <template #content>
         <TableQueryWhere
           ref="proTableQueryWhere"
           v-bind="tblWhereQueryProps"
@@ -109,6 +110,26 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
             await tblWhereQueryProps.triggerFetching(fromStart)
             tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen?.(false)
           }"
+        />
+      </template>
+    </USlideover>
+
+    <!-- query order (drawer from right) -->
+    <USlideover
+      :open="tblHeaderProps.orderQueryProps.orderQueryOpen"
+      side="top"
+      inset
+      :portal="`#${tablePortalId}`"
+      :ui="{
+        content: '!absolute z-2 h-fit w-fit ml-auto',
+        overlay: 'z-1'
+      }"
+      @update:open="tblHeaderProps.orderQueryProps.onUpdateOrderQueryOpen"
+    >
+      <template #content>
+        <TableQueryOrder
+          v-bind="tblHeaderProps.orderQueryProps"
+          :trigger-fetching="tblHeaderProps.orderQueryProps.triggerFetching"
         />
       </template>
     </USlideover>

@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T">
 import { markRaw, computed } from 'vue'
 import { defu } from 'defu'
+import { compareObjArrays } from '#v/utils'
 import { useOverlay } from '@nuxt/ui/composables'
 import type { TableHeaderProps, VColumn } from '#v/types'
 import type { ButtonProps, DropdownMenuItem } from '@nuxt/ui'
@@ -10,7 +11,6 @@ import UKbd from '@nuxt/ui/components/Kbd.vue'
 import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue'
 import UFieldGroup from '@nuxt/ui/components/FieldGroup.vue'
 import PermissionWrapper from '#v/components/PermissionWrapper.vue'
-import TableQueryOrder from '#v/components/table/query/order/index.vue'
 import DeleteModal from '#v/components/DeleteModal.vue'
 import TableHeaderSettings from '#v/components/table/header/settings/index.vue'
 import TableExcelExportModal from '#v/components/table/ExcelExportModal.vue'
@@ -163,7 +163,9 @@ const headerActions = computed<HeaderAction[]>(() => {
         label: '排序',
         icon: 'i-lucide-arrow-up-down',
         visible: !props.disableOrderQuery,
-        onSelect: () => {}
+        onSelect: () => {
+          props.orderQueryProps.onUpdateOrderQueryOpen?.(true)
+        }
       })
     }
     if (opr === 'settings') {
@@ -300,11 +302,21 @@ const mobileMoreItems = computed<DropdownMenuItem[]>(() =>
           </UButton>
         </UChip>
 
-        <TableQueryOrder
+        <UChip
           v-if="opr === 'orderQuery' && !disableOrderQuery"
-          v-bind="orderQueryProps"
-          :size="size"
-        />
+          :show="!compareObjArrays(orderQueryProps.orderQuery, orderQueryProps.defaultOrderQuery)"
+        >
+          <UButton
+            icon="i-lucide-arrow-up-down"
+            :size="size"
+            :color="orderQueryProps.orderQueryOpen ? 'primary' : 'neutral'"
+            :loading="fetching"
+            variant="outline"
+            @click="orderQueryProps.onUpdateOrderQueryOpen?.(!orderQueryProps.orderQueryOpen)"
+          >
+            排序
+          </UButton>
+        </UChip>
 
         <UButton
           v-if="opr === 'settings' && !disableSettings && rawBizColumns?.length && onUpdateBizColumns"

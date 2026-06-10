@@ -99,6 +99,11 @@ export function useTableQuery<T>(props: {
     set: query => localStgSettings.value = { ...localStgSettings.value, orderQuery: query }
   })
 
+  const orderQueryOpen = computed<boolean>({
+    get: () => localStgSettings.value.orderQueryOpen ?? false,
+    set: (open: boolean) => localStgSettings.value = { ...localStgSettings.value, orderQueryOpen: open }
+  })
+
   // check if where query is empty
   const checkIfWhereQueryItemsValueEmpty = (items: WhereQueryItem<T>[]) => {
     const itemsWithOprNoValues = items.filter(item => noValueOprList.includes(item.opr))
@@ -171,6 +176,7 @@ export function useTableQuery<T>(props: {
     whereQuery,
     whereQueryOpen,
     orderQuery,
+    orderQueryOpen,
     isWhereQueryValueEmpty,
     pruneWhereQuery
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T">
 import type { OrderQueryProps, OrderQuery, OrderQueryOpr } from '#v/types'
 import { compareObjArrays } from '#v/utils'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import Dnd from '#v/components/Dnd.client.vue'
 import TableQueryOrderItem from '#v/components/table/query/order/Item.vue'
 import TableQueryOrderNewer from '#v/components/table/query/order/Newer.vue'
@@ -46,68 +46,52 @@ const dragOrderQuery = computed<OrderQuery<T>>({
     onUpdateAndTriggerFetching(newOrderQuery)
   }
 })
-
-const open = ref(false)
 </script>
 
 <template>
-  <UPopover v-model:open="open" mode="click">
-    <UChip :show="!isOrderQueryDefault">
+  <div class="flex flex-col p-4 gap-2.5">
+    <div class="font-bold text-xs text-dimmed">
+      排序条件
+    </div>
+    <Dnd
+      v-if="dragOrderQuery.length > 0"
+      v-model="dragOrderQuery"
+      handle=".order-query-handle"
+      class="flex flex-col gap-2.5"
+    >
+      <TableQueryOrderItem
+        v-for="item in dragOrderQuery"
+        :key="item.field"
+        :field="item.field as string"
+        :biz-columns="bizColumns"
+        :opr="item.order"
+        :order-options="orderOptions"
+        :unselected-fields="unselectedOrderFields"
+        :disabled="fetching"
+        handle-class-name="order-query-handle"
+        @change="(newField, orderType) => onChangeField(item.field as string, newField, orderType)"
+        @remove="onRemoveField(item.field as string)"
+      />
+    </Dnd>
+    <div class="flex flex-col">
+      <TableQueryOrderNewer
+        :options="orderOptions"
+        :unselected-fields="unselectedOrderFields"
+        :biz-columns="bizColumns"
+        :disabled="fetching"
+        @new="onNewField"
+      />
       <UButton
-        icon="i-lucide-arrow-up-down"
-        :color="open ? 'primary' : 'neutral'"
-        :loading="fetching"
-        variant="outline"
-        :size="size"
+        size="sm"
+        color="neutral"
+        variant="ghost"
+        square
+        :disabled="isOrderQueryDefault || fetching"
+        icon="i-lucide-timer-reset"
+        @click="() => onUpdateAndTriggerFetching(defaultOrderQuery ?? [])"
       >
-        排序
+        重置
       </UButton>
-    </UChip>
-    <template #content>
-      <div class="flex flex-col gap-2.5 py-2.5 px-3">
-        <span class="font-bold text-xs text-dimmed">排序条件</span>
-        <!-- items -->
-        <Dnd
-          v-if="dragOrderQuery.length > 0"
-          v-model="dragOrderQuery"
-          handle=".order-query-handle"
-          class="flex flex-col gap-2"
-        >
-          <TableQueryOrderItem
-            v-for="item in dragOrderQuery"
-            :key="item.field"
-            :field="item.field as string"
-            :biz-columns="bizColumns"
-            :opr="item.order"
-            :order-options="orderOptions"
-            :unselected-fields="unselectedOrderFields"
-            :disabled="fetching"
-            handle-class-name="order-query-handle"
-            @change="(newField, orderType) => onChangeField(item.field as string, newField, orderType)"
-            @remove="onRemoveField(item.field as string)"
-          />
-        </Dnd>
-        <div class="flex flex-col">
-          <TableQueryOrderNewer
-            :options="orderOptions"
-            :unselected-fields="unselectedOrderFields"
-            :biz-columns="bizColumns"
-            :disabled="fetching"
-            @new="onNewField"
-          />
-          <UButton
-            size="sm"
-            color="neutral"
-            variant="ghost"
-            :disabled="isOrderQueryDefault || fetching"
-            icon="i-lucide-timer-reset"
-            square
-            @click="() => onUpdateAndTriggerFetching(defaultOrderQuery ?? [])"
-          >
-            重置
-          </UButton>
-        </div>
-      </div>
-    </template>
-  </UPopover>
+    </div>
+  </div>
 </template>
