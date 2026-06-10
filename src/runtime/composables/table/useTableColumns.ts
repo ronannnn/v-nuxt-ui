@@ -12,7 +12,7 @@ interface UseTableColumnsReturn<T> {
   selectionColumn: VColumn<T>
   expandColumn: VColumn<T>
   clonedBizColumns: ShallowRef<VColumn<T>[]>
-  columnsWithCommonProps: ShallowRef<VColumn<T>[]>
+  columnsWithCommonProps: ComputedRef<VColumn<T>[]>
   sortedColumns: ComputedRef<VColumn<T>[]>
   columnsWithFilterOptions: ComputedRef<VColumn<T>[]>
   columnsWithSortableHeader: ComputedRef<VColumn<T>[]>
@@ -105,7 +105,7 @@ export function useTableColumns<T>(props: {
     return defu(col, defaults) as VColumn<T>
   }
 
-  const columnsWithCommonProps = shallowRef<VColumn<T>[]>(
+  const columnsWithCommonProps = computed<VColumn<T>[]>(() =>
     clonedBizColumns.value.map(col => mergeColumnWithDefaults(col, cloneJson(commonColumnProps)))
   )
 

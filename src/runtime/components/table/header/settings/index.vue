@@ -1,11 +1,12 @@
 <script setup lang="ts" generic="T">
-import type { VColumn } from '#v/types'
+import type { Column, VColumn } from '#v/types'
 import TableHeaderSettingsColumns from '#v/components/table/header/settings/columns/index.vue'
 
 defineProps<{
+  name: string
   tblName: string
   rawBizColumns: VColumn<T>[]
-  onUpdateBizColumns: (cols: VColumn<T>[]) => void
+  onUpdateBizColumns: (cols: VColumn<T>[], storageColumns?: Column[]) => void
 }>()
 
 const emit = defineEmits<{
@@ -23,8 +24,8 @@ const emit = defineEmits<{
     <template #body>
       <TableHeaderSettingsColumns
         :raw-biz-columns="rawBizColumns"
-        :tbl-name="tblName"
-        @update-biz-columns="onUpdateBizColumns"
+        :name="name"
+        :on-update-biz-columns="onUpdateBizColumns"
       />
     </template>
     <template #footer>

@@ -7,12 +7,12 @@ import TableHeaderSettingsColumnsDndList from '#v/components/table/header/settin
 export type FixType = 'left' | 'right' | 'unfixed'
 
 const props = defineProps<{
-  tblName: string
+  name: string
   rawBizColumns: VColumn<T>[]
-  onUpdateBizColumns: (cols: VColumn<T>[]) => void
+  onUpdateBizColumns: (cols: VColumn<T>[], storageColumns?: Column[]) => void
 }>()
 
-const localTblSettings = useLocalStorage<TableSettings<T>>(`${props.tblName}-table-settings`, {})
+const localTblSettings = useLocalStorage<TableSettings<T>>(`${props.name}-table-settings`, {})
 
 // 1. 生成所有列的完整信息（顺序、固定、显示状态）
 function getFullColumns(
@@ -114,12 +114,13 @@ function syncToParentAndStorage() {
     ...allColumns.value.filter(c => c.fixed === 'right')
   ]
   localTblSettings.value = { ...localTblSettings.value, columns: ordered }
-  // 按 ordered 顺序输出 checked 的 bizColumns
-  const checkedKeys = ordered.filter(c => c.checked).map(c => c.accessorKey)
-  const sortedBizColumns = checkedKeys
-    .map(key => props.rawBizColumns.find(col => (col as any)['accessorKey'] === key))
+  const sortedBizColumns = ordered
+    .map((settingCol) => {
+      const bizCol = props.rawBizColumns.find(col => (col as any)['accessorKey'] === settingCol.accessorKey)
+      return bizCol ? ({ ...bizCol, checked: settingCol.checked } as VColumn<T>) : undefined
+    })
     .filter(Boolean) as VColumn<T>[]
-  props.onUpdateBizColumns(sortedBizColumns)
+  props.onUpdateBizColumns(sortedBizColumns, ordered)
 }
 
 // 8. 初始化

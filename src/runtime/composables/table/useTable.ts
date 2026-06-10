@@ -1,6 +1,6 @@
 import { computed, ref, useTemplateRef, nextTick } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
-import type { OrderQueryProps, TableHeaderProps, TablePaginationProps, VColumn, VTableProps, WhereQueryProps, OrderQuery, StatsItem } from '#v/types'
+import type { Column, OrderQueryProps, TableHeaderProps, TablePaginationProps, VColumn, VTableProps, WhereQueryProps, OrderQuery, StatsItem } from '#v/types'
 import type { ContextMenuItem, TableProps, TableRow } from '@nuxt/ui'
 import { useTableQuery } from './useTableQuery'
 import { useTablePagination } from './useTablePagination'
@@ -384,11 +384,15 @@ export function useTable<T>(props: VTableProps<T>): UseTableReturn<T> {
   }))
 
   const tblHeaderProps = computed<TableHeaderProps<T>>(() => ({
-    name: cnName,
+    name,
+    tblName: cnName,
     fetching: fetching.value,
     rawBizColumns: bizColumns,
-    onUpdateBizColumns: (columns: VColumn<T>[]) => {
+    onUpdateBizColumns: (columns: VColumn<T>[], storageColumns?: Column[]) => {
       clonedBizColumns.value = columns
+      if (storageColumns) {
+        localStgSettings.value = { ...localStgSettings.value, columns: storageColumns }
+      }
     },
     initStorageColumns: initStorageColumns.value,
     onNew,

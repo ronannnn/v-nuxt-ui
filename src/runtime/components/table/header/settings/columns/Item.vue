@@ -2,12 +2,17 @@
 import type { FixType } from './index.vue'
 import type { Column, VColumn } from '#v/types'
 
-defineProps<{
+const props = defineProps<{
   columns: VColumn<T>[]
   stgCol: Column
   onFixCol: (col: Column, fixType: FixType) => void
+  onToggleChecked?: (col: Column) => void
 }>()
 const checked = defineModel<boolean | undefined>('checked', { required: true })
+
+function handleToggleChecked() {
+  props.onToggleChecked?.(props.stgCol)
+}
 </script>
 
 <template>
@@ -54,7 +59,7 @@ const checked = defineModel<boolean | undefined>('checked', { required: true })
           variant="ghost"
           size="xs"
           color="neutral"
-          @click="checked = !checked"
+          @click="handleToggleChecked"
         />
       </UTooltip>
     </div>

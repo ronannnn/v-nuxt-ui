@@ -12,6 +12,7 @@ defineProps<{
   group: DndProps<T>['group']
   handle: DndProps<T>['handle']
   onFixCol: (col: Column, fixType: FixType) => void
+  onToggleChecked?: (col: Column) => void
   onAfterDrag?: () => void
 }>()
 const list = defineModel<Column[]>('list', { required: true })
@@ -42,7 +43,8 @@ const list = defineModel<Column[]>('list', { required: true })
           v-model:checked="element.checked"
           :stg-col="element"
           :columns="rawBizColumns"
-          @fix-col="onFixCol"
+          :on-fix-col="onFixCol"
+          :on-toggle-checked="onToggleChecked"
         />
       </Dnd>
     </ScrollArea>

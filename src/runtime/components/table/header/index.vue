@@ -3,7 +3,7 @@ import { markRaw, computed } from 'vue'
 import { defu } from 'defu'
 import { compareObjArrays } from '#v/utils'
 import { useOverlay } from '@nuxt/ui/composables'
-import type { TableHeaderProps, VColumn } from '#v/types'
+import type { Column, TableHeaderProps, VColumn } from '#v/types'
 import type { ButtonProps, DropdownMenuItem } from '@nuxt/ui'
 import UButton from '@nuxt/ui/components/Button.vue'
 import UChip from '@nuxt/ui/components/Chip.vue'
@@ -47,9 +47,10 @@ async function handleSettings() {
   if (!props.onUpdateBizColumns) return
   const updateFn = props.onUpdateBizColumns
   await settingsModal.open({
-    tblName: props.name,
+    name: props.name,
+    tblName: props.tblName ?? props.name,
     rawBizColumns: props.rawBizColumns as any,
-    onUpdateBizColumns: ((cols: VColumn<T>[]) => updateFn(cols)) as any
+    onUpdateBizColumns: ((cols: VColumn<T>[], storageColumns?: Column[]) => updateFn(cols, storageColumns)) as any
   })
 }
 
