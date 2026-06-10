@@ -3,7 +3,7 @@ import type { OrderQueryProps, OrderQuery, OrderQueryOpr } from '#v/types'
 import { compareObjArrays } from '#v/utils'
 import { computed } from 'vue'
 import Dnd from '#v/components/Dnd.client.vue'
-import TableQueryOrderItem from '#v/components/table/query/order/Item.vue'
+import TableQueryOrderItem from '#v/components/table/query/order/item.vue'
 import TableQueryOrderNewer from '#v/components/table/query/order/Newer.vue'
 
 const props = defineProps<OrderQueryProps<T>>()

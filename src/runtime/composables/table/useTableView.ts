@@ -2,21 +2,27 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick, useTemplateRef 
 import type { Ref, ComputedRef } from 'vue'
 import type { VTableProps, TableHeaderProps, TablePaginationProps, WhereQueryProps, StatsItem } from '#v/types'
 import type { TableProps, ContextMenuItem } from '@nuxt/ui'
+import type { ColumnSizingState } from '@tanstack/table-core'
 import { useTable } from './useTable'
+
+type TablePropsWithColumnState<T> = TableProps<T> & {
+  columnPinning?: unknown
+  columnSizing?: ColumnSizingState
+}
 
 // 固定列阴影样式常量
 // light 模式使用 rgba(0,0,0,0.15)，dark 模式使用更明显的 rgba(0,0,0,0.45)
 // 通过 CSS 变量 --pinned-shadow-color 统一控制，配合 dark: 变体覆盖
 const PINNED_SHADOW_CLASSES = {
   left: {
-    base: '[--pinned-shadow-color:rgba(0,0,0,0.15)] dark:[--pinned-shadow-color:rgba(0,0,0,0.45)] [&_th[data-pinned=left]]:after:absolute [&_th[data-pinned=left]]:after:top-0 [&_th[data-pinned=left]]:after:right-0 [&_th[data-pinned=left]]:after:bottom-0 [&_th[data-pinned=left]]:after:w-[30px] [&_th[data-pinned=left]]:after:translate-x-full [&_th[data-pinned=left]]:after:transition-opacity [&_th[data-pinned=left]]:after:duration-300 [&_th[data-pinned=left]]:after:pointer-events-none [&_th[data-pinned=left]]:after:shadow-[inset_10px_0_8px_-8px_var(--pinned-shadow-color)] [&_td[data-pinned=left]]:after:absolute [&_td[data-pinned=left]]:after:top-0 [&_td[data-pinned=left]]:after:right-0 [&_td[data-pinned=left]]:after:bottom-0 [&_td[data-pinned=left]]:after:w-[30px] [&_td[data-pinned=left]]:after:translate-x-full [&_td[data-pinned=left]]:after:transition-opacity [&_td[data-pinned=left]]:after:duration-200 [&_td[data-pinned=left]]:after:pointer-events-none [&_td[data-pinned=left]]:after:shadow-[inset_10px_0_8px_-8px_var(--pinned-shadow-color)]',
-    show: '[&_th[data-pinned=left]]:after:opacity-100 [&_td[data-pinned=left]]:after:opacity-100',
-    hide: '[&_th[data-pinned=left]]:after:opacity-0 [&_td[data-pinned=left]]:after:opacity-0'
+    base: '[--pinned-shadow-color:rgba(0,0,0,0.15)] dark:[--pinned-shadow-color:rgba(0,0,0,0.45)] [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:absolute [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:top-0 [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:right-0 [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:bottom-0 [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:w-[30px] [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:translate-x-full [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:transition-opacity [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:duration-300 [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:pointer-events-none [&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:shadow-[inset_10px_0_8px_-8px_var(--pinned-shadow-color)] [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:absolute [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:top-0 [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:right-0 [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:bottom-0 [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:w-[30px] [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:translate-x-full [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:transition-opacity [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:duration-200 [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:pointer-events-none [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:shadow-[inset_10px_0_8px_-8px_var(--pinned-shadow-color)]',
+    show: '[&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:opacity-100 [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:opacity-100',
+    hide: '[&_th[data-pinned=left]:not(:has(+th[data-pinned=left]))]:after:opacity-0 [&_td[data-pinned=left]:not(:has(+td[data-pinned=left]))]:after:opacity-0'
   },
   right: {
-    base: '[&_th[data-pinned=right]]:before:absolute [&_th[data-pinned=right]]:before:top-0 [&_th[data-pinned=right]]:before:left-0 [&_th[data-pinned=right]]:before:bottom-0 [&_th[data-pinned=right]]:before:w-[30px] [&_th[data-pinned=right]]:before:-translate-x-full [&_th[data-pinned=right]]:before:transition-opacity [&_th[data-pinned=right]]:before:duration-300 [&_th[data-pinned=right]]:before:pointer-events-none [&_th[data-pinned=right]]:before:shadow-[inset_-10px_0_8px_-8px_var(--pinned-shadow-color)] [&_td[data-pinned=right]]:before:absolute [&_td[data-pinned=right]]:before:top-0 [&_td[data-pinned=right]]:before:left-0 [&_td[data-pinned=right]]:before:bottom-0 [&_td[data-pinned=right]]:before:w-[30px] [&_td[data-pinned=right]]:before:-translate-x-full [&_td[data-pinned=right]]:before:transition-opacity [&_td[data-pinned=right]]:before:duration-200 [&_td[data-pinned=right]]:before:pointer-events-none [&_td[data-pinned=right]]:before:shadow-[inset_-10px_0_8px_-8px_var(--pinned-shadow-color)]',
-    show: '[&_th[data-pinned=right]]:before:opacity-100 [&_td[data-pinned=right]]:before:opacity-100',
-    hide: '[&_th[data-pinned=right]]:before:opacity-0 [&_td[data-pinned=right]]:before:opacity-0'
+    base: '[&_th:not([data-pinned=right])+th[data-pinned=right]]:before:absolute [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:top-0 [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:left-0 [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:bottom-0 [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:w-[30px] [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:-translate-x-full [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:transition-opacity [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:duration-300 [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:pointer-events-none [&_th:not([data-pinned=right])+th[data-pinned=right]]:before:shadow-[inset_-10px_0_8px_-8px_var(--pinned-shadow-color)] [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:absolute [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:top-0 [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:left-0 [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:bottom-0 [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:w-[30px] [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:-translate-x-full [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:transition-opacity [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:duration-200 [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:pointer-events-none [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:shadow-[inset_-10px_0_8px_-8px_var(--pinned-shadow-color)]',
+    show: '[&_th:not([data-pinned=right])+th[data-pinned=right]]:before:opacity-100 [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:opacity-100',
+    hide: '[&_th:not([data-pinned=right])+th[data-pinned=right]]:before:opacity-0 [&_td:not([data-pinned=right])+td[data-pinned=right]]:before:opacity-0'
   }
 } as const
 
@@ -55,7 +61,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     fetchList,
     rowSelection,
     onUpdateRowSelection,
-    tblProps,
+    tblProps: baseTblProps,
     tblWhereQueryProps,
     tblHeaderProps,
     tblPaginationProps,
@@ -92,6 +98,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
 
   const tableWidth = ref(0)
   const tableDiv = useTemplateRef<HTMLDivElement>('table')
+  const columnSizing = ref<ColumnSizingState>({})
   let resizeObserver: ResizeObserver | null = null
   let scrollContainer: HTMLElement | null = null
 
@@ -111,6 +118,37 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
   const HIDE_LAST_ROW_BORDER_CLASS = '[&_tbody_tr:last-child_td]:border-b-0'
   const tblClasses = computed(() => [pinnedShadowClasses.value, EXPANDED_STICKY_CLASS, hasVerticalOverflow.value && HIDE_LAST_ROW_BORDER_CLASS])
   const tblUi = computed(() => ({ root: 'relative overflow-clip', th: thClass.value, td: tdClass.value }))
+  const tblProps = computed<TableProps<T>>(() => ({
+    ...baseTblProps.value,
+    columnSizing: columnSizing.value
+  }) as TablePropsWithColumnState<T>)
+
+  function getColumnId(column: unknown): string | undefined {
+    if (!column || typeof column !== 'object') return undefined
+    const col = column as { id?: string, accessorKey?: string }
+    return col.id ?? col.accessorKey
+  }
+
+  function updateColumnSizing() {
+    if (!tableDiv.value) return
+
+    const leafColumns = baseTblProps.value.columns
+      ?.flatMap((column: any) => column.columns ?? [column])
+      .map(getColumnId)
+      .filter((id): id is string => !!id) ?? []
+    const headers = Array.from(tableDiv.value.querySelectorAll<HTMLTableCellElement>('thead tr[data-slot="tr"] th[data-slot="th"]'))
+    if (!leafColumns.length || !headers.length) return
+
+    const nextSizing: ColumnSizingState = {}
+    headers.slice(0, leafColumns.length).forEach((header, index) => {
+      const columnId = leafColumns[index]
+      const width = Math.ceil(header.getBoundingClientRect().width)
+      if (columnId && width > 0) {
+        nextSizing[columnId] = width
+      }
+    })
+    columnSizing.value = nextSizing
+  }
 
   function updateTableWidth() {
     if (tableDiv.value) {
@@ -154,10 +192,14 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
       if (tableDiv.value) {
         resizeObserver = new ResizeObserver(() => {
           updateTableWidth()
-          nextTick(() => checkShadowVisibility())
+          nextTick(() => {
+            updateColumnSizing()
+            checkShadowVisibility()
+          })
         })
         resizeObserver.observe(tableDiv.value)
         updateTableWidth()
+        updateColumnSizing()
         checkShadowVisibility()
       }
     })
@@ -165,8 +207,22 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
 
   // 监听数据变化，重新检查阴影状态
   watch(data, () => {
-    nextTick(() => checkShadowVisibility())
+    nextTick(() => {
+      updateColumnSizing()
+      checkShadowVisibility()
+    })
   }, { flush: 'post' })
+
+  watch(
+    () => [baseTblProps.value.columns, (baseTblProps.value as TablePropsWithColumnState<T>).columnPinning],
+    () => {
+      nextTick(() => {
+        updateColumnSizing()
+        checkShadowVisibility()
+      })
+    },
+    { flush: 'post' }
+  )
 
   onUnmounted(() => {
     if (resizeObserver && tableDiv.value) {
