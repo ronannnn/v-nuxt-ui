@@ -98,6 +98,7 @@ export function pruneQueryTemplate<M>(payload: QueryTemplate<M>): QueryTemplate<
   const newPayload = cloneJson(payload)
   newPayload.whereQuery?.items?.forEach((item) => {
     delete item.extraData
+    delete item.whereQuerySection
   })
   return newPayload
 }

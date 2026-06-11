@@ -56,6 +56,8 @@ export interface WhereQueryItem<T> {
   value?: any
   custom?: boolean
   extraData?: any
+  // 简单查询面板中所属分区（常用/其他）的覆盖标记，仅用于 UI 持久化，请求前会被剔除
+  whereQuerySection?: 'preferred' | 'other'
 }
 
 // order query

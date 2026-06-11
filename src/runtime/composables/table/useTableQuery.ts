@@ -152,6 +152,7 @@ export function useTableQuery<T>(props: {
       .map((item) => {
         const newItem = { ...item }
         delete (newItem as any).extraData
+        delete (newItem as any).whereQuerySection
         return newItem
       }) as WhereQueryItem<T>[]
 

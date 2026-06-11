@@ -6,17 +6,16 @@ interface SimpleUser {
   name: string
   status: string
   role: string
-  joinedAt: string
 }
 
 const toast = useToast()
 
 const data = ref<SimpleUser[]>([
-  { id: 1, name: 'Alice', status: 'active', role: 'Admin', joinedAt: '2024-01-10' },
-  { id: 2, name: 'Bob', status: 'active', role: 'Editor', joinedAt: '2024-03-22' },
-  { id: 3, name: 'Charlie', status: 'inactive', role: 'Viewer', joinedAt: '2024-05-01' },
-  { id: 4, name: 'Diana', status: 'active', role: 'Editor', joinedAt: '2024-07-15' },
-  { id: 5, name: 'Eve', status: 'inactive', role: 'Viewer', joinedAt: '2024-09-30' }
+  { id: 1, name: 'Alice', status: 'active', role: 'Admin' },
+  { id: 2, name: 'Bob', status: 'active', role: 'Editor' },
+  { id: 3, name: 'Charlie', status: 'inactive', role: 'Viewer' },
+  { id: 4, name: 'Diana', status: 'active', role: 'Editor' },
+  { id: 5, name: 'Eve', status: 'inactive', role: 'Viewer' }
 ])
 
 const columns: VColumn<SimpleUser>[] = [
@@ -33,14 +32,7 @@ const columns: VColumn<SimpleUser>[] = [
       ]
     }
   },
-  { accessorKey: 'role', header: 'Role' },
-  {
-    accessorKey: 'joinedAt',
-    header: 'Joined',
-    filterOption: {
-      type: 'date-picker'
-    }
-  }
+  { accessorKey: 'role', header: 'Role' }
 ]
 
 const extraRowActions: RowActionProps<SimpleUser>[] = [

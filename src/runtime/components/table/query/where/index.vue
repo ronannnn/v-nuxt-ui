@@ -88,20 +88,17 @@ const whereQueryWithoutInitValues = computed<WhereQueryItem<T>[]>(() => {
 })
 
 type WhereQuerySection = 'preferred' | 'other'
-const whereQuerySectionExtraDataKey = '__whereQuerySection'
 
 function getBaseItemSection(item: WhereQueryItem<T>): WhereQuerySection {
   return props.whereOptions.find(opt => opt.field === item.field)?.preferred === false ? 'other' : 'preferred'
 }
 
-function getItemSectionOverride(item: WhereQueryItem<T>): WhereQuerySection | undefined {
-  if (!item.extraData || typeof item.extraData !== 'object' || Array.isArray(item.extraData)) return undefined
-  const section = (item.extraData as Record<string, unknown>)[whereQuerySectionExtraDataKey]
-  return section === 'preferred' || section === 'other' ? section : undefined
-}
-
+// 分区覆盖标记存放在 item 顶层的 whereQuerySection 字段，
+// 不与 extraData（异步下拉用于存放选中模型，可能是数组）冲突，
+// 且会随 item 透传（编辑器 { ...whereQueryItem } 扩展）天然保留。
 function getItemSection(item: WhereQueryItem<T>): WhereQuerySection {
-  return getItemSectionOverride(item) ?? getBaseItemSection(item)
+  const section = item.whereQuerySection
+  return section === 'preferred' || section === 'other' ? section : getBaseItemSection(item)
 }
 
 function isPreferredItem(item: WhereQueryItem<T>) {
@@ -109,27 +106,12 @@ function isPreferredItem(item: WhereQueryItem<T>) {
 }
 
 function setItemSection(item: WhereQueryItem<T>, section: WhereQuerySection): WhereQueryItem<T> {
-  const baseSection = getBaseItemSection(item)
-  if (item.extraData && (typeof item.extraData !== 'object' || Array.isArray(item.extraData))) {
-    return item
+  // 与默认分区一致时清除覆盖，避免冗余持久化
+  if (section === getBaseItemSection(item)) {
+    const { whereQuerySection: _omit, ...rest } = item
+    return rest as WhereQueryItem<T>
   }
-
-  const extraData = item.extraData ? { ...item.extraData } : {}
-
-  if (section === baseSection) {
-    const { [whereQuerySectionExtraDataKey]: _section, ...restExtraData } = extraData as Record<string, unknown>
-    return {
-      ...item,
-      extraData: Object.keys(restExtraData).length > 0 ? restExtraData : undefined
-    }
-  } else {
-    ;(extraData as Record<string, unknown>)[whereQuerySectionExtraDataKey] = section
-  }
-
-  return {
-    ...item,
-    extraData: Object.keys(extraData).length > 0 ? extraData : undefined
-  }
+  return { ...item, whereQuerySection: section }
 }
 
 const preferredItems = computed<WhereQueryItem<T>[]>(() =>
@@ -275,39 +257,41 @@ defineExpose({ focusField })
 <template>
   <div class="divide-y divide-default">
     <div class="@container p-4 space-y-6">
-      <div
+      <template
         v-for="section in sections"
         :key="section.key"
       >
-        <div class="font-bold text-xs text-dimmed mb-2.5">
-          {{ section.label }}
-        </div>
-        <Dnd
-          v-model="section.dndItems"
-          group="where-query"
-          handle=".where-query-handle"
-          :on-end="onDndEnd"
-          :class="conditionListClass"
-        >
-          <div
-            v-for="item in section.dndItems"
-            :key="item.field"
-            class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6"
-            :class="isDateRangeQueryItem(item) ? '@3xl:col-span-24 @5xl:col-span-12 @7xl:col-span-8' : undefined"
-          >
-            <TableQueryWhereSimpleItem
-              :ref="(el) => setItemRef(item.field as string, el)"
-              :where-query-item="item"
-              :options="whereOptions"
-              :fetching="fetching"
-              :trigger-fetching="() => triggerFetching(true)"
-              handle-class-name="where-query-handle"
-              @remove="onRemoveFilter"
-              @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
-            />
+        <div v-if="section.dndItems.length > 0">
+          <div class="font-bold text-xs text-dimmed mb-2.5">
+            {{ section.label }}
           </div>
-        </Dnd>
-      </div>
+          <Dnd
+            v-model="section.dndItems"
+            group="where-query"
+            handle=".where-query-handle"
+            :on-end="onDndEnd"
+            :class="conditionListClass"
+          >
+            <div
+              v-for="item in section.dndItems"
+              :key="item.field"
+              class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6"
+              :class="isDateRangeQueryItem(item) ? '@3xl:col-span-24 @5xl:col-span-12 @7xl:col-span-8' : undefined"
+            >
+              <TableQueryWhereSimpleItem
+                :ref="(el) => setItemRef(item.field as string, el)"
+                :where-query-item="item"
+                :options="whereOptions"
+                :fetching="fetching"
+                :trigger-fetching="() => triggerFetching(true)"
+                handle-class-name="where-query-handle"
+                @remove="onRemoveFilter"
+                @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
+              />
+            </div>
+          </Dnd>
+        </div>
+      </template>
     </div>
     <!-- action bar -->
     <div class="flex items-center gap-2.5 p-4">
