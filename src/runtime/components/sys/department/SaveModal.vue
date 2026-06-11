@@ -28,7 +28,6 @@ watch(
 const { onSubmit } = useFormSubmission(
   toRef(oldValues),
   toRef(newValues),
-  close => emit('close', close),
   model => emit('save', model),
   useDepartmentApi
 )

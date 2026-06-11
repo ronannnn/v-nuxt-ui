@@ -11,7 +11,6 @@ const { oldValues, newValues } = useFormValues(toRef(props.modelValue), props.de
 const { onSubmit } = useFormSubmission(
   toRef(oldValues) as any,
   toRef(newValues) as any,
-  props.onClose,
   props.onSave,
   props.apiGroup
 )
@@ -24,7 +23,7 @@ const { onSubmit } = useFormSubmission(
     :title="title"
     :description="description"
     :on-close="onClose"
-    :on-submit="onSubmit"
     :fields="fields"
+    @submit="onSubmit"
   />
 </template>

@@ -20,7 +20,6 @@ const { oldValues, newValues } = useFormValues(toRef(props.model), { id: 0, disa
 const { onSubmit } = useFormSubmission(
   toRef(oldValues),
   toRef(newValues),
-  close => emit('close', close),
   model => emit('save', model),
   useMenuApi,
   ['staticRouteKeys']

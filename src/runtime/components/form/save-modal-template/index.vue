@@ -53,18 +53,10 @@ function computeDiff(): ConfirmDiffItem[] {
 
 const { submitting, startSubmitting, endSubmitting } = useSubmitting()
 
-async function doSubmit() {
-  try {
-    startSubmitting()
-    await props.onSubmit()
-  } finally {
-    endSubmitting()
-  }
-}
-
 async function onSubmitWithValidation(e: Event) {
   e.preventDefault()
   e.stopPropagation()
+
   try {
     await form.value?.validate?.()
   } catch {
@@ -72,27 +64,44 @@ async function onSubmitWithValidation(e: Event) {
     return
   }
 
-  // Update mode: show confirmation modal with diff
-  if (isUpdate.value) {
-    const items = computeDiff()
-    if (items.length === 0) {
-      await doSubmit()
-      return
-    }
-    const confirmed = await confirmModal.open({
-      fields: props.fields,
-      diffItems: items,
-      oldModelValue: props.oldModelValue as Record<string, unknown>,
-      newModelValue: props.modelValue as Record<string, unknown>
-    }).result
-    if (confirmed) {
-      await doSubmit()
-    }
-    return
-  }
+  startSubmitting()
 
-  // Create mode: submit directly
-  await doSubmit()
+  // 区分两种结束
+  // 提交失败 / 校验失败 / 用户取消确认
+  // modal 还留在页面上，所以必须 endSubmitting()，让按钮恢复。
+
+  // 提交成功，并且即将关闭 modal
+  // modal 还没立刻卸载，中间有一小段时间。如果这时候执行 endSubmitting()，按钮会从 loading 恢复成可点击，用户就能在关闭动画/卸载前再点一次。
+
+  // keepSubmitting 的作用就是标记第 2 种情况：
+  let keepSubmitting = false
+
+  try {
+    // Update mode: show confirmation modal with diff
+    if (isUpdate.value) {
+      const items = computeDiff()
+      if (items.length > 0) {
+        const confirmed = await confirmModal.open({
+          fields: props.fields,
+          diffItems: items,
+          oldModelValue: props.oldModelValue as Record<string, unknown>,
+          newModelValue: props.modelValue as Record<string, unknown>
+        }).result
+        if (!confirmed) {
+          return
+        }
+      }
+    }
+
+    keepSubmitting = await props.onSubmit() === true
+    if (keepSubmitting) {
+      props.onClose(true)
+    }
+  } finally {
+    if (!keepSubmitting) {
+      endSubmitting()
+    }
+  }
 }
 </script>
 

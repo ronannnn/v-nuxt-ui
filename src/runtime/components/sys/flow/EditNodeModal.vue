@@ -18,6 +18,11 @@ const { oldValues, newValues } = useFormValues(toRef(props.model), {
   id: 0,
   name: ''
 })
+
+async function onSubmit() {
+  emit('save', newValues.value)
+  return true
+}
 </script>
 
 <template>
@@ -30,9 +35,6 @@ const { oldValues, newValues } = useFormValues(toRef(props.model), {
     :model-value="newValues"
     :old-model-value="oldValues"
     @update-model-value="newVal => newValues = { ...props.model, ...newVal }"
-    @submit="async () => {
-      emit('save', newValues)
-      emit('close', true)
-    }"
+    @submit="onSubmit"
   />
 </template>

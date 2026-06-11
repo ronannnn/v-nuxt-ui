@@ -22,7 +22,6 @@ const { oldValues, newValues } = useFormValues(toRef(props.model), { id: 0, need
 const { onSubmit } = useFormSubmission(
   toRef(oldValues),
   toRef(newValues),
-  close => emit('close', close),
   model => emit('save', model),
   useUserApi,
   ['roles', 'menus'],

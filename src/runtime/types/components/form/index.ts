@@ -15,7 +15,7 @@ export type SaveModalFormTemplateProps<T> = {
   title: string
   description?: string
   onClose: (ok: boolean) => void
-  onSubmit: () => Promise<void>
+  onSubmit: () => Promise<boolean | undefined>
   fields: VFormFieldProps[]
   oldModelValue: Partial<T>
   modelValue: Partial<T>

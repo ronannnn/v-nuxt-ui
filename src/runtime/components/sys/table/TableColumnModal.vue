@@ -30,6 +30,11 @@ const fields = computed<VFormFieldProps[]>(() => [
   { name: 'fixed', type: 'select', label: '固定', colSpan: '8', items: fixedItems, enableEmptyOption: false, zodType: z.string().optional() },
   { name: 'visible', type: 'switch', label: '是否显示', colSpan: '24', zodType: z.boolean().optional() }
 ])
+
+async function onSubmit() {
+  props.onSaveColumn(newValues.value as TableColumn)
+  return true
+}
 </script>
 
 <template>
@@ -40,9 +45,6 @@ const fields = computed<VFormFieldProps[]>(() => [
     :model-value="newValues"
     :old-model-value="oldValues"
     @update-model-value="newVal => newValues = { id: 0, ...newVal }"
-    @submit="async () => {
-      props.onSaveColumn(newValues as TableColumn)
-      emit('close', true)
-    }"
+    @submit="onSubmit"
   />
 </template>

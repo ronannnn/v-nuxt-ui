@@ -22,7 +22,6 @@ const columnListRef = ref<InstanceType<typeof TableColumnList>>()
 const { onSubmit } = useFormSubmission(
   toRef(oldValues),
   toRef(newValues),
-  close => emit('close', close),
   async (model) => {
     const tableApi = useTableApi()
     if (model.id === 0) {
