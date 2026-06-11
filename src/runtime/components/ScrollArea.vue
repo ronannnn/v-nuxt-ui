@@ -204,7 +204,7 @@ onActivated(() => {
     </ScrollAreaViewport>
 
     <ScrollAreaScrollbar
-      class="flex select-none touch-none p-0.5 z-99 data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-2 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2"
+      class="flex select-none touch-none p-0.5 z-99 transition-[width,height] duration-150 ease-out data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-2 data-[orientation=vertical]:hover:w-3 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2 data-[orientation=horizontal]:hover:h-3"
       orientation="vertical"
     >
       <ScrollAreaThumb
@@ -213,7 +213,7 @@ onActivated(() => {
     </ScrollAreaScrollbar>
 
     <ScrollAreaScrollbar
-      class="flex select-none touch-none p-0.5 z-99 data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-2 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2"
+      class="flex select-none touch-none p-0.5 z-99 transition-[width,height] duration-150 ease-out data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-2 data-[orientation=vertical]:hover:w-3 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2 data-[orientation=horizontal]:hover:h-3"
       orientation="horizontal"
     >
       <UTooltip
