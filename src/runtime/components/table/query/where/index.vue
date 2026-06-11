@@ -130,17 +130,40 @@ watch([preferredItems, otherItems], () => {
   otherDndItems.value = [...otherItems.value]
 }, { immediate: true })
 
-function onDndEnd() {
+function updateWhereQuerySections(preferred: WhereQueryItem<T>[], other: WhereQueryItem<T>[]) {
   const defaultKeys = getDefaultKeys()
   const initItems = props.whereQuery?.items?.filter(q => defaultKeys.includes(q.field as string)) ?? []
   props.onUpdateWhereQuery({
     ...props.whereQuery,
     items: [
       ...initItems,
-      ...preferredDndItems.value.map(item => setItemSection(item, 'preferred')),
-      ...otherDndItems.value.map(item => setItemSection(item, 'other'))
+      ...preferred.map(item => setItemSection(item, 'preferred')),
+      ...other.map(item => setItemSection(item, 'other'))
     ]
   })
+}
+
+function onDndEnd() {
+  updateWhereQuerySections(preferredDndItems.value, otherDndItems.value)
+}
+
+function onMoveItemSection(field: string, section: WhereQuerySection) {
+  const currentPreferredItems = [...preferredDndItems.value]
+  const currentOtherItems = [...otherDndItems.value]
+  const sourceItems = section === 'preferred' ? currentOtherItems : currentPreferredItems
+  const item = sourceItems.find(item => item.field === field)
+  if (!item) return
+
+  const nextPreferredItems = section === 'preferred'
+    ? [...currentPreferredItems, item]
+    : currentPreferredItems.filter(item => item.field !== field)
+  const nextOtherItems = section === 'other'
+    ? [...currentOtherItems, item]
+    : currentOtherItems.filter(item => item.field !== field)
+
+  preferredDndItems.value = nextPreferredItems
+  otherDndItems.value = nextOtherItems
+  updateWhereQuerySections(nextPreferredItems, nextOtherItems)
 }
 
 function onUpdateWhereQueryItem(field: string, newWhereQueryItem: WhereQueryItem<T>) {
@@ -285,7 +308,9 @@ defineExpose({ focusField })
                 :fetching="fetching"
                 :trigger-fetching="() => triggerFetching(true)"
                 handle-class-name="where-query-handle"
+                :section="section.key"
                 @remove="onRemoveFilter"
+                @move-section="onMoveItemSection"
                 @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
               />
             </div>
