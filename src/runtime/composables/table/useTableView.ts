@@ -2,13 +2,19 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick, useTemplateRef 
 import type { Ref, ComputedRef } from 'vue'
 import type { VTableProps, TableHeaderProps, TablePaginationProps, WhereQueryProps, StatsItem } from '#v/types'
 import type { TableProps, ContextMenuItem } from '@nuxt/ui'
-import type { ColumnSizingState } from '@tanstack/table-core'
+import type { ColumnPinningState, ColumnSizingState } from '@tanstack/table-core'
 import { useTable } from './useTable'
 
 type TablePropsWithColumnState<T> = TableProps<T> & {
-  columnPinning?: unknown
+  columnPinning?: ColumnPinningState
   columnSizing?: ColumnSizingState
 }
+
+type TableColumnLike = {
+  id?: string
+  accessorKey?: string
+  columns?: TableColumnLike[]
+} & Record<string, unknown>
 
 // 固定列阴影样式常量
 // light 模式使用 rgba(0,0,0,0.15)，dark 模式使用更明显的 rgba(0,0,0,0.45)
@@ -27,6 +33,8 @@ const PINNED_SHADOW_CLASSES = {
 } as const
 
 const EXPANDED_STICKY_CLASS = '[&_tr[data-expanded=true]]:sticky [&_tr[data-expanded=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded=true]]:z-10 [&_tr[data-expanded=true]]:bg-default'
+const PINNED_POSITION_CLASS = '[&_th[data-pinned=left]]:!transition-colors [&_th[data-pinned=right]]:!transition-colors [&_td[data-pinned=left]]:!transition-colors [&_td[data-pinned=right]]:!transition-colors [&_th[data-pinned=left]]:!duration-150 [&_th[data-pinned=right]]:!duration-150 [&_td[data-pinned=left]]:!duration-150 [&_td[data-pinned=right]]:!duration-150'
+const PINNED_HOVER_CLASS = '[&_tbody_tr:hover_td[data-pinned=left]]:!bg-muted [&_tbody_tr:hover_td[data-pinned=right]]:!bg-muted'
 
 export interface UseProTableViewReturn<T> {
   data: Ref<T[]>
@@ -100,7 +108,12 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
   const tableDiv = useTemplateRef<HTMLDivElement>('table')
   const columnSizing = ref<ColumnSizingState>({})
   let resizeObserver: ResizeObserver | null = null
+  let mutationObserver: MutationObserver | null = null
   let scrollContainer: HTMLElement | null = null
+  let pinnedOffsetFrame: number | null = null
+  let tableDomUpdateQueued = false
+  let postRenderPinnedOffsetQueued = false
+  let renderedTableStateQueued = false
 
   // 固定列阴影控制
   const showLeftPinnedShadow = ref(false)
@@ -116,7 +129,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
   ])
 
   const HIDE_LAST_ROW_BORDER_CLASS = '[&_tbody_tr:last-child_td]:border-b-0'
-  const tblClasses = computed(() => [pinnedShadowClasses.value, EXPANDED_STICKY_CLASS, hasVerticalOverflow.value && HIDE_LAST_ROW_BORDER_CLASS])
+  const tblClasses = computed(() => [pinnedShadowClasses.value, EXPANDED_STICKY_CLASS, PINNED_POSITION_CLASS, PINNED_HOVER_CLASS, hasVerticalOverflow.value && HIDE_LAST_ROW_BORDER_CLASS])
   const tblUi = computed(() => ({ root: 'relative overflow-clip', th: thClass.value, td: tdClass.value }))
   const tblProps = computed<TableProps<T>>(() => ({
     ...baseTblProps.value,
@@ -129,25 +142,185 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     return col.id ?? col.accessorKey
   }
 
-  function updateColumnSizing() {
-    if (!tableDiv.value) return
+  function getLeafColumnIds(columns: unknown[]): string[] {
+    return columns.flatMap((column) => {
+      if (!column || typeof column !== 'object') return []
+      const col = column as TableColumnLike
+      if (Array.isArray(col.columns) && col.columns.length) {
+        return getLeafColumnIds(col.columns)
+      }
+      const columnId = getColumnId(column)
+      return columnId ? [columnId] : []
+    })
+  }
 
-    const leafColumns = baseTblProps.value.columns
-      ?.flatMap((column: any) => column.columns ?? [column])
-      .map(getColumnId)
-      .filter((id): id is string => !!id) ?? []
+  function getRenderedLeafColumnIds(columns: unknown[], columnPinning?: ColumnPinningState): string[] {
+    const columnIds = getLeafColumnIds(columns)
+    const columnIdSet = new Set(columnIds)
+    const leftIds = columnPinning?.left?.filter(id => columnIdSet.has(id)) ?? []
+    const rightIds = columnPinning?.right?.filter(id => columnIdSet.has(id)) ?? []
+    const pinnedIds = new Set([...leftIds, ...rightIds])
+    const centerIds = columnIds.filter(id => !pinnedIds.has(id))
+    return [...leftIds, ...centerIds, ...rightIds]
+  }
+
+  function isSameColumnSizing(prev: ColumnSizingState, next: ColumnSizingState): boolean {
+    const prevKeys = Object.keys(prev)
+    const nextKeys = Object.keys(next)
+    return prevKeys.length === nextKeys.length && nextKeys.every(key => prev[key] === next[key])
+  }
+
+  function getElementWidth(element: HTMLElement): number {
+    return element.getBoundingClientRect().width
+  }
+
+  function getDirectTableCells(row: HTMLTableRowElement): HTMLTableCellElement[] {
+    return Array.from(row.children).filter((cell): cell is HTMLTableCellElement => cell instanceof HTMLTableCellElement && (cell.dataset.slot === 'th' || cell.dataset.slot === 'td'))
+  }
+
+  function updateColumnSizing(): boolean {
+    if (!tableDiv.value) return false
+
+    const leafColumns = getRenderedLeafColumnIds((baseTblProps.value.columns ?? []) as unknown[], (baseTblProps.value as TablePropsWithColumnState<T>).columnPinning)
     const headers = Array.from(tableDiv.value.querySelectorAll<HTMLTableCellElement>('thead tr[data-slot="tr"] th[data-slot="th"]'))
-    if (!leafColumns.length || !headers.length) return
+    const bodyRows = Array.from(tableDiv.value.querySelectorAll<HTMLTableRowElement>('tbody tr[data-slot="tr"]'))
+    if (!leafColumns.length || !headers.length) return false
 
     const nextSizing: ColumnSizingState = {}
     headers.slice(0, leafColumns.length).forEach((header, index) => {
       const columnId = leafColumns[index]
-      const width = Math.ceil(header.getBoundingClientRect().width)
+      let width = getElementWidth(header)
+      bodyRows.forEach((row) => {
+        const cell = row.children[index]
+        if (cell instanceof HTMLElement) {
+          width = Math.max(width, getElementWidth(cell))
+        }
+      })
       if (columnId && width > 0) {
-        nextSizing[columnId] = width
+        nextSizing[columnId] = Math.ceil(width)
       }
     })
+    if (isSameColumnSizing(columnSizing.value, nextSizing)) return false
     columnSizing.value = nextSizing
+    return true
+  }
+
+  function updatePinnedColumnOffsets() {
+    if (!tableDiv.value) return
+
+    const headerRow = tableDiv.value.querySelector<HTMLTableRowElement>('thead tr[data-slot="tr"]')
+    if (!headerRow) return
+
+    const headerCells = getDirectTableCells(headerRow)
+    if (!headerCells.length) return
+
+    const leftOffsets: Array<[number, number]> = []
+    const rightOffsets: Array<[number, number]> = []
+
+    let leftOffset = 0
+    headerCells.forEach((cell, index) => {
+      if (cell.dataset.pinned !== 'left') return
+      leftOffsets.push([index, leftOffset])
+      leftOffset += getElementWidth(cell)
+    })
+
+    let rightOffset = 0
+    for (let index = headerCells.length - 1; index >= 0; index--) {
+      const cell = headerCells[index]
+      if (!cell || cell.dataset.pinned !== 'right') continue
+      rightOffsets.push([index, rightOffset])
+      rightOffset += getElementWidth(cell)
+    }
+
+    if (!leftOffsets.length && !rightOffsets.length) return
+
+    const setCellOffset = (cell: HTMLTableCellElement, side: 'left' | 'right', offset: number) => {
+      const value = `${offset}px`
+      if (cell.style[side] !== value) {
+        cell.style[side] = value
+      }
+    }
+
+    const rows = Array.from(tableDiv.value.querySelectorAll<HTMLTableRowElement>('tr[data-slot="tr"]'))
+    rows.forEach((row) => {
+      const cells = getDirectTableCells(row)
+      if (!cells.length) return
+
+      leftOffsets.forEach(([index, offset]) => {
+        const cell = cells[index]
+        if (cell?.dataset.pinned === 'left') {
+          setCellOffset(cell, 'left', offset)
+        }
+      })
+
+      rightOffsets.forEach(([index, offset]) => {
+        const cell = cells[index]
+        if (cell?.dataset.pinned === 'right') {
+          setCellOffset(cell, 'right', offset)
+        }
+      })
+    })
+  }
+
+  function queuePinnedColumnOffsetUpdate(immediate = true) {
+    if (immediate) {
+      updatePinnedColumnOffsets()
+    }
+    if (typeof requestAnimationFrame !== 'function') return
+
+    if (pinnedOffsetFrame !== null) {
+      return
+    }
+
+    pinnedOffsetFrame = requestAnimationFrame(() => {
+      pinnedOffsetFrame = null
+      updatePinnedColumnOffsets()
+    })
+  }
+
+  function queuePostRenderPinnedColumnOffsetUpdate() {
+    if (postRenderPinnedOffsetQueued) return
+    postRenderPinnedOffsetQueued = true
+    nextTick(() => {
+      postRenderPinnedOffsetQueued = false
+      queuePinnedColumnOffsetUpdate()
+      checkShadowVisibility()
+    })
+  }
+
+  function updateRenderedTableState() {
+    const columnSizingChanged = updateColumnSizing()
+    queuePinnedColumnOffsetUpdate()
+    if (columnSizingChanged) {
+      queuePostRenderPinnedColumnOffsetUpdate()
+    }
+    checkShadowVisibility()
+  }
+
+  function queueRenderedTableStateUpdate() {
+    if (renderedTableStateQueued) return
+    renderedTableStateQueued = true
+    nextTick(() => {
+      renderedTableStateQueued = false
+      updateRenderedTableState()
+    })
+  }
+
+  function queueTableDomUpdate() {
+    if (tableDomUpdateQueued) return
+    tableDomUpdateQueued = true
+
+    const runUpdate = () => {
+      tableDomUpdateQueued = false
+      updateRenderedTableState()
+    }
+
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(runUpdate)
+      return
+    }
+
+    Promise.resolve().then(runUpdate)
   }
 
   function updateTableWidth() {
@@ -171,6 +344,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
 
     showLeftPinnedShadow.value = scrollLeft > 0
     showRightPinnedShadow.value = scrollLeft + clientWidth < scrollWidth - 1
+    queuePinnedColumnOffsetUpdate(false)
   }
 
   onMounted(() => {
@@ -192,34 +366,34 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
       if (tableDiv.value) {
         resizeObserver = new ResizeObserver(() => {
           updateTableWidth()
-          nextTick(() => {
-            updateColumnSizing()
-            checkShadowVisibility()
-          })
+          queueRenderedTableStateUpdate()
         })
         resizeObserver.observe(tableDiv.value)
+        mutationObserver = new MutationObserver(() => {
+          queueTableDomUpdate()
+        })
+        const observedTableBody = tableDiv.value.querySelector('tbody') ?? tableDiv.value
+        mutationObserver.observe(observedTableBody, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['data-expanded']
+        })
         updateTableWidth()
-        updateColumnSizing()
-        checkShadowVisibility()
+        updateRenderedTableState()
       }
     })
   })
 
   // 监听数据变化，重新检查阴影状态
   watch(data, () => {
-    nextTick(() => {
-      updateColumnSizing()
-      checkShadowVisibility()
-    })
+    queueRenderedTableStateUpdate()
   }, { flush: 'post' })
 
   watch(
     () => [baseTblProps.value.columns, (baseTblProps.value as TablePropsWithColumnState<T>).columnPinning],
     () => {
-      nextTick(() => {
-        updateColumnSizing()
-        checkShadowVisibility()
-      })
+      queueRenderedTableStateUpdate()
     },
     { flush: 'post' }
   )
@@ -231,10 +405,24 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
       resizeObserver = null
     }
 
+    if (mutationObserver) {
+      mutationObserver.disconnect()
+      mutationObserver = null
+    }
+
     if (scrollContainer) {
       scrollContainer.removeEventListener('scroll', handleScroll)
       scrollContainer = null
     }
+
+    if (pinnedOffsetFrame !== null) {
+      cancelAnimationFrame(pinnedOffsetFrame)
+      pinnedOffsetFrame = null
+    }
+
+    tableDomUpdateQueued = false
+    postRenderPinnedOffsetQueued = false
+    renderedTableStateQueued = false
   })
 
   return {
