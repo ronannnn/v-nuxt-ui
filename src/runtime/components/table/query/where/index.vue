@@ -306,16 +306,6 @@ defineExpose({ focusField })
               @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
             />
           </div>
-          <div class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6 flex items-center">
-            <TableQueryWhereNewer
-              v-if="unselectedWhereFields.length > 0"
-              :options="whereOptions"
-              :unselected-fields="unselectedWhereFields"
-              :biz-columns="bizColumns ?? []"
-              size="sm"
-              @new="onNewField"
-            />
-          </div>
         </Dnd>
       </div>
     </div>
@@ -323,6 +313,14 @@ defineExpose({ focusField })
     <div class="flex items-center gap-2.5 p-4">
       <div class="flex-1" />
       <div class="flex items-center gap-2.5">
+        <TableQueryWhereNewer
+          v-if="unselectedWhereFields.length > 0"
+          :options="whereOptions"
+          :unselected-fields="unselectedWhereFields"
+          :biz-columns="bizColumns ?? []"
+          size="sm"
+          @new="onNewField"
+        />
         <UButton
           v-if="!hideQueryButton"
           label="查询"
