@@ -9,6 +9,7 @@ const props = defineProps<{
   options: WhereQueryOption<T>[]
   disabled?: boolean
   focus?: () => void
+  buttonClass?: string
 }>()
 
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
@@ -68,6 +69,10 @@ const currentLabel = computed(() => {
       variant="outline"
       :label="currentLabel"
       :disabled="disabled"
+      :ui="{
+        base: 'rounded-t-none',
+        label: 'text-dimmed'
+      }"
     />
   </ButtonDropdown>
 </template>

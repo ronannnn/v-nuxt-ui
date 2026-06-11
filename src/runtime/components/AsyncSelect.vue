@@ -146,6 +146,13 @@ function findLabel(tagItem: unknown): string {
   const match = items.value.find(i => i != null && String((i as any).value) === String(tagItem))
   return (match as any)?.label ?? String(tagItem ?? '')
 }
+
+const showPlaceholder = computed(() => {
+  if (props.multiple) {
+    return (!modelValue.value.values || (Array.isArray(modelValue.value.values) && modelValue.value.values.length === 0)) ? props.placeholder : ''
+  }
+  return !modelValue.value.values ? props.placeholder : ''
+})
 </script>
 
 <template>
@@ -157,7 +164,7 @@ function findLabel(tagItem: unknown): string {
     :items="items"
     :multiple="multiple"
     :size="size"
-    :placeholder="placeholder"
+    :placeholder="showPlaceholder && placeholder"
     :create-item="canCreate && createModalComponent && {
       position: 'top',
       when: 'always'
@@ -165,13 +172,18 @@ function findLabel(tagItem: unknown): string {
     color="neutral"
     delete-icon="i-lucide-trash"
     value-key="value"
-    clear
+    :clear="{
+      ui: {
+        leadingIcon: 'size-3 text-dimmed'
+      }
+    }"
     clear-icon="i-lucide-circle-x"
     :icon="icon"
     :loading="fetching"
     :disabled="disabled"
     open-on-focus
     trailing
+    trailing-icon=""
     ignore-filter
     :ui="ui"
     :content="{

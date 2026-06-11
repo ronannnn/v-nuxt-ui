@@ -56,12 +56,14 @@ defineExpose({
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
     v-bind="option"
+    rounded-none
   />
   <TableQueryWhereSimpleItemOprDatePicker
     v-else-if="option!.type === 'date-picker'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
+    rounded-none
   />
   <TableQueryWhereSimpleItemOprAsyncSelect
     v-else-if="option!.type === 'async-select'"
@@ -69,5 +71,6 @@ defineExpose({
     v-model:where-query-item="whereQueryItem"
     :disabled="fetching"
     v-bind="option"
+    rounded-none
   />
 </template>

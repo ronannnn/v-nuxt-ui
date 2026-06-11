@@ -9,6 +9,7 @@ withDefaults(defineProps<{
   size?: InputProps['size']
   icon?: InputProps['icon']
   inputClass?: string
+  roundedNone?: boolean
 }>(), {
   icon: 'i-lucide-calendar'
 })
@@ -68,7 +69,9 @@ const onInput = () => {
 }
 
 // 清空
-const handleClear = () => {
+const handleClear = (e: MouseEvent) => {
+  e.preventDefault()
+  e.stopPropagation()
   inputBuffer.value = ''
   isInternalUpdate = true
   value.value = undefined
@@ -92,6 +95,9 @@ defineExpose({
     :placeholder="placeholder"
     :color="isInvalid ? 'error' : 'neutral'"
     :highlight="isInvalid"
+    :ui="{
+      base: roundedNone && 'rounded-none'
+    }"
     @input="onInput"
     @focus="(e: FocusEvent) => emit('focus', e)"
     @blur="(e: FocusEvent) => emit('blur', e)"
@@ -100,8 +106,11 @@ defineExpose({
       <UButton
         color="neutral"
         variant="link"
-        size="sm"
+        size="xs"
         icon="i-lucide-circle-x"
+        :ui="{
+          leadingIcon: 'size-3 text-dimmed'
+        }"
         aria-label="Clear input"
         @mousedown.prevent
         @click="handleClear"

@@ -143,6 +143,18 @@ const componentMeta: Record<string, ComponentMetaEntry> = {
     events: []
   },
 
+  ProButtonConfirm: {
+    props: [
+      { name: 'button', type: 'ButtonProps', required: false, description: 'Nuxt UI button props before confirmation' },
+      { name: 'confirmButton', type: 'ButtonProps', required: false, description: 'Nuxt UI button props in confirmation state' },
+      { name: 'resetOnMouseleave', type: 'boolean', default: 'true', description: 'Reset confirmation state when the pointer leaves' }
+    ],
+    slots: [],
+    events: [
+      { name: 'confirm', type: '[]', description: 'Emitted on the second click' }
+    ]
+  },
+
   ProButtonTheme: {
     props: [
       { name: 'label', type: 'string', required: true, description: 'Button label' },

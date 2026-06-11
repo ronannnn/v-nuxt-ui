@@ -292,7 +292,7 @@ defineExpose({ focusField })
           <div
             v-for="item in section.dndItems"
             :key="item.field"
-            class="flex items-center gap-1 col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6"
+            class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6"
             :class="isDateRangeQueryItem(item) ? '@3xl:col-span-24 @5xl:col-span-12 @7xl:col-span-8' : undefined"
           >
             <TableQueryWhereSimpleItem
@@ -306,7 +306,7 @@ defineExpose({ focusField })
               @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
             />
           </div>
-          <div class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6">
+          <div class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6 flex items-center">
             <TableQueryWhereNewer
               v-if="unselectedWhereFields.length > 0"
               :options="whereOptions"

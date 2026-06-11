@@ -4,7 +4,7 @@ import type { VColumn, User } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 import { isEmptyString } from '#v/utils'
 import { useDepartmentApi, useRoleApi, useUserApi } from '#v/composables'
-import { booleanOptions, dateFormat, genderOptions, loginTypeOptions } from '#v/constants'
+import { booleanOptions, dateFormat, genderOptions } from '#v/constants'
 import SysUsersSaveModal from './SaveModal.vue'
 import UBadge from '@nuxt/ui/components/Badge.vue'
 import TablePage from '#v/components/table/Page.vue'
@@ -99,12 +99,6 @@ const columns: VColumn<User>[] = [
   {
     accessorKey: 'loginType',
     header: '登录方式',
-    filterOption: {
-      type: 'select',
-      items: loginTypeOptions,
-      preferred: false,
-      initHide: true
-    },
     meta: {
       class: {
         td: 'min-w-24'
@@ -121,19 +115,7 @@ const columns: VColumn<User>[] = [
   },
   {
     accessorKey: 'needFillWh',
-    header: '工时填报',
-    filterOption: {
-      type: 'select',
-      preferred: false,
-      initHide: true,
-      items: booleanOptions,
-      multiple: true,
-      empty: {
-        label: '否',
-        variant: 'outline',
-        color: 'neutral'
-      }
-    }
+    header: '工时填报'
   },
   {
     accessorKey: 'gender',

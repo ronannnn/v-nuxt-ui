@@ -81,14 +81,15 @@ const currentOption = computed(() => {
     :items="items"
   >
     <UButton
-      :size="'sm'"
-      :color="'neutral'"
-      :variant="'outline'"
+      size="sm"
+      color="neutral"
+      variant="ghost"
+      :icon="tableWhereQueryItemIconMap.get(currentOption?.type ?? 'unknown') || 'field'"
       :label="currentOption?.label || '选择字段'"
       :disabled="disabled"
-      :icon="tableWhereQueryItemIconMap.get(currentOption?.type ?? 'unknown') || 'field'"
       :ui="{
-        label: 'font-bold'
+        base: 'w-full rounded-b-none',
+        label: 'font-bold text-highlighted'
       }"
     />
   </ButtonDropdown>

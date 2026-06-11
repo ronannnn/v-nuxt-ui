@@ -38,6 +38,13 @@ defineExpose({
     inputMenuRef.value?.inputRef.focus()
   }
 })
+
+const showPlaceholder = computed(() => {
+  if (props.multiple) {
+    return (!modelValue.value || (Array.isArray(modelValue.value) && modelValue.value.length === 0)) ? props.placeholder : ''
+  }
+  return !modelValue.value ? props.placeholder : ''
+})
 </script>
 
 <template>
@@ -47,18 +54,23 @@ defineExpose({
     v-model:search-term="searchTerm"
     v-model="modelValue"
     :items="filteredItems"
-    :placeholder="placeholder"
+    :placeholder="showPlaceholder && placeholder"
     :multiple="multiple"
     :size="size"
     color="neutral"
     delete-icon="i-lucide-trash"
     value-key="value"
-    clear
+    :clear="{
+      ui: {
+        leadingIcon: 'size-3 text-dimmed'
+      }
+    }"
     clear-icon="i-lucide-circle-x"
     :icon="icon"
     :disabled="disabled"
     open-on-focus
     trailing
+    trailing-icon=""
     ignore-filter
     :ui="ui"
     :content="{

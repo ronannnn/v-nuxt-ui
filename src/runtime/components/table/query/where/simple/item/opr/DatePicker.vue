@@ -11,6 +11,7 @@ import DatePickerInput from '#v/components/date-picker/Input.vue'
 
 defineProps<{
   disabled?: boolean
+  roundedNone?: boolean
 }>()
 
 const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { required: true })
@@ -76,7 +77,6 @@ const displayDateFormat = 'YYYY-MM-DD'
 
 // Range 输入
 const startDateStrValueInput = useTemplateRef('startDateStrValueInput')
-const endDateStrValueInput = useTemplateRef('endDateStrValueInput')
 const startDateStrValue = computed<string | undefined>({
   get() {
     return useDate().dateValueToDayjs((calendarValue.value as DateRange)?.start)?.format(displayDateFormat) ?? undefined
@@ -177,54 +177,56 @@ const dateRangeShortcuts: DateShortcut[] = [
       onOpenAutoFocus: (e: Event) => e.preventDefault()
     }"
   >
-    <!-- 输入框直接暴露 -->
-    <template v-if="isNoCalendarOpr" />
+    <!--
+      使用 anchor 插槽而非默认（trigger）插槽来承载输入框：
+      UPopover 的 trigger（mode="click"）会把 onClick 切换逻辑及 aria 属性
+      合并到插槽根元素上，若输入框直接作为根元素，会与 focus 打开逻辑冲突
+      （弹层一闪即关）并污染 input。anchor 只负责定位，不带点击切换。
+    -->
+    <template #anchor>
+      <span v-if="isNoCalendarOpr" />
 
-    <UFieldGroup
-      v-else-if="isRangeOpr"
-      class="w-full"
-    >
-      <div />
-      <DatePickerInput
-        ref="startDateStrValueInput"
-        v-model:value="startDateStrValue"
-        icon=""
-        input-class="min-w-28 flex-1"
-        placeholder="YYYY-MM-DD"
-        @focus="onOpenCalendar"
-        @blur="onCloseCalendar"
-      />
-      <UBadge variant="outline" color="neutral">
-        ~
-      </UBadge>
-      <DatePickerInput
-        ref="endDateStrValueInput"
-        v-model:value="endDateStrValue"
-        icon=""
-        input-class="min-w-28 flex-1"
-        placeholder="YYYY-MM-DD"
-        @focus="onOpenCalendar"
-        @blur="onCloseCalendar"
-      />
-      <div />
-    </UFieldGroup>
+      <UFieldGroup
+        v-else-if="isRangeOpr"
+        class="w-full"
+      >
+        <DatePickerInput
+          ref="startDateStrValueInput"
+          v-model:value="startDateStrValue"
+          icon=""
+          input-class="flex-1"
+          :rounded-none="roundedNone"
+          placeholder="YYYY-MM-DD"
+          @focus="onOpenCalendar"
+          @blur="onCloseCalendar"
+        />
+        <UBadge variant="outline" color="neutral">
+          ~
+        </UBadge>
+        <DatePickerInput
+          ref="endDateStrValueInput"
+          v-model:value="endDateStrValue"
+          icon=""
+          input-class="flex-1"
+          :rounded-none="roundedNone"
+          placeholder="YYYY-MM-DD"
+          @focus="onOpenCalendar"
+          @blur="onCloseCalendar"
+        />
+      </UFieldGroup>
 
-    <div
-      v-else
-      class="w-full"
-    >
-      <div />
       <DatePickerInput
+        v-else
         ref="singleDateStrValueInput"
         v-model:value="singleDateStrValue"
         icon=""
-        input-class="w-full min-w-32"
+        input-class="w-full"
+        :rounded-none="roundedNone"
         placeholder="YYYY-MM-DD"
         @focus="onOpenCalendar"
         @blur="onCloseCalendar"
       />
-      <div />
-    </div>
+    </template>
 
     <template #content>
       <div
