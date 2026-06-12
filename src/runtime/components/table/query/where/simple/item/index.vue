@@ -88,7 +88,7 @@ defineExpose({
         </span>
       </div>
       <ButtonConfirm
-        class="rounded-b-none rounded-tl-none bg-elevated/40 opacity-0 transition-all group-hover/where-item:opacity-100 max-md:opacity-100"
+        class="rounded-br-none opacity-0 transition-all group-hover/where-item:opacity-100 max-md:opacity-100"
         @confirm="onRemove(whereQueryItem.field as string)"
       />
     </div>

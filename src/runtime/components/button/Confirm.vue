@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ButtonProps } from '@nuxt/ui'
+import defu from 'defu'
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
@@ -8,18 +9,6 @@ const props = withDefaults(defineProps<{
   resetOnMouseleave?: boolean
   ui?: Record<string, any>
 }>(), {
-  button: () => ({
-    icon: 'i-lucide-x',
-    color: 'neutral',
-    variant: 'ghost',
-    size: 'sm'
-  }),
-  confirmButton: () => ({
-    label: '确认',
-    color: 'error',
-    variant: 'ghost',
-    size: 'sm'
-  }),
   resetOnMouseleave: true
 })
 
@@ -27,9 +16,23 @@ const emit = defineEmits<{
   confirm: []
 }>()
 
+const buttonProps = computed(() => defu(props.button, {
+  icon: 'i-lucide-x',
+  color: 'neutral',
+  variant: 'link',
+  size: 'sm'
+}))
+const confirmButtonProps = computed(() => defu(props.confirmButton, {
+  icon: 'i-lucide-x',
+  color: 'error',
+  variant: 'ghost',
+  size: 'sm',
+  label: '确认'
+}))
+
 const confirming = defineModel<boolean>('confirming', { default: false })
 
-const activeButton = computed(() => confirming.value ? props.confirmButton : props.button)
+const activeButton = computed(() => confirming.value ? confirmButtonProps.value : buttonProps.value)
 
 const onClick = () => {
   if (activeButton.value?.disabled) return
