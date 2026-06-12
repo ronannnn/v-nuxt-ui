@@ -298,8 +298,8 @@ defineExpose({ focusField })
             <div
               v-for="item in section.dndItems"
               :key="item.field"
-              class="col-span-24 @3xl:col-span-12 @5xl:col-span-8 @7xl:col-span-6"
-              :class="isDateRangeQueryItem(item) ? '@3xl:col-span-24 @5xl:col-span-12 @7xl:col-span-8' : undefined"
+              class="col-span-24 @2xl:col-span-12 @4xl:col-span-8 @6xl:col-span-6 @7xl:col-span-4"
+              :class="isDateRangeQueryItem(item) ? '@2xl:col-span-24 @4xl:col-span-12 @6xl:col-span-8 @7xl:col-span-6' : undefined"
             >
               <TableQueryWhereSimpleItem
                 :ref="(el) => setItemRef(item.field as string, el)"
