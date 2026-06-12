@@ -56,7 +56,7 @@ defineExpose({
         size="sm"
         icon="i-lucide-circle-x"
         :ui="{
-          leadingIcon: 'size-3.5 text-dimmed'
+          leadingIcon: 'size-3 text-dimmed'
         }"
         aria-label="Clear input"
         @click="() => {
