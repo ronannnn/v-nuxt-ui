@@ -31,6 +31,13 @@ const props = defineProps<{
 
 const isOrderedAsc = computed(() => props.isOrdered && props.orderOpr === 'asc')
 const isOrderedDesc = computed(() => props.isOrdered && props.orderOpr === 'desc')
+const isPinnedLeft = computed(() => props.isPinned === 'left')
+const isPinnedRight = computed(() => props.isPinned === 'right')
+const isUnpinned = computed(() => !props.isPinned)
+const headerIcon = computed(() => {
+  if (isPinnedLeft.value || isPinnedRight.value) return 'i-lucide-pin'
+  return undefined
+})
 
 const onClickAsc = async () => {
   props.onUpdateOrderOpr(isOrderedAsc.value ? null : 'asc')
@@ -41,88 +48,117 @@ const onClickDesc = async () => {
   await props.fetchList()
 }
 
-// dropdown menu items
-const dropdownItems = computed<DropdownMenuItem[]>(() => {
-  const groups: DropdownMenuItem[] = []
+function groupLabel(label: string): DropdownMenuItem {
+  return { type: 'label', label }
+}
 
-  // 筛选
-  if (props.enableFilter) {
-    groups.push({
+function createActionItem(item: DropdownMenuItem): DropdownMenuItem {
+  return {
+    ...item,
+    disabled: props.disabled || item.disabled
+  }
+}
+
+async function applyOrderOpr(opr: OrderQueryOpr) {
+  props.onUpdateOrderOpr(opr)
+  await props.fetchList()
+}
+
+const filterItems = computed<DropdownMenuItem[]>(() => {
+  if (!props.enableFilter) return []
+  return [
+    createActionItem({
       label: '筛选',
       icon: 'i-lucide-list-filter',
       onSelect: () => props.onFilterClick?.(props.accessorKey)
     })
-  }
-
-  // 隐藏列
-  groups.push({
-    label: '隐藏列',
-    icon: 'i-lucide-eye-off',
-    onSelect: () => props.onHideColumn?.(props.accessorKey)
-  })
-
-  // 固定列
-  groups.push({
-    label: '固定列',
-    icon: 'i-lucide-pin',
-    children: [
-      {
-        label: '固定在左侧',
-        icon: 'i-lucide-panel-left',
-        type: 'checkbox' as const,
-        checked: props.isPinned === 'left',
-        onSelect: () => props.onUpdatePinned(props.isPinned === 'left' ? 'unfixed' : 'left')
-      },
-      {
-        label: '固定在右侧',
-        icon: 'i-lucide-panel-right',
-        type: 'checkbox' as const,
-        checked: props.isPinned === 'right',
-        onSelect: () => props.onUpdatePinned(props.isPinned === 'right' ? 'unfixed' : 'right')
-      }
-    ]
-  })
-
-  // 排序
-  if (props.enableOrder) {
-    const isAsc = isOrderedAsc.value
-    const isDesc = isOrderedDesc.value
-    groups.push({
-      label: '排序',
-      icon: 'i-lucide-arrow-up-down',
-      children: [
-        {
-          label: '升序',
-          icon: 'i-lucide-arrow-up',
-          type: 'checkbox' as const,
-          checked: isAsc,
-          onSelect: async () => {
-            props.onUpdateOrderOpr(isAsc ? null : 'asc')
-            await props.fetchList()
-          }
-        },
-        {
-          label: '降序',
-          icon: 'i-lucide-arrow-down',
-          type: 'checkbox' as const,
-          checked: isDesc,
-          onSelect: async () => {
-            props.onUpdateOrderOpr(isDesc ? null : 'desc')
-            await props.fetchList()
-          }
-        }
-      ]
-    })
-  }
-
-  return groups
+  ]
 })
+
+const sortItems = computed<DropdownMenuItem[]>(() => {
+  if (!props.enableOrder) return []
+  return [
+    groupLabel('排序'),
+    createActionItem({
+      label: '升序',
+      icon: 'i-lucide-arrow-up-narrow-wide',
+      type: 'checkbox',
+      checked: isOrderedAsc.value,
+      onSelect: () => applyOrderOpr(isOrderedAsc.value ? null : 'asc')
+    }),
+    createActionItem({
+      label: '降序',
+      icon: 'i-lucide-arrow-down-wide-narrow',
+      type: 'checkbox',
+      checked: isOrderedDesc.value,
+      onSelect: () => applyOrderOpr(isOrderedDesc.value ? null : 'desc')
+    }),
+    createActionItem({
+      label: '取消排序',
+      icon: 'i-lucide-arrow-up-down',
+      type: 'checkbox',
+      checked: !props.isOrdered,
+      disabled: props.disabled || !props.isOrdered,
+      onSelect: () => applyOrderOpr(null)
+    })
+  ]
+})
+
+const pinItems = computed<DropdownMenuItem[]>(() => [
+  groupLabel('固定'),
+  createActionItem({
+    label: '固定在左侧',
+    icon: 'i-lucide-arrow-left-to-line',
+    type: 'checkbox',
+    checked: isPinnedLeft.value,
+    onSelect: () => props.onUpdatePinned(isPinnedLeft.value ? 'unfixed' : 'left')
+  }),
+  createActionItem({
+    label: '固定在右侧',
+    icon: 'i-lucide-arrow-right-to-line',
+    type: 'checkbox',
+    checked: isPinnedRight.value,
+    onSelect: () => props.onUpdatePinned(isPinnedRight.value ? 'unfixed' : 'right')
+  }),
+  createActionItem({
+    label: '不固定',
+    icon: 'i-lucide-pin-off',
+    type: 'checkbox',
+    checked: isUnpinned.value,
+    disabled: props.disabled || isUnpinned.value,
+    onSelect: () => props.onUpdatePinned('unfixed')
+  })
+])
+
+const visibilityItems = computed<DropdownMenuItem[]>(() => {
+  if (!props.onHideColumn) return []
+  return [
+    groupLabel('显示'),
+    createActionItem({
+      label: '隐藏列',
+      icon: 'i-lucide-eye-off',
+      color: 'warning',
+      onSelect: () => props.onHideColumn?.(props.accessorKey)
+    })
+  ]
+})
+
+// dropdown menu items
+const dropdownItems = computed<DropdownMenuItem[][]>(() =>
+  [
+    filterItems.value,
+    sortItems.value,
+    pinItems.value,
+    visibilityItems.value
+  ].filter(group => group.length > 0)
+)
 </script>
 
 <template>
   <div class="flex">
     <UDropdownMenu
       :items="dropdownItems"
+      size="sm"
       :content="{ align: 'start', side: 'bottom' }"
     >
       <UButton
@@ -130,7 +166,7 @@ const dropdownItems = computed<DropdownMenuItem[]>(() => {
         :color="isOrdered ? 'primary' : 'neutral'"
         :variant="isOrdered ? 'soft' : 'ghost'"
         :disabled="disabled"
-        :icon="isPinned ? 'i-lucide-pin' : undefined"
+        :icon="headerIcon"
         class="px-4 font-bold rounded-none h-(--ui-table-header-height) w-full"
         :ui="{
           leadingIcon: 'text-neutral-400 size-4',
