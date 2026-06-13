@@ -44,6 +44,7 @@ declare module 'vue' {
     UTabs: typeof import('@nuxt/ui/components/Tabs.vue')['default']
     UTable: typeof import('@nuxt/ui/components/Table.vue')['default']
     UTextarea: typeof import('@nuxt/ui/components/Textarea.vue')['default']
+    UTheme: typeof import('@nuxt/ui/components/Theme.vue')['default']
     UTooltip: typeof import('@nuxt/ui/components/Tooltip.vue')['default']
     UTree: typeof import('@nuxt/ui/components/Tree.vue')['default']
   }
