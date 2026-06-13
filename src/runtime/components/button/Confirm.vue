@@ -23,7 +23,6 @@ const buttonProps = computed(() => defu(props.button, {
   size: 'sm'
 }))
 const confirmButtonProps = computed(() => defu(props.confirmButton, {
-  icon: 'i-lucide-x',
   color: 'error',
   variant: 'ghost',
   size: 'sm',
