@@ -274,12 +274,14 @@ const sections = reactive([
   { key: 'other' as const, label: '其他查询条件', dndItems: otherDndItems, unselectedFields: unselectedOtherFields }
 ])
 
+const empty = computed(() => sections.every(section => section.dndItems.length === 0))
+
 defineExpose({ focusField })
 </script>
 
 <template>
   <div class="divide-y divide-default">
-    <div class="@container p-4 space-y-6">
+    <div v-if="!empty" class="@container p-4 space-y-6">
       <template
         v-for="section in sections"
         :key="section.key"
