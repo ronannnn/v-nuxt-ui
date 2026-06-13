@@ -3,6 +3,7 @@ import { ref, watch, computed, useTemplateRef } from 'vue'
 import type { InputProps } from '@nuxt/ui'
 import { vMaska } from 'maska/vue'
 import dayjs from 'dayjs'
+import { focusElement } from '#v/utils'
 
 withDefaults(defineProps<{
   placeholder?: InputProps['placeholder']
@@ -22,6 +23,15 @@ const emit = defineEmits<{
 }>()
 
 const input = useTemplateRef('input')
+
+interface FocusOptions {
+  onFocus?: () => void
+  waitForStablePosition?: boolean
+}
+
+function getInputElement() {
+  return input.value?.inputRef
+}
 
 // 本地输入缓冲区：保存用户正在输入的原始文本
 const inputBuffer = ref(value.value ?? '')
@@ -80,7 +90,12 @@ const handleClear = (e: MouseEvent) => {
 }
 
 defineExpose({
-  focus: () => input.value?.inputRef?.focus()
+  focus: (options?: FocusOptions) => {
+    focusElement(getInputElement, {
+      afterFocus: options?.onFocus,
+      waitForStablePosition: options?.waitForStablePosition
+    })
+  }
 })
 </script>
 

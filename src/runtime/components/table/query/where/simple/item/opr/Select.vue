@@ -21,7 +21,7 @@ const modelValue = computed<string[] | number[]>({
 const selectRef = useTemplateRef('select')
 defineExpose({
   focus: () => {
-    selectRef.value?.focus()
+    selectRef.value?.focus({ open: true, waitForStablePosition: true })
   }
 })
 </script>

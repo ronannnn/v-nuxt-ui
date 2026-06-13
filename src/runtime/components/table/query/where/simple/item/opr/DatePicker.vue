@@ -144,9 +144,15 @@ const onCloseCalendar = () => {
 const focusStartInput = () => {
   nextTick(() => {
     if (isRangeOpr.value) {
-      startDateStrValueInput.value?.focus()
+      startDateStrValueInput.value?.focus({
+        onFocus: onOpenCalendar,
+        waitForStablePosition: true
+      })
     } else {
-      singleDateStrValueInput.value?.focus()
+      singleDateStrValueInput.value?.focus({
+        onFocus: onOpenCalendar,
+        waitForStablePosition: true
+      })
     }
   })
 }

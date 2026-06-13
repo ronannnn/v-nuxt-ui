@@ -68,7 +68,7 @@ const filterItems = computed<DropdownMenuItem[]>(() => {
   if (!props.enableFilter) return []
   return [
     createActionItem({
-      label: '筛选',
+      label: '查询',
       icon: 'i-lucide-list-filter',
       onSelect: () => props.onFilterClick?.(props.accessorKey)
     })

@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T">
 import type { VSelectProps } from '#v/types'
-import { isEmptyString } from '#v/utils'
+import { focusElement, isEmptyString } from '#v/utils'
 import type { InputMenuItem } from '@nuxt/ui'
 import { computed, ref, useTemplateRef } from 'vue'
 
@@ -33,9 +33,22 @@ const ui = computed(() => ({
 }))
 
 const inputMenuRef = useTemplateRef('inputMenu')
+
+interface FocusOptions {
+  open?: boolean
+  waitForStablePosition?: boolean
+}
+
+function getInputElement() {
+  return inputMenuRef.value?.inputRef
+}
+
 defineExpose({
-  focus: () => {
-    inputMenuRef.value?.inputRef.focus()
+  focus: (options?: FocusOptions) => {
+    focusElement(getInputElement, {
+      afterFocus: options?.open ? () => dropdownOpen.value = true : undefined,
+      waitForStablePosition: options?.waitForStablePosition
+    })
   }
 })
 

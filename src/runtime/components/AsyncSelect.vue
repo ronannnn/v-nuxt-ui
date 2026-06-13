@@ -4,7 +4,7 @@ import { ref, computed, useTemplateRef, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import { defu } from 'defu'
 import { useFetching } from '#v/composables/useBoolean'
-import { isEmptyString } from '#v/utils'
+import { focusElement, isEmptyString } from '#v/utils'
 import type { AsyncSelectCombinedValue, AsyncSelectValue, QueryTemplate, VAsyncSelectProps } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
 
@@ -133,9 +133,22 @@ watch(searchTerm, (newVal) => {
 }, { immediate: true })
 
 const inputMenuRef = useTemplateRef('inputMenu')
+
+interface FocusOptions {
+  open?: boolean
+  waitForStablePosition?: boolean
+}
+
+function getInputElement() {
+  return inputMenuRef.value?.inputRef
+}
+
 defineExpose({
-  focus: () => {
-    inputMenuRef.value?.inputRef.focus()
+  focus: (options?: FocusOptions) => {
+    focusElement(getInputElement, {
+      afterFocus: options?.open ? () => dropdownOpen.value = true : undefined,
+      waitForStablePosition: options?.waitForStablePosition
+    })
   }
 })
 

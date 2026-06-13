@@ -28,7 +28,7 @@ const modelValue = computed({
 const asyncSelectRef = useTemplateRef('asyncSelect')
 defineExpose({
   focus: () => {
-    asyncSelectRef.value?.focus()
+    asyncSelectRef.value?.focus({ open: true, waitForStablePosition: true })
   }
 })
 </script>
