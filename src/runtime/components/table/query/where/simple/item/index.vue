@@ -1,13 +1,20 @@
 <script setup lang="ts" generic="T">
 import type { DropdownMenuItem } from '@nuxt/ui'
 import type { WhereQueryOption, WhereQueryItem } from '#v/types'
-import { computed, shallowRef, watch, useTemplateRef } from 'vue'
+import { computed, shallowRef, useTemplateRef, watch } from 'vue'
 import TableQueryWhereSimpleItemOprPicker from '#v/components/table/query/where/simple/item/OprPicker.vue'
 import TableQueryWhereSimpleItemOpr from '#v/components/table/query/where/simple/item/opr/index.vue'
 import ButtonConfirm from '#v/components/button/Confirm.vue'
 import { tableWhereQueryItemIconMap } from '#v/constants'
 
 type WhereQuerySection = 'preferred' | 'other'
+type HandlePointerStart = {
+  clientX: number
+  clientY: number
+  wasOpen: boolean
+}
+
+const CLICK_DISTANCE = 4
 
 const props = defineProps<{
   options: WhereQueryOption<T>[]
@@ -24,7 +31,7 @@ const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { requir
 
 const option = computed(() => props.options.find(option => option.field === whereQueryItem.value.field))
 const moveMenuOpen = shallowRef(false)
-const pointerStart = shallowRef<Pick<PointerEvent, 'clientX' | 'clientY'> | null>(null)
+let handlePointerStart: HandlePointerStart | null = null
 const moveSectionItems = computed<DropdownMenuItem[]>(() => {
   const targetSection = props.section === 'preferred' ? 'other' : 'preferred'
   return [{
@@ -35,23 +42,30 @@ const moveSectionItems = computed<DropdownMenuItem[]>(() => {
 })
 
 function onHandlePointerDown(event: PointerEvent) {
-  pointerStart.value = event
+  handlePointerStart = {
+    clientX: event.clientX,
+    clientY: event.clientY,
+    wasOpen: moveMenuOpen.value
+  }
 }
 
-// 不加这个，会出现，拖拽一点点，复原后，点击第一下不会弹出dropdown menu
+// 拖拽库可能吞掉一次 click。这里只兜底打开，不反向关闭，避免和 DropdownMenuTrigger 抢状态。
 function onHandlePointerUp(event: PointerEvent) {
-  if (!pointerStart.value) return
+  const start = handlePointerStart
+  handlePointerStart = null
+  if (!start || start.wasOpen) return
 
   const distance = Math.hypot(
-    event.clientX - pointerStart.value.clientX,
-    event.clientY - pointerStart.value.clientY
+    event.clientX - start.clientX,
+    event.clientY - start.clientY
   )
-  pointerStart.value = null
 
-  if (distance > 4) return
+  if (distance > CLICK_DISTANCE) return
 
   window.setTimeout(() => {
-    moveMenuOpen.value = !moveMenuOpen.value
+    if (!moveMenuOpen.value) {
+      moveMenuOpen.value = true
+    }
   })
 }
 
@@ -119,7 +133,7 @@ defineExpose({
           aria-label="拖拽或移动查询条件分组"
           @pointerdown="onHandlePointerDown"
           @pointerup="onHandlePointerUp"
-          @pointercancel="pointerStart = null"
+          @pointercancel="handlePointerStart = null"
         />
       </UDropdownMenu>
     </UFieldGroup>
