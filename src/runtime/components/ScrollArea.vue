@@ -204,7 +204,7 @@ onActivated(() => {
     </ScrollAreaViewport>
 
     <ScrollAreaScrollbar
-      class="flex select-none touch-none p-0.5 z-99 transition-[width,height] duration-150 ease-out data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-2 data-[orientation=vertical]:hover:w-3 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2 data-[orientation=horizontal]:hover:h-3"
+      class="flex select-none touch-none z-99 transition-[width,height,padding] duration-150 ease-out data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-4 data-[orientation=vertical]:py-0.5 data-[orientation=vertical]:pl-2.5 data-[orientation=vertical]:pr-0.5 data-[orientation=vertical]:hover:w-4 data-[orientation=vertical]:hover:pl-1.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-4 data-[orientation=horizontal]:px-0.5 data-[orientation=horizontal]:pt-2.5 data-[orientation=horizontal]:pb-0.5 data-[orientation=horizontal]:hover:h-4 data-[orientation=horizontal]:hover:pt-1.5"
       orientation="vertical"
     >
       <ScrollAreaThumb
@@ -213,7 +213,7 @@ onActivated(() => {
     </ScrollAreaScrollbar>
 
     <ScrollAreaScrollbar
-      class="flex select-none touch-none p-0.5 z-99 transition-[width,height] duration-150 ease-out data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-2 data-[orientation=vertical]:hover:w-3 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2 data-[orientation=horizontal]:hover:h-3"
+      class="flex select-none touch-none z-99 transition-[width,height,padding] duration-150 ease-out data-[state=visible]:animate-[fade-in_300ms_ease-in] data-[state=hidden]:animate-[fade-out_300ms_ease-out] data-[orientation=vertical]:w-4 data-[orientation=vertical]:py-0.5 data-[orientation=vertical]:pl-2.5 data-[orientation=vertical]:pr-0.5 data-[orientation=vertical]:hover:w-4 data-[orientation=vertical]:hover:pl-1.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-4 data-[orientation=horizontal]:px-0.5 data-[orientation=horizontal]:pt-2.5 data-[orientation=horizontal]:pb-0.5 data-[orientation=horizontal]:hover:h-4 data-[orientation=horizontal]:hover:pt-1.5"
       orientation="horizontal"
     >
       <UTooltip
