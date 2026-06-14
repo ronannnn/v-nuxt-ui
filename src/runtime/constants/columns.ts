@@ -9,7 +9,8 @@ export const getCreateAtColumn = <T extends BaseModel>(createdAtSortOpr: OrderQu
   cell: ({ row }) => dayjs(row.original.createdAt).format(dateTimeFormat),
   filterOption: {
     type: 'date-picker',
-    preferred: false
+    preferred: false,
+    initHide: true
   },
   sortOption: {
     defaultOpr: createdAtSortOpr
