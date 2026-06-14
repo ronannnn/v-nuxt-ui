@@ -680,7 +680,35 @@ const users: MockUser[] = [
   { id: 25, nickname: '秦廿七', username: 'qinnianqi', email: 'qinnianqi@example.com', gender: 1, departmentId: 8, department: { id: 8, name: '销售部' }, isAdmin: false, status: 'active', entryDate: '2025-01-20', telNo: '13800025555', createdAt: '2025-01-20T08:00:00Z', updatedAt: '2025-03-22T16:00:00Z', createdBy: 'caonianyi', updatedBy: 'caonianyi', version: 1 }
 ]
 
-let nextId = 26
+const generatedUserNames = ['赵', '钱', '孙', '李', '周', '吴', '郑', '王', '冯', '陈', '褚', '卫', '蒋', '沈', '韩', '杨', '朱', '秦', '尤', '许']
+for (let id = 26; id <= 200; id++) {
+  const department = departments[(id - 1) % departments.length]!
+  const username = `mockuser${id}`
+  const createdMonth = String((id % 12) + 1).padStart(2, '0')
+  const createdDay = String((id % 28) + 1).padStart(2, '0')
+
+  users.push({
+    id,
+    nickname: `${generatedUserNames[id % generatedUserNames.length]}用户${id}`,
+    username,
+    email: `${username}@example.com`,
+    gender: id % 2 === 0 ? 2 : 1,
+    departmentId: department.id,
+    department: { id: department.id, name: department.name },
+    isAdmin: id % 37 === 0,
+    status: id % 11 === 0 ? 'inactive' : 'active',
+    entryDate: `2024-${createdMonth}-${createdDay}`,
+    resignDate: id % 11 === 0 ? `2025-${createdMonth}-${createdDay}` : undefined,
+    telNo: `138${String(id).padStart(8, '0')}`,
+    createdAt: `2024-${createdMonth}-${createdDay}T08:00:00Z`,
+    updatedAt: `2025-${createdMonth}-${createdDay}T10:00:00Z`,
+    createdBy: 'playground',
+    updatedBy: 'playground',
+    version: 1
+  })
+}
+
+let nextId = 201
 
 export function getUsers() {
   return users
