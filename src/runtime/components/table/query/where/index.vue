@@ -388,7 +388,7 @@ defineExpose({ focusField })
     </div>
     <!-- action bar -->
     <div class="flex items-center gap-2.5 p-4">
-      <div class="flex-1" />
+      <div class="flex-1 hidden sm:flex" />
       <div class="flex items-center gap-2.5">
         <TableQueryWhereNewer
           v-if="unselectedWhereFields.length > 0"
