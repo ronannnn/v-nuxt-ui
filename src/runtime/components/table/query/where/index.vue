@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T">
 import type { ComponentPublicInstance } from 'vue'
-import type { WhereQueryItem, WhereQueryProps } from '#v/types'
+import type { WhereQueryItem, WhereQueryItemGroup, WhereQueryProps } from '#v/types'
 import type { DropdownMenuItem } from '@nuxt/ui'
 import { computed, ref, reactive, watch, nextTick } from 'vue'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
@@ -13,8 +13,61 @@ import TableQueryWhereNewer from '#v/components/table/query/where/Newer.vue'
 
 const props = defineProps<WhereQueryProps<T>>()
 
+const whereOptionFieldSet = computed(() =>
+  new Set(props.whereOptions.map(option => option.field as string))
+)
+
+function isValidWhereField(field: string | undefined) {
+  return !!field && whereOptionFieldSet.value.has(field)
+}
+
+function filterValidItems(items: WhereQueryItem<T>[] = []) {
+  return items.filter(item => isValidWhereField(item.field as string))
+}
+
+function filterValidGroups(groups: WhereQueryItemGroup<T>[] = []): WhereQueryItemGroup<T>[] {
+  return groups
+    .map((group) => {
+      const items = filterValidItems(group.items)
+      const childGroups = filterValidGroups(group.groups)
+      return {
+        ...group,
+        items,
+        groups: childGroups
+      }
+    })
+    .filter(group => (group.items?.length ?? 0) > 0 || (group.groups?.length ?? 0) > 0)
+}
+
+const validWhereQueryItems = computed<WhereQueryItem<T>[]>(() =>
+  filterValidItems(props.whereQuery?.items)
+)
+
+const validWhereQueryGroups = computed<WhereQueryItemGroup<T>[]>(() =>
+  filterValidGroups(props.whereQuery?.groups)
+)
+
+watch([() => props.whereQuery, whereOptionFieldSet], () => {
+  if (!props.whereQuery) return
+
+  const currentItems = props.whereQuery.items ?? []
+  const currentGroups = props.whereQuery.groups ?? []
+  const items = filterValidItems(currentItems)
+  const groups = filterValidGroups(currentGroups)
+  const itemsChanged = items.length !== currentItems.length
+  const groupsChanged = JSON.stringify(groups) !== JSON.stringify(currentGroups)
+
+  if (!itemsChanged && !groupsChanged) return
+
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items,
+    groups
+  })
+}, { immediate: true })
+
 const selectedWhereFields = computed<string[]>(() => {
-  return props.whereQuery?.items?.map(query => query.field as string) ?? []
+  return validWhereQueryItems.value.map(query => query.field as string)
 })
 const unselectedWhereFields = computed<string[]>(() => {
   return props.whereOptions.map(option => option.field as string).filter(field => !selectedWhereFields.value.includes(field))
@@ -37,14 +90,17 @@ const itemRefMap = ref<Map<string, { focus: () => void }>>(new Map())
 function setItemRef(field: string, el: Element | ComponentPublicInstance | null) {
   if (el && 'focus' in el && typeof el.focus === 'function') {
     itemRefMap.value.set(field, el as { focus: () => void })
+  } else {
+    itemRefMap.value.delete(field)
   }
 }
 
 const onRemoveFilter = (field: string) => {
-  const updatedItems = props.whereQuery?.items?.filter(query => query.field !== field) ?? []
+  const updatedItems = validWhereQueryItems.value.filter(query => query.field !== field)
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: updatedItems
+    items: updatedItems,
+    groups: validWhereQueryGroups.value
   })
 }
 
@@ -60,12 +116,13 @@ const onNewField = (field: string) => {
   }
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: [...(props.whereQuery?.items ?? []), {
+    items: [...validWhereQueryItems.value, {
       field,
       opr: option.defaultOpr ?? useTableOpr().getDefaultOprByType(option.type),
       value: null,
       custom: option.custom
-    }]
+    }],
+    groups: validWhereQueryGroups.value
   })
   nextTick(() => {
     const item = itemRefMap.value.get(field)
@@ -81,10 +138,10 @@ const getDefaultKeys = () => props.extraWhereQueryInitValues?.items?.map(query =
 const whereQueryWithoutInitValues = computed<WhereQueryItem<T>[]>(() => {
   if (!props.whereQuery) return []
   const defaultKeys = getDefaultKeys()
-  return props.whereQuery.items?.filter((query) => {
+  return validWhereQueryItems.value.filter((query) => {
     const field = query.field as string
     return !defaultKeys.includes(field)
-  }) ?? []
+  })
 })
 
 type WhereQuerySection = 'preferred' | 'other'
@@ -132,14 +189,15 @@ watch([preferredItems, otherItems], () => {
 
 function updateWhereQuerySections(preferred: WhereQueryItem<T>[], other: WhereQueryItem<T>[]) {
   const defaultKeys = getDefaultKeys()
-  const initItems = props.whereQuery?.items?.filter(q => defaultKeys.includes(q.field as string)) ?? []
+  const initItems = validWhereQueryItems.value.filter(q => defaultKeys.includes(q.field as string))
   props.onUpdateWhereQuery({
     ...props.whereQuery,
     items: [
       ...initItems,
       ...preferred.map(item => setItemSection(item, 'preferred')),
       ...other.map(item => setItemSection(item, 'other'))
-    ]
+    ],
+    groups: validWhereQueryGroups.value
   })
 }
 
@@ -167,7 +225,7 @@ function onMoveItemSection(field: string, section: WhereQuerySection) {
 }
 
 function onUpdateWhereQueryItem(field: string, newWhereQueryItem: WhereQueryItem<T>) {
-  const items = props.whereQuery?.items ?? []
+  const items = validWhereQueryItems.value
   const realIdx = items.findIndex(query => query.field === field)
   if (realIdx === -1) return
   const currentItem = items[realIdx]
@@ -177,7 +235,8 @@ function onUpdateWhereQueryItem(field: string, newWhereQueryItem: WhereQueryItem
   updatedItems[realIdx] = setItemSection(newWhereQueryItem, currentSection)
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: updatedItems
+    items: updatedItems,
+    groups: validWhereQueryGroups.value
   })
 }
 
@@ -192,13 +251,14 @@ const onClearValues = () => {
   if (!props.whereQuery?.items) return
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: props.whereQuery.items.map(item => ({ ...item, value: null }))
+    items: validWhereQueryItems.value.map(item => ({ ...item, value: null })),
+    groups: validWhereQueryGroups.value
   })
 }
 
 // 还原默认：补全 initHide 不为 true 的字段，值全部置空，不删除已有字段
 const onResetAll = () => {
-  const currentItems = props.whereQuery?.items ?? []
+  const currentItems = validWhereQueryItems.value
   const currentFields = new Set(currentItems.map(item => item.field as string))
 
   // 补全缺失的默认显示字段（initHide 不为 true）
@@ -216,13 +276,14 @@ const onResetAll = () => {
     items: [
       ...currentItems.map(item => ({ ...item, value: null })),
       ...newItems
-    ]
+    ],
+    groups: validWhereQueryGroups.value
   })
 }
 
 // 补全字段：将可查询但未出现的字段追加到列表后面（常用优先）
 const onFillMissingFields = () => {
-  const currentFields = new Set((props.whereQuery?.items ?? []).map(item => item.field as string))
+  const currentFields = new Set(validWhereQueryItems.value.map(item => item.field as string))
   const missingOptions = props.whereOptions.filter(opt => !currentFields.has(opt.field as string))
   if (missingOptions.length === 0) return
 
@@ -238,17 +299,19 @@ const onFillMissingFields = () => {
 
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: [...(props.whereQuery?.items ?? []), ...newItems]
+    items: [...validWhereQueryItems.value, ...newItems],
+    groups: validWhereQueryGroups.value
   })
 }
 
 // 删除所有字段：仅保留 init 值
 const onRemoveAllFields = () => {
   const defaultKeys = props.extraWhereQueryInitValues?.items?.map(q => q.field) ?? []
-  const initItems = props.whereQuery?.items?.filter(q => defaultKeys.includes(q.field as string)) ?? []
+  const initItems = validWhereQueryItems.value.filter(q => defaultKeys.includes(q.field as string))
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: initItems.map(item => ({ ...item, value: null }))
+    items: initItems.map(item => ({ ...item, value: null })),
+    groups: validWhereQueryGroups.value
   })
 }
 
@@ -259,6 +322,9 @@ const moreActions = computed<DropdownMenuItem[]>(() => [
 
 // 从列头筛选触发的聚焦
 const focusField = (field: string): boolean => {
+  if (!isValidWhereField(field)) {
+    return false
+  }
   const item = itemRefMap.value.get(field)
   if (item) {
     item.focus()
