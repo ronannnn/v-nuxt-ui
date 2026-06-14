@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T">
-import { useId } from 'vue'
+import { computed, useId, useTemplateRef } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import type { VTableProps } from '#v/types'
 import { useProTableView } from '#v/composables/table/useTableView'
 import USlideover from '@nuxt/ui/components/Slideover.vue'
@@ -15,6 +16,13 @@ const props = withDefaults(defineProps<VTableProps<T>>(), {
   singleColumn: false
 })
 const tablePortalId = `v-table-portal-${useId().replace(/[^A-Za-z0-9_-]/g, '-')}`
+const tableRef = useTemplateRef<HTMLElement>('table')
+const { height: tableHeight } = useElementSize(tableRef)
+const whereQueryPanelMaxHeight = computed(() => {
+  const inset = 16
+  const availableHeight = tableHeight.value - inset * 2
+  return Math.max(0, availableHeight)
+})
 const {
   // data
   data,
@@ -97,7 +105,7 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
       :close="false"
       :portal="`#${tablePortalId}`"
       :ui="{
-        content: '!absolute z-2',
+        content: '!absolute z-3 h-fit overflow-hidden',
         overlay: 'z-1'
       }"
       @update:open="tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen"
@@ -106,6 +114,7 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
         <TableQueryWhere
           ref="proTableQueryWhere"
           v-bind="tblWhereQueryProps"
+          :panel-max-height="whereQueryPanelMaxHeight"
           :trigger-fetching="async (fromStart: boolean) => {
             await tblWhereQueryProps.triggerFetching(fromStart)
             tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen?.(false)

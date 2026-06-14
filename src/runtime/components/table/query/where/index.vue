@@ -2,16 +2,32 @@
 import type { ComponentPublicInstance } from 'vue'
 import type { WhereQueryItem, WhereQueryItemGroup, WhereQueryProps } from '#v/types'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { computed, ref, reactive, watch, nextTick } from 'vue'
+import { computed, ref, reactive, watch, nextTick, useTemplateRef } from 'vue'
+import { useElementSize } from '@vueuse/core'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
 import { useToast } from '@nuxt/ui/composables'
 import UFieldGroup from '@nuxt/ui/components/FieldGroup.vue'
 import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue'
 import Dnd from '#v/components/Dnd.client.vue'
+import ScrollArea from '#v/components/ScrollArea.vue'
 import TableQueryWhereSimpleItem from '#v/components/table/query/where/simple/item/index.vue'
 import TableQueryWhereNewer from '#v/components/table/query/where/Newer.vue'
 
-const props = defineProps<WhereQueryProps<T>>()
+const props = defineProps<WhereQueryProps<T> & {
+  panelMaxHeight?: number
+}>()
+
+const actionBarRef = useTemplateRef<HTMLElement>('actionBar')
+const { height: actionBarHeight } = useElementSize(actionBarRef, undefined, { box: 'border-box' })
+const panelStyle = computed(() =>
+  props.panelMaxHeight ? { maxHeight: `${props.panelMaxHeight}px` } : undefined
+)
+const viewportStyle = computed(() => {
+  if (!props.panelMaxHeight) return undefined
+  return {
+    maxHeight: `${Math.max(0, props.panelMaxHeight - actionBarHeight.value)}px`
+  }
+})
 
 const whereOptionFieldSet = computed(() =>
   new Set(props.whereOptions.map(option => option.field as string))
@@ -346,48 +362,58 @@ defineExpose({ focusField })
 </script>
 
 <template>
-  <div class="divide-y divide-default">
-    <div v-if="!empty" class="@container p-4 space-y-6">
-      <template
-        v-for="section in sections"
-        :key="section.key"
-      >
-        <div v-if="section.dndItems.length > 0">
-          <div class="font-bold text-xs text-dimmed mb-2.5">
-            {{ section.label }}
-          </div>
-          <Dnd
-            v-model="section.dndItems"
-            group="where-query"
-            handle=".where-query-handle"
-            :on-end="onDndEnd"
-            :class="conditionListClass"
-          >
-            <div
-              v-for="item in section.dndItems"
-              :key="item.field"
-              class="col-span-24 @2xl:col-span-12 @4xl:col-span-8 @6xl:col-span-6 @7xl:col-span-4"
-              :class="isDateRangeQueryItem(item) ? 'col-span-24 @2xl:col-span-12 @4xl:col-span-12 @6xl:col-span-8 @7xl:col-span-8' : undefined"
-            >
-              <TableQueryWhereSimpleItem
-                :ref="(el) => setItemRef(item.field as string, el)"
-                :where-query-item="item"
-                :options="whereOptions"
-                :fetching="fetching"
-                :trigger-fetching="() => triggerFetching(true)"
-                handle-class-name="where-query-handle"
-                :section="section.key"
-                @remove="onRemoveFilter"
-                @move-section="onMoveItemSection"
-                @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
-              />
+  <div
+    class="flex h-fit max-h-full flex-col divide-y divide-default overflow-hidden"
+    :style="panelStyle"
+  >
+    <ScrollArea
+      v-if="!empty"
+      class="!h-fit"
+      viewport-class="!h-auto"
+      :viewport-style="viewportStyle"
+    >
+      <div class="@container p-4 space-y-6">
+        <template
+          v-for="section in sections"
+          :key="section.key"
+        >
+          <div v-if="section.dndItems.length > 0">
+            <div class="font-bold text-xs text-dimmed mb-2.5">
+              {{ section.label }}
             </div>
-          </Dnd>
-        </div>
-      </template>
-    </div>
+            <Dnd
+              v-model="section.dndItems"
+              group="where-query"
+              handle=".where-query-handle"
+              :on-end="onDndEnd"
+              :class="conditionListClass"
+            >
+              <div
+                v-for="item in section.dndItems"
+                :key="item.field"
+                class="col-span-24 @2xl:col-span-12 @4xl:col-span-8 @6xl:col-span-6 @7xl:col-span-4"
+                :class="isDateRangeQueryItem(item) ? 'col-span-24 @2xl:col-span-12 @4xl:col-span-12 @6xl:col-span-8 @7xl:col-span-8' : undefined"
+              >
+                <TableQueryWhereSimpleItem
+                  :ref="(el) => setItemRef(item.field as string, el)"
+                  :where-query-item="item"
+                  :options="whereOptions"
+                  :fetching="fetching"
+                  :trigger-fetching="() => triggerFetching(true)"
+                  handle-class-name="where-query-handle"
+                  :section="section.key"
+                  @remove="onRemoveFilter"
+                  @move-section="onMoveItemSection"
+                  @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
+                />
+              </div>
+            </Dnd>
+          </div>
+        </template>
+      </div>
+    </ScrollArea>
     <!-- action bar -->
-    <div class="flex items-center gap-2.5 p-4">
+    <div ref="actionBar" class="shrink-0 flex items-center gap-2.5 p-4">
       <div class="flex-1 hidden sm:flex" />
       <div class="flex items-center gap-2.5">
         <TableQueryWhereNewer

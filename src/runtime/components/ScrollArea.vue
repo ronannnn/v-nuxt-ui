@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { StyleValue } from 'vue'
 import { ref, computed, useTemplateRef, onMounted, onUnmounted, onActivated, nextTick } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import {
@@ -14,6 +15,8 @@ const props = defineProps<{
   enableLeftTransparent?: boolean
   enableRightTransparent?: boolean
   enableHorizontalTooltip?: boolean
+  viewportClass?: string
+  viewportStyle?: StyleValue
   onScrollEvent?: (ele: HTMLElement) => void
 }>()
 
@@ -199,7 +202,11 @@ onActivated(() => {
       />
     </Transition>
 
-    <ScrollAreaViewport class="size-full overscroll-contain" @scroll="onScrollWithSave">
+    <ScrollAreaViewport
+      :class="['size-full overscroll-contain', viewportClass]"
+      :style="viewportStyle"
+      @scroll="onScrollWithSave"
+    >
       <slot />
     </ScrollAreaViewport>
 
