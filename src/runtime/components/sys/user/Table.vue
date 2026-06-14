@@ -195,6 +195,11 @@ const columns: VColumn<User>[] = [
       { field: 'createdAt', label: '创建时间', defaultOpr: 'desc' }
     ]"
     :display-fn-in-delete-modal="model => model.nickname"
+    :export-excel="{
+      filename: '用户列表',
+      filenameWithDateTime: true,
+      permissionKey: 'user-export'
+    }"
     @edit-row-from-modal="async (row: User) => await saveModal.open({ model: row }).result"
   />
 </template>
