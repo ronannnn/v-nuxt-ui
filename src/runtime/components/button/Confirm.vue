@@ -21,13 +21,13 @@ const buttonProps = computed(() => defu(props.button, {
   color: 'neutral',
   variant: 'link',
   size: 'sm'
-}))
+}) as ButtonProps)
 const confirmButtonProps = computed(() => defu(props.confirmButton, {
   color: 'error',
   variant: 'ghost',
   size: 'sm',
   label: '确认'
-}))
+}) as ButtonProps)
 
 const confirming = defineModel<boolean>('confirming', { default: false })
 
