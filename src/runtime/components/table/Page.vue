@@ -87,7 +87,7 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
     </div>
 
     <!-- pagination -->
-    <TablePagination v-bind="tblPaginationProps" />
+    <TablePagination v-bind="tblPaginationProps" class="z-2" />
 
     <!-- query where (slideover from top, portalled into table) -->
     <USlideover
