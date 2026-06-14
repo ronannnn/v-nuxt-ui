@@ -25,6 +25,7 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     filterOption: {
       type: 'async-select',
       preferred: false,
+      initHide: true,
       listApi: useUserApi().list,
       likeSearchFields: ['nickname'],
       labelField: 'nickname',
@@ -41,6 +42,7 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     filterOption: {
       type: 'async-select',
       preferred: false,
+      initHide: true,
       listApi: useUserApi().list,
       likeSearchFields: ['nickname'],
       labelField: 'nickname',
@@ -55,7 +57,8 @@ export const getOprColumns = <T extends BaseModel>(createdAtSortOpr: OrderQueryO
     cell: ({ row }) => dayjs(row.original.updatedAt).format(dateTimeFormat),
     filterOption: {
       type: 'date-picker',
-      preferred: false
+      preferred: false,
+      initHide: true
     },
     sortOption: true
   }
