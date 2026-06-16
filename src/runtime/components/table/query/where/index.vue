@@ -33,8 +33,23 @@ const whereOptionFieldSet = computed(() =>
   new Set(props.whereOptions.map(option => option.field as string))
 )
 
+function collectWhereQueryFields(items: WhereQueryItem<T>[] = [], groups: WhereQueryItemGroup<T>[] = []) {
+  const fields = items.map(item => item.field as string)
+  for (const group of groups) {
+    fields.push(...collectWhereQueryFields(group.items, group.groups))
+  }
+  return fields
+}
+
+const extraWhereQueryInitFieldSet = computed(() =>
+  new Set(collectWhereQueryFields(
+    props.extraWhereQueryInitValues?.items,
+    props.extraWhereQueryInitValues?.groups
+  ))
+)
+
 function isValidWhereField(field: string | undefined) {
-  return !!field && whereOptionFieldSet.value.has(field)
+  return !!field && (whereOptionFieldSet.value.has(field) || extraWhereQueryInitFieldSet.value.has(field))
 }
 
 function filterValidItems(items: WhereQueryItem<T>[] = []) {
@@ -63,7 +78,7 @@ const validWhereQueryGroups = computed<WhereQueryItemGroup<T>[]>(() =>
   filterValidGroups(props.whereQuery?.groups)
 )
 
-watch([() => props.whereQuery, whereOptionFieldSet], () => {
+watch([() => props.whereQuery, whereOptionFieldSet, extraWhereQueryInitFieldSet], () => {
   if (!props.whereQuery) return
 
   const currentItems = props.whereQuery.items ?? []
