@@ -6,6 +6,7 @@ import { computed, ref, reactive, watch, nextTick, useTemplateRef } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import { useTableOpr } from '#v/composables/table/useTableOpr'
 import { useToast } from '@nuxt/ui/composables'
+import { cloneJson } from '#v/utils'
 import UFieldGroup from '@nuxt/ui/components/FieldGroup.vue'
 import UDropdownMenu from '@nuxt/ui/components/DropdownMenu.vue'
 import Dnd from '#v/components/Dnd.client.vue'
@@ -77,6 +78,16 @@ const validWhereQueryItems = computed<WhereQueryItem<T>[]>(() =>
 const validWhereQueryGroups = computed<WhereQueryItemGroup<T>[]>(() =>
   filterValidGroups(props.whereQuery?.groups)
 )
+
+function createWhereQuerySnapshot(query: WhereQueryProps<T>['whereQuery']) {
+  const items = filterValidItems(cloneJson(query?.items ?? []))
+  const groups = filterValidGroups(cloneJson(query?.groups ?? []))
+  const itemMap = new Map(items.map(item => [item.field as string, item]))
+  return { items, groups, itemMap }
+}
+
+const defaultQuery = computed(() => createWhereQuerySnapshot(props.defaultWhereQuery))
+const fixedInitQuery = computed(() => createWhereQuerySnapshot(props.extraWhereQueryInitValues))
 
 watch([() => props.whereQuery, whereOptionFieldSet, extraWhereQueryInitFieldSet], () => {
   if (!props.whereQuery) return
@@ -277,72 +288,90 @@ const isDateRangeQueryItem = (item: WhereQueryItem<T>) => {
   return option?.type === 'date-picker' && rangeOprList.includes(item.opr as string)
 }
 
-// 清空数据：保留字段，值置空
+function createWhereQueryItemFromOption(option: typeof props.whereOptions[number]): WhereQueryItem<T> {
+  return {
+    field: option.field,
+    opr: option.defaultOpr ?? useTableOpr().getDefaultOprByType(option.type),
+    value: option.initValues ?? null,
+    custom: option.custom
+  }
+}
+
+function restoreInitItemValue(item: WhereQueryItem<T>): WhereQueryItem<T> {
+  const initItem = defaultQuery.value.itemMap.get(item.field as string)
+  if (!initItem) return item
+  return {
+    ...cloneJson(initItem),
+    whereQuerySection: item.whereQuerySection
+  }
+}
+
+function clearNonInitItemValue(item: WhereQueryItem<T>): WhereQueryItem<T> {
+  const initItem = defaultQuery.value.itemMap.get(item.field as string)
+  if (initItem) {
+    return restoreInitItemValue(item)
+  }
+  return { ...item, value: null }
+}
+
+function mergeDefaultWhereQueryGroups(groups: WhereQueryItemGroup<T>[]) {
+  const defaultGroupKeys = new Set(defaultQuery.value.groups.map(group => JSON.stringify(group)))
+  return [
+    ...defaultQuery.value.groups,
+    ...groups.filter(group => !defaultGroupKeys.has(JSON.stringify(group)))
+  ]
+}
+
+function updateWhereQueryWithInitValues(items: WhereQueryItem<T>[], groups = validWhereQueryGroups.value) {
+  props.onUpdateWhereQuery({
+    ...props.whereQuery,
+    items,
+    groups: mergeDefaultWhereQueryGroups(groups)
+  })
+}
+
+// 清空数据：保留字段，非 init 字段值置空，init 字段恢复初始值
 const onClearValues = () => {
   if (!props.whereQuery?.items) return
-  props.onUpdateWhereQuery({
-    ...props.whereQuery,
-    items: validWhereQueryItems.value.map(item => ({ ...item, value: null })),
-    groups: validWhereQueryGroups.value
-  })
+  updateWhereQueryWithInitValues(validWhereQueryItems.value.map(clearNonInitItemValue))
 }
 
-// 还原默认：补全 initHide 不为 true 的字段，值全部置空，不删除已有字段
+// 还原默认：恢复 defaultWhereQuery，不复用当前已修改的 init 字段值
 const onResetAll = () => {
-  const currentItems = validWhereQueryItems.value
-  const currentFields = new Set(currentItems.map(item => item.field as string))
-
-  // 补全缺失的默认显示字段（initHide 不为 true）
-  const missingOptions = props.whereOptions.filter(opt => !opt.initHide && !currentFields.has(opt.field as string))
-  const newItems: WhereQueryItem<T>[] = missingOptions.map(opt => ({
-    field: opt.field,
-    opr: opt.defaultOpr ?? useTableOpr().getDefaultOprByType(opt.type),
-    value: null,
-    custom: opt.custom
-  }))
-
-  // 保留现有字段、值置空、追加缺失字段
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: [
-      ...currentItems.map(item => ({ ...item, value: null })),
-      ...newItems
-    ],
-    groups: validWhereQueryGroups.value
+    items: defaultQuery.value.items,
+    groups: defaultQuery.value.groups
   })
 }
 
-// 补全字段：将可查询但未出现的字段追加到列表后面（常用优先）
+// 补全字段：恢复 init 字段初始值，再将可查询但未出现的字段追加到列表后面（常用优先）
 const onFillMissingFields = () => {
-  const currentFields = new Set(validWhereQueryItems.value.map(item => item.field as string))
+  const currentItems = validWhereQueryItems.value.map(restoreInitItemValue)
+  const currentFields = new Set(currentItems.map(item => item.field as string))
+  const missingDefaultItems = defaultQuery.value.items.filter(item => !currentFields.has(item.field as string))
+  missingDefaultItems.forEach(item => currentFields.add(item.field as string))
+
   const missingOptions = props.whereOptions.filter(opt => !currentFields.has(opt.field as string))
-  if (missingOptions.length === 0) return
+  if (missingDefaultItems.length === 0 && missingOptions.length === 0) {
+    updateWhereQueryWithInitValues(currentItems)
+    return
+  }
 
   const preferred = missingOptions.filter(opt => opt.preferred !== false)
   const other = missingOptions.filter(opt => opt.preferred === false)
 
-  const newItems: WhereQueryItem<T>[] = [...preferred, ...other].map(opt => ({
-    field: opt.field,
-    opr: opt.defaultOpr ?? useTableOpr().getDefaultOprByType(opt.type),
-    value: null,
-    custom: opt.custom
-  }))
+  const newItems = [...preferred, ...other].map(createWhereQueryItemFromOption)
 
-  props.onUpdateWhereQuery({
-    ...props.whereQuery,
-    items: [...validWhereQueryItems.value, ...newItems],
-    groups: validWhereQueryGroups.value
-  })
+  updateWhereQueryWithInitValues([...currentItems, ...missingDefaultItems, ...newItems])
 }
 
-// 删除所有字段：仅保留 init 值
+// 删除所有字段：仅保留 extra init 条件，并恢复 init 值
 const onRemoveAllFields = () => {
-  const defaultKeys = props.extraWhereQueryInitValues?.items?.map(q => q.field) ?? []
-  const initItems = validWhereQueryItems.value.filter(q => defaultKeys.includes(q.field as string))
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: initItems.map(item => ({ ...item, value: null })),
-    groups: validWhereQueryGroups.value
+    items: fixedInitQuery.value.items,
+    groups: fixedInitQuery.value.groups
   })
 }
 
