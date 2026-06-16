@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T">
-import { computed, useId, useTemplateRef } from 'vue'
+import { computed, useId } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import type { VTableProps } from '#v/types'
 import { useProTableView } from '#v/composables/table/useTableView'
@@ -16,13 +16,6 @@ const props = withDefaults(defineProps<VTableProps<T>>(), {
   singleColumn: false
 })
 const tablePortalId = `v-table-portal-${useId().replace(/[^A-Za-z0-9_-]/g, '-')}`
-const tableRef = useTemplateRef<HTMLElement>('table')
-const { height: tableHeight } = useElementSize(tableRef)
-const whereQueryPanelMaxHeight = computed(() => {
-  const inset = 16
-  const availableHeight = tableHeight.value - inset * 2
-  return Math.max(0, availableHeight)
-})
 const {
   // data
   data,
@@ -44,10 +37,17 @@ const {
   tblContextMenuItems,
   // view
   tableWidth,
+  tableDiv,
   updateTableWidth,
   tblClasses,
   tblUi
 } = useProTableView<T>(props)
+const { height: tableHeight } = useElementSize(tableDiv)
+const whereQueryPanelMaxHeight = computed(() => {
+  const inset = 16
+  const availableHeight = tableHeight.value - inset * 2
+  return Math.max(0, availableHeight)
+})
 
 // expose
 defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data })
