@@ -1,8 +1,9 @@
+import type { Component } from 'vue'
 import type { OrderQueryOpr, WhereQueryOpr } from '../../query'
 import type { BadgeProps, TableColumn } from '@nuxt/ui'
 import type { VAsyncSelectProps, VSelectProps } from '../../index'
 
-export type WhereQueryType = 'input' | 'input-number' | 'date-picker' | 'select' | 'async-select' | 'unknown'
+export type WhereQueryType = 'input' | 'input-number' | 'date-picker' | 'select' | 'async-select' | 'custom' | 'unknown'
 
 export type WhereQueryColumnOption<T> = {
   defaultOpr?: WhereQueryOpr
@@ -24,6 +25,16 @@ export type WhereQueryColumnOption<T> = {
   | {
     type: 'async-select'
   } & VAsyncSelectProps<T>
+  | {
+    /**
+     * 自定义查询组件。组件通过 `v-model:where-query-item` 读写整条 WhereQueryItem
+     * （自行维护 value / opr），并在需要时调用 triggerFetching。
+     * 通常配合 disableOprSelector + defaultOpr 使用。
+     */
+    type: 'custom'
+    component: Component
+    componentProps?: Record<string, unknown>
+  }
   | { type: 'unknown' }
 )
 

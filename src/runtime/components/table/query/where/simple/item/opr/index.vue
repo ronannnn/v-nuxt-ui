@@ -29,7 +29,8 @@ watch(
 
 const itemRef = useTemplateRef('item')
 defineExpose({
-  focus: () => itemRef.value?.focus()
+  // ref 可能指向自定义组件（type: 'custom'），未必实现 focus，做一次可选调用
+  focus: () => (itemRef.value as { focus?: () => void } | null)?.focus?.()
 })
 </script>
 
@@ -72,5 +73,14 @@ defineExpose({
     :disabled="fetching"
     v-bind="option"
     rounded-none
+  />
+  <component
+    :is="(option as any).component"
+    v-else-if="option!.type === 'custom'"
+    ref="item"
+    v-model:where-query-item="whereQueryItem"
+    :disabled="fetching"
+    :trigger-fetching="triggerFetching"
+    v-bind="(option as any).componentProps"
   />
 </template>

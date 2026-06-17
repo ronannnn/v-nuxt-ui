@@ -6,5 +6,6 @@ export const tableWhereQueryItemIconMap: Map<WhereQueryColumnOption<any>['type']
   ['input', 'i-lucide-text-cursor-input'],
   ['input-number', 'i-lucide-text-cursor-input'],
   ['select', 'i-lucide-list-check'],
+  ['custom', 'i-lucide-sliders-horizontal'],
   ['unknown', 'i-lucide-circle-question-mark']
 ])

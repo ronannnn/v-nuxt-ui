@@ -108,6 +108,7 @@ defineExpose({
     </div>
     <UFieldGroup size="sm" class="w-full">
       <TableQueryWhereSimpleItemOprPicker
+        v-if="option?.type !== 'custom'"
         v-model:where-query-item="whereQueryItem"
         :options="options"
         :fetching="fetching"
