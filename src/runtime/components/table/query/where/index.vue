@@ -13,6 +13,7 @@ import Dnd from '#v/components/Dnd.client.vue'
 import ScrollArea from '#v/components/ScrollArea.vue'
 import TableQueryWhereSimpleItem from '#v/components/table/query/where/simple/item/index.vue'
 import TableQueryWhereNewer from '#v/components/table/query/where/Newer.vue'
+import ButtonConfirm from '#v/components/button/Confirm.vue'
 
 const props = defineProps<WhereQueryProps<T> & {
   panelMaxHeight?: number
@@ -483,14 +484,6 @@ defineExpose({ focusField })
     <div ref="actionBar" class="shrink-0 flex items-center gap-2.5 p-4">
       <div class="flex-1 hidden sm:flex" />
       <div class="flex items-center gap-2.5">
-        <TableQueryWhereNewer
-          v-if="unselectedWhereFields.length > 0"
-          :options="whereOptions"
-          :unselected-fields="unselectedWhereFields"
-          :biz-columns="bizColumns ?? []"
-          size="sm"
-          @new="onNewField"
-        />
         <UButton
           v-if="!hideQueryButton"
           label="查询"
@@ -503,22 +496,39 @@ defineExpose({ focusField })
             await triggerFetching(true)
           }"
         />
-        <UButton
-          color="neutral"
-          variant="subtle"
-          size="sm"
-          icon="i-lucide-eraser"
-          :disabled="fetching"
-          @click="onClearValues"
+        <ButtonConfirm
+          :button="{
+            label: '清空',
+            color: 'neutral',
+            variant: 'outline',
+            size: 'sm',
+            icon: 'i-lucide-timer-reset'
+          }"
+          :confirm-button="{
+            label: '确认',
+            color: 'error',
+            variant: 'outline',
+            size: 'sm',
+            icon: 'i-lucide-timer-reset'
+          }"
+          @confirm="onClearValues"
         >
           清空
-        </UButton>
+        </ButtonConfirm>
+        <TableQueryWhereNewer
+          v-if="unselectedWhereFields.length > 0"
+          :options="whereOptions"
+          :unselected-fields="unselectedWhereFields"
+          :biz-columns="bizColumns ?? []"
+          size="sm"
+          @new="onNewField"
+        />
       </div>
       <div class="flex-1 flex justify-end items-center">
         <UFieldGroup size="sm">
           <UButton
             color="neutral"
-            variant="subtle"
+            variant="outline"
             icon="i-lucide-timer-reset"
             :disabled="fetching"
             @click="onResetAll"
@@ -528,7 +538,7 @@ defineExpose({ focusField })
           <UDropdownMenu :items="moreActions" size="sm">
             <UButton
               color="neutral"
-              variant="subtle"
+              variant="outline"
               icon="i-lucide-ellipsis"
               :disabled="fetching"
             />

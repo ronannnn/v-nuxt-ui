@@ -65,7 +65,7 @@ const unselectedOptions = computed<ListboxItem[]>(() => {
       label="新增"
       :size="size"
       color="neutral"
-      variant="subtle"
+      variant="outline"
       icon="i-lucide-list-filter-plus"
     />
   </ButtonDropdown>
