@@ -31,7 +31,6 @@ const whereQueryItem = defineModel<WhereQueryItem<T>>('whereQueryItem', { requir
 
 const option = computed(() => props.options.find(option => option.field === whereQueryItem.value.field))
 const moveMenuOpen = shallowRef(false)
-let handlePointerStart: HandlePointerStart | null = null
 const moveSectionItems = computed<DropdownMenuItem[]>(() => {
   const targetSection = props.section === 'preferred' ? 'other' : 'preferred'
   return [{
@@ -40,6 +39,8 @@ const moveSectionItems = computed<DropdownMenuItem[]>(() => {
     onSelect: () => emit('moveSection', whereQueryItem.value.field as string, targetSection)
   }]
 })
+
+let handlePointerStart: HandlePointerStart | null = null
 
 function onHandlePointerDown(event: PointerEvent) {
   handlePointerStart = {
@@ -131,6 +132,9 @@ defineExpose({
           color="neutral"
           class="cursor-move hover:bg-default active:bg-default rounded-t-none"
           :class="handleClassName"
+          :ui="{
+            leadingIcon: 'text-dimmed'
+          }"
           aria-label="拖拽或移动查询条件分组"
           @pointerdown="onHandlePointerDown"
           @pointerup="onHandlePointerUp"
