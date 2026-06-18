@@ -360,12 +360,25 @@ const onClearValues = () => {
   updateWhereQueryWithInitValues(validWhereQueryItems.value.map(clearNonInitItemValue))
 }
 
-// 还原默认：恢复 defaultWhereQuery，不复用当前已修改的 init 字段值
+function createMissingVisibleItems(currentFields: Set<string>): WhereQueryItem<T>[] {
+  return props.whereOptions
+    .filter(option => option.initHide !== true && !currentFields.has(option.field as string))
+    .map((option) => {
+      const defaultItem = defaultQuery.value.itemMap.get(option.field as string)
+      return defaultItem ? cloneJson(defaultItem) : createWhereQueryItemFromOption(option)
+    })
+}
+
+// 还原默认：保留当前字段和值与顺序，仅追加未显示的默认查询字段
 const onResetAll = () => {
+  const currentItems = validWhereQueryItems.value
+  const currentFields = new Set(currentItems.map(item => item.field as string))
+  const missingItems = createMissingVisibleItems(currentFields)
+
   props.onUpdateWhereQuery({
     ...props.whereQuery,
-    items: defaultQuery.value.items,
-    groups: defaultQuery.value.groups
+    items: [...currentItems, ...missingItems],
+    groups: validWhereQueryGroups.value
   })
 }
 
