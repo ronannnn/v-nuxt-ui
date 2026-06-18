@@ -18,6 +18,7 @@ const props = defineProps<WhereQueryProps<T> & {
   panelMaxHeight?: number
 }>()
 
+const tableOpr = useTableOpr()
 const actionBarRef = useTemplateRef<HTMLElement>('actionBar')
 const { height: actionBarHeight } = useElementSize(actionBarRef, undefined, { box: 'border-box' })
 const panelStyle = computed(() =>
@@ -53,8 +54,30 @@ function isValidWhereField(field: string | undefined) {
   return !!field && (whereOptionFieldSet.value.has(field) || extraWhereQueryInitFieldSet.value.has(field))
 }
 
+function getDefaultOpr(option: typeof props.whereOptions[number]) {
+  const nameMap = tableOpr.getOprNameMapByType(option.type)
+  const typeDefaultOpr = tableOpr.getDefaultOprByType(option.type)
+  if (option.defaultOpr && nameMap.has(option.defaultOpr)) return option.defaultOpr
+  if (nameMap.has(typeDefaultOpr)) return typeDefaultOpr
+  return option.defaultOpr ?? typeDefaultOpr
+}
+
+function normalizeWhereQueryItem(item: WhereQueryItem<T>) {
+  const option = props.whereOptions.find(option => option.field === item.field)
+  if (!option || option.type === 'custom' || option.type === 'unknown') return item
+  if (tableOpr.getOprNameMapByType(option.type).has(item.opr)) return item
+
+  return {
+    ...item,
+    opr: getDefaultOpr(option),
+    value: null
+  }
+}
+
 function filterValidItems(items: WhereQueryItem<T>[] = []) {
-  return items.filter(item => isValidWhereField(item.field as string))
+  return items
+    .filter(item => isValidWhereField(item.field as string))
+    .map(normalizeWhereQueryItem)
 }
 
 function filterValidGroups(groups: WhereQueryItemGroup<T>[] = []): WhereQueryItemGroup<T>[] {
@@ -160,7 +183,7 @@ const onNewField = (field: string) => {
     ...props.whereQuery,
     items: [...validWhereQueryItems.value, {
       field,
-      opr: option.defaultOpr ?? useTableOpr().getDefaultOprByType(option.type),
+      opr: getDefaultOpr(option),
       value: null,
       custom: option.custom
     }],
@@ -291,7 +314,7 @@ const isDateRangeQueryItem = (item: WhereQueryItem<T>) => {
 function createWhereQueryItemFromOption(option: typeof props.whereOptions[number]): WhereQueryItem<T> {
   return {
     field: option.field,
-    opr: option.defaultOpr ?? useTableOpr().getDefaultOprByType(option.type),
+    opr: getDefaultOpr(option),
     value: option.initValues ?? null,
     custom: option.custom
   }
