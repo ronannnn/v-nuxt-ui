@@ -5,13 +5,26 @@ import { useRoute } from 'nuxt/app'
 import { getEmojiFlag } from '#v/utils'
 import { computed } from 'vue'
 
-defineProps<{
+type UserMenuItems = DropdownMenuItem[] | DropdownMenuItem[][]
+
+const props = defineProps<{
   collapsed?: boolean
   headerMode?: boolean
+  items?: UserMenuItems
 }>()
 
 const auth = useAuth()
 const route = useRoute()
+
+function normalizeItems(items?: UserMenuItems): DropdownMenuItem[][] {
+  if (!items?.length) {
+    return []
+  }
+
+  return Array.isArray(items[0])
+    ? items as DropdownMenuItem[][]
+    : [items as DropdownMenuItem[]]
+}
 
 const items = computed<DropdownMenuItem[][]>(() => (
   [
@@ -22,18 +35,7 @@ const items = computed<DropdownMenuItem[][]>(() => (
         icon: 'i-lucide-user-circle'
       }
     ],
-    [
-      {
-        label: '个人资料',
-        icon: 'i-lucide-user',
-        disabled: true
-      },
-      {
-        label: '设置',
-        icon: 'i-lucide-settings',
-        to: '/settings/theme'
-      }
-    ],
+    ...normalizeItems(props.items),
     [
       {
         label: '退出登录',
