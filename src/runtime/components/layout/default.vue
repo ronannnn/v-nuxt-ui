@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useSidebarMenus, useAuth, useTheme, useApp } from '#v/composables'
+import type { DropdownMenuItem } from '@nuxt/ui'
 import { useRoute } from 'nuxt/app'
 import { stringsJoin } from '#v/utils'
 import UNavigationMenu from '@nuxt/ui/components/NavigationMenu.vue'
@@ -9,6 +10,12 @@ import LayoutThemePicker from '#v/components/layout/button/ThemePicker.vue'
 import LayoutUserMenu from '#v/components/layout/button/UserMenu.vue'
 import Watermark from '#v/components/Watermark.vue'
 import { watch, computed } from 'vue'
+
+type UserMenuItems = DropdownMenuItem[] | DropdownMenuItem[][]
+
+defineProps<{
+  userMenuItems?: UserMenuItems
+}>()
 
 const app = useApp()
 const theme = useTheme()
@@ -88,7 +95,10 @@ watch(
       </template>
 
       <template #footer="{ state }">
-        <LayoutUserMenu :collapsed="state === 'collapsed'" />
+        <LayoutUserMenu
+          :collapsed="state === 'collapsed'"
+          :items="userMenuItems"
+        />
       </template>
     </USidebar>
 
