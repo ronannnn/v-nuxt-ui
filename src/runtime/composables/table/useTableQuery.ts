@@ -105,16 +105,18 @@ export function useTableQuery<T>(props: {
   })
 
   // check if where query is empty
-  const checkIfWhereQueryItemsValueEmpty = (items: WhereQueryItem<T>[]) => {
-    const itemsWithOprNoValues = items.filter(item => noValueOprList.includes(item.opr))
-    if (itemsWithOprNoValues.length > 0) {
+  const isWhereQueryItemValueEmpty = (item: WhereQueryItem<T>) => {
+    if (noValueOprList.includes(item.opr)) {
       return false
     }
-    const defaultKeys = whereQueryInitValues.value.items?.map(query => query.field) ?? []
-    return !items
-      .filter(item => !defaultKeys.includes(item.field))
-      .filter(item => !noValueOprList.includes(item.opr))
-      .some(item => item.value !== null && item.value !== undefined && item.value !== '')
+    if (Array.isArray(item.value)) {
+      return item.value.length === 0
+    }
+    return item.value === null || item.value === undefined || item.value === ''
+  }
+
+  const checkIfWhereQueryItemsValueEmpty = (items: WhereQueryItem<T>[]) => {
+    return items.every(isWhereQueryItemValueEmpty)
   }
 
   const checkIfWhereQueryGroupsValueEmpty = (groups: WhereQueryItemGroup<T>[]) => {
