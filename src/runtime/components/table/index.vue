@@ -10,6 +10,13 @@ const props = withDefaults(defineProps<VTableProps<T>>(), {
   singleRow: true,
   singleColumn: false
 })
+
+defineSlots<{
+  'where-extra'?: () => any
+  'where-inner-top'?: () => any
+  'where-inner-bottom'?: () => any
+}>()
+
 const {
   // data
   data,
@@ -52,7 +59,26 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
       </div>
       <UCollapsible :open="tblHeaderProps.whereQueryProps.whereQueryOpen">
         <template #content>
-          <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default bg-muted" />
+          <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default bg-muted">
+            <template
+              v-if="$slots['where-inner-top']"
+              #innerTop
+            >
+              <slot name="where-inner-top" />
+            </template>
+            <template
+              v-if="$slots['where-inner-bottom']"
+              #innerBottom
+            >
+              <slot name="where-inner-bottom" />
+            </template>
+            <template
+              v-if="$slots['where-extra']"
+              #extra
+            >
+              <slot name="where-extra" />
+            </template>
+          </TableQueryWhere>
         </template>
       </UCollapsible>
     </div>

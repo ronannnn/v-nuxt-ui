@@ -15,6 +15,13 @@ const props = withDefaults(defineProps<VTableProps<T>>(), {
   singleRow: true,
   singleColumn: false
 })
+
+defineSlots<{
+  'where-extra'?: () => any
+  'where-inner-top'?: () => any
+  'where-inner-bottom'?: () => any
+}>()
+
 const tablePortalId = `v-table-portal-${useId().replace(/[^A-Za-z0-9_-]/g, '-')}`
 const {
   // data
@@ -119,7 +126,26 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
             await tblWhereQueryProps.triggerFetching(fromStart)
             tblHeaderProps.whereQueryProps.onUpdateWhereQueryOpen?.(false)
           }"
-        />
+        >
+          <template
+            v-if="$slots['where-inner-top']"
+            #innerTop
+          >
+            <slot name="where-inner-top" />
+          </template>
+          <template
+            v-if="$slots['where-inner-bottom']"
+            #innerBottom
+          >
+            <slot name="where-inner-bottom" />
+          </template>
+          <template
+            v-if="$slots['where-extra']"
+            #extra
+          >
+            <slot name="where-extra" />
+          </template>
+        </TableQueryWhere>
       </template>
     </USlideover>
 

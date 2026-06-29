@@ -17,6 +17,12 @@ const props = defineProps<WhereQueryProps<T> & {
   panelMaxHeight?: number
 }>()
 
+defineSlots<{
+  extra?: () => any
+  innerTop?: () => any
+  innerBottom?: () => any
+}>()
+
 const actionBarRef = useTemplateRef<HTMLElement>('actionBar')
 const { height: actionBarHeight } = useElementSize(actionBarRef, undefined, { box: 'border-box' })
 const panelStyle = computed(() =>
@@ -96,12 +102,15 @@ defineExpose({ focusField })
     :style="panelStyle"
   >
     <ScrollArea
-      v-if="!empty"
+      v-if="!empty || $slots.innerTop || $slots.innerBottom"
       class="!h-fit"
       viewport-class="!h-auto"
       :viewport-style="viewportStyle"
     >
       <div class="@container p-4 space-y-6">
+        <div v-if="$slots.innerTop">
+          <slot name="innerTop" />
+        </div>
         <template
           v-for="section in sections"
           :key="section.key"
@@ -139,11 +148,16 @@ defineExpose({ focusField })
             </Dnd>
           </div>
         </template>
+        <div v-if="$slots.innerBottom">
+          <slot name="innerBottom" />
+        </div>
       </div>
     </ScrollArea>
     <!-- action bar -->
     <div ref="actionBar" class="shrink-0 flex items-center gap-2.5 p-4">
-      <div class="flex-1 hidden sm:flex" />
+      <div class="flex-1 hidden min-w-0 sm:flex">
+        <slot name="extra" />
+      </div>
       <div class="flex items-center gap-2.5">
         <UButton
           v-if="!hideQueryButton"
