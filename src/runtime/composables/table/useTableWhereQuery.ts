@@ -3,6 +3,7 @@ import type { WhereQuery, WhereQueryItem, WhereQueryItemGroup, WhereQueryOption,
 import { cloneJson } from '#v/utils'
 import { computed, reactive, ref, watch } from 'vue'
 import { useTableOpr } from './useTableOpr'
+import { useTableWhereQueryRules } from './useTableWhereQueryRules'
 
 export type WhereQuerySection = 'preferred' | 'other'
 
@@ -10,30 +11,6 @@ const rangeOprList = ['range_gt_lt', 'range_gt_lte', 'range_gte_lt', 'range_gte_
 
 export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
   const tableOpr = useTableOpr()
-
-  // 字段合法性：whereOptions 是普通查询字段，extra init 允许保留调用方注入的固定条件。
-  const whereOptionFieldSet = computed(() =>
-    new Set(props.whereOptions.map(option => option.field as string))
-  )
-
-  function collectWhereQueryFields(items: WhereQueryItem<T>[] = [], groups: WhereQueryItemGroup<T>[] = []) {
-    const fields = items.map(item => item.field as string)
-    for (const group of groups) {
-      fields.push(...collectWhereQueryFields(group.items, group.groups))
-    }
-    return fields
-  }
-
-  const extraWhereQueryInitFieldSet = computed(() =>
-    new Set(collectWhereQueryFields(
-      props.extraWhereQueryInitValues?.items,
-      props.extraWhereQueryInitValues?.groups
-    ))
-  )
-
-  function isValidWhereField(field: string | undefined) {
-    return !!field && (whereOptionFieldSet.value.has(field) || extraWhereQueryInitFieldSet.value.has(field))
-  }
 
   // 查询项规范化：字段还存在但 opr 已不适配当前类型时，回退到该类型默认 opr。
   function getDefaultOpr(option: WhereQueryOption<T>) {
@@ -65,64 +42,41 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
     }
   }
 
-  function filterValidItems(items: WhereQueryItem<T>[] = []) {
-    return items
-      .filter(item => isValidWhereField(item.field as string))
-      .map(normalizeWhereQueryItem)
-  }
+  const whereQueryRules = useTableWhereQueryRules<T>({
+    whereOptions: () => props.whereOptions,
+    extraWhereQueryInitValues: () => props.extraWhereQueryInitValues,
+    normalizeItem: normalizeWhereQueryItem
+  })
 
-  function filterValidGroups(groups: WhereQueryItemGroup<T>[] = []): WhereQueryItemGroup<T>[] {
-    return groups
-      .map((group) => {
-        const items = filterValidItems(group.items)
-        const childGroups = filterValidGroups(group.groups)
-        return {
-          ...group,
-          items,
-          groups: childGroups
-        }
-      })
-      .filter(group => (group.items?.length ?? 0) > 0 || (group.groups?.length ?? 0) > 0)
+  const defaultQuery = computed(() => whereQueryRules.createWhereQuerySnapshot(props.defaultWhereQuery))
+  const fixedInitQuery = computed(() => whereQueryRules.createWhereQuerySnapshot(props.extraWhereQueryInitValues))
+
+  function updateValidWhereQuery(query: WhereQuery<T> | undefined) {
+    props.onUpdateWhereQuery(whereQueryRules.sanitizeWhereQuery(query))
   }
 
   const validWhereQueryItems = computed<WhereQueryItem<T>[]>(() =>
-    filterValidItems(props.whereQuery?.items)
+    whereQueryRules.filterValidItems(props.whereQuery?.items)
   )
 
   const validWhereQueryGroups = computed<WhereQueryItemGroup<T>[]>(() =>
-    filterValidGroups(props.whereQuery?.groups)
+    whereQueryRules.filterValidGroups(props.whereQuery?.groups)
   )
 
-  watch([() => props.whereQuery, whereOptionFieldSet, extraWhereQueryInitFieldSet], () => {
+  watch([() => props.whereQuery, whereQueryRules.whereOptionFieldSet, whereQueryRules.extraWhereQueryInitFieldSet], () => {
     if (!props.whereQuery) return
 
+    // 面板打开时同步修正本地查询：补回缺失的固定条件，删除已不存在的字段。
     const currentItems = props.whereQuery.items ?? []
     const currentGroups = props.whereQuery.groups ?? []
-    const items = filterValidItems(currentItems)
-    const groups = filterValidGroups(currentGroups)
-    const itemsChanged = items.length !== currentItems.length
-    const groupsChanged = JSON.stringify(groups) !== JSON.stringify(currentGroups)
+    const sanitizedQuery = whereQueryRules.sanitizeWhereQuery(props.whereQuery)
+    const itemsChanged = JSON.stringify(sanitizedQuery.items ?? []) !== JSON.stringify(currentItems)
+    const groupsChanged = JSON.stringify(sanitizedQuery.groups ?? []) !== JSON.stringify(currentGroups)
 
     if (!itemsChanged && !groupsChanged) return
 
-    props.onUpdateWhereQuery({
-      ...props.whereQuery,
-      items,
-      groups
-    })
+    props.onUpdateWhereQuery(sanitizedQuery)
   }, { immediate: true })
-
-  // 默认快照：defaultWhereQuery 用于恢复 init 值，extra init 用于固定条件保留。
-  function createWhereQuerySnapshot(query: WhereQuery<T> | undefined) {
-    const items = filterValidItems(cloneJson(query?.items ?? []))
-    const groups = filterValidGroups(cloneJson(query?.groups ?? []))
-    const itemMap = new Map(items.map(item => [item.field as string, item]))
-    return { items, groups, itemMap }
-  }
-
-  const defaultQuery = computed(() => createWhereQuerySnapshot(props.defaultWhereQuery))
-  const fixedInitQuery = computed(() => createWhereQuerySnapshot(props.extraWhereQueryInitValues))
-  const getDefaultKeys = () => props.extraWhereQueryInitValues?.items?.map(query => query.field) ?? []
 
   function restoreInitItemValue(item: WhereQueryItem<T>): WhereQueryItem<T> {
     const initItem = defaultQuery.value.itemMap.get(item.field as string)
@@ -142,15 +96,16 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
   }
 
   function mergeDefaultWhereQueryGroups(groups: WhereQueryItemGroup<T>[]) {
-    const defaultGroupKeys = new Set(defaultQuery.value.groups.map(group => JSON.stringify(group)))
+    const fixedGroupKeys = new Set(fixedInitQuery.value.groups.map(group => JSON.stringify(group)))
     return [
-      ...defaultQuery.value.groups,
-      ...groups.filter(group => !defaultGroupKeys.has(JSON.stringify(group)))
+      // groups 里的 extra init 同样是固定条件；用户操作不能删除它们。
+      ...fixedInitQuery.value.groups,
+      ...groups.filter(group => !fixedGroupKeys.has(JSON.stringify(group)))
     ]
   }
 
   function updateWhereQueryWithInitValues(items: WhereQueryItem<T>[], groups = validWhereQueryGroups.value) {
-    props.onUpdateWhereQuery({
+    updateValidWhereQuery({
       ...props.whereQuery,
       items,
       groups: mergeDefaultWhereQueryGroups(groups)
@@ -182,7 +137,7 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
     const option = props.whereOptions.find(option => option.field === field)
     if (!option || !option.type) return false
 
-    props.onUpdateWhereQuery({
+    updateValidWhereQuery({
       ...props.whereQuery,
       items: [...validWhereQueryItems.value, createWhereQueryItemFromOption(option)],
       groups: validWhereQueryGroups.value
@@ -192,7 +147,7 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
 
   const onRemoveFilter = (field: string) => {
     const updatedItems = validWhereQueryItems.value.filter(query => query.field !== field)
-    props.onUpdateWhereQuery({
+    updateValidWhereQuery({
       ...props.whereQuery,
       items: updatedItems,
       groups: validWhereQueryGroups.value
@@ -202,10 +157,10 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
   // 分区状态：extra init 条件不参与简单查询面板排序；whereQuerySection 只保存用户手动分区覆盖。
   const whereQueryWithoutInitValues = computed<WhereQueryItem<T>[]>(() => {
     if (!props.whereQuery) return []
-    const defaultKeys = getDefaultKeys()
+    const fixedKeys = whereQueryRules.getFixedFieldKeys()
     return validWhereQueryItems.value.filter((query) => {
       const field = query.field as string
-      return !defaultKeys.includes(field)
+      return !fixedKeys.includes(field)
     })
   })
 
@@ -247,9 +202,9 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
   }, { immediate: true })
 
   function updateWhereQuerySections(preferred: WhereQueryItem<T>[], other: WhereQueryItem<T>[]) {
-    const defaultKeys = getDefaultKeys()
-    const initItems = validWhereQueryItems.value.filter(q => defaultKeys.includes(q.field as string))
-    props.onUpdateWhereQuery({
+    const fixedKeys = whereQueryRules.getFixedFieldKeys()
+    const initItems = validWhereQueryItems.value.filter(q => fixedKeys.includes(q.field as string))
+    updateValidWhereQuery({
       ...props.whereQuery,
       items: [
         ...initItems,
@@ -292,7 +247,7 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
     const currentSection = getItemSection(currentItem)
     const updatedItems = [...items]
     updatedItems[realIdx] = setItemSection(newWhereQueryItem, currentSection)
-    props.onUpdateWhereQuery({
+    updateValidWhereQuery({
       ...props.whereQuery,
       items: updatedItems,
       groups: validWhereQueryGroups.value
@@ -306,29 +261,25 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
 
   const empty = computed(() => sections.every(section => section.dndItems.length === 0))
 
-  // 批量动作：清空只清值；恢复默认只补 visible 缺失字段；补全会加入所有可查询字段。
+  // 批量动作：清空只清值；恢复默认只补回缺失的默认展示字段；补全会加入所有可查询字段；清空字段只保留固定条件。
   const onClearValues = () => {
-    if (!props.whereQuery?.items) return
     updateWhereQueryWithInitValues(validWhereQueryItems.value.map(clearNonInitItemValue))
-  }
-
-  function createMissingVisibleItems(currentFields: Set<string>): WhereQueryItem<T>[] {
-    return props.whereOptions
-      .filter(option => option.initHide !== true && !currentFields.has(option.field as string))
-      .map((option) => {
-        const defaultItem = defaultQuery.value.itemMap.get(option.field as string)
-        return defaultItem ? cloneJson(defaultItem) : createWhereQueryItemFromOption(option)
-      })
   }
 
   const onResetAll = () => {
     const currentItems = validWhereQueryItems.value
     const currentFields = new Set(currentItems.map(item => item.field as string))
-    const missingItems = createMissingVisibleItems(currentFields)
+    const missingVisibleItems = props.whereOptions
+      .filter(option => option.initHide !== true)
+      .filter(option => !currentFields.has(option.field as string))
+      .map((option) => {
+        const defaultItem = defaultQuery.value.itemMap.get(option.field as string)
+        return defaultItem ? cloneJson(defaultItem) : createWhereQueryItemFromOption(option)
+      })
 
-    props.onUpdateWhereQuery({
+    updateValidWhereQuery({
       ...props.whereQuery,
-      items: [...currentItems, ...missingItems],
+      items: [...currentItems, ...missingVisibleItems],
       groups: validWhereQueryGroups.value
     })
   }
@@ -354,7 +305,7 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
   }
 
   const onRemoveAllFields = () => {
-    props.onUpdateWhereQuery({
+    updateValidWhereQuery({
       ...props.whereQuery,
       items: fixedInitQuery.value.items,
       groups: fixedInitQuery.value.groups
@@ -374,7 +325,7 @@ export function useTableWhereQuery<T>(props: WhereQueryProps<T>) {
   return {
     empty,
     isDateRangeQueryItem,
-    isValidWhereField,
+    isValidWhereField: whereQueryRules.isValidWhereField,
     moreActions,
     onClearValues,
     onDndEnd,

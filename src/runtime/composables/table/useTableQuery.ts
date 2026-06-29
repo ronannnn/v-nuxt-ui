@@ -1,10 +1,9 @@
 import { computed } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
-import type { OrderQueryOption, WhereQueryOption, VColumn, OrderQuery, WhereQuery, WhereQueryItem, WhereQueryItemGroup, Column, TableSettings } from '#v/types'
-import { noValueOprList } from '#v/types'
+import type { OrderQueryOption, WhereQueryOption, VColumn, OrderQuery, WhereQuery, Column, TableSettings } from '#v/types'
 import { defu } from 'defu'
 import { useTableOpr } from './useTableOpr'
-import { cloneJson } from '#v/utils'
+import { useTableWhereQueryRules } from './useTableWhereQueryRules'
 
 export function useTableQuery<T>(props: {
   name: string
@@ -15,7 +14,7 @@ export function useTableQuery<T>(props: {
 }) {
   const { name, bizColumns, extraWhereQueryOptions, extraWhereQueryInitValues, extraOrderQueryOptions } = props
 
-  // where query options and initial values
+  // whereOptions 来自 columns/filterOption，是用户能在查询面板里管理的字段。
   const whereQueryOptions = computed<WhereQueryOption<T>[]>(() => {
     const options = (bizColumns as any)
       .filter((col: any) => col.filterOption)
@@ -41,6 +40,7 @@ export function useTableQuery<T>(props: {
           custom: option.custom
         }))
     }
+    // extraWhereQueryInitValues 是隐藏固定条件，和 columns 默认条件一起成为本地查询初始值。
     return defu(initValues, extraWhereQueryInitValues ?? {})
   })
 
@@ -93,6 +93,11 @@ export function useTableQuery<T>(props: {
     set: (open: boolean) => localStgSettings.value = { ...localStgSettings.value, whereQueryOpen: open }
   })
 
+  const whereQueryRules = useTableWhereQueryRules<T>({
+    whereOptions: whereQueryOptions,
+    extraWhereQueryInitValues
+  })
+
   // order query state
   const orderQuery = computed<OrderQuery<T>>({
     get: () => localStgSettings.value.orderQuery ?? [],
@@ -104,70 +109,9 @@ export function useTableQuery<T>(props: {
     set: (open: boolean) => localStgSettings.value = { ...localStgSettings.value, orderQueryOpen: open }
   })
 
-  // check if where query is empty
-  const isWhereQueryItemValueEmpty = (item: WhereQueryItem<T>) => {
-    if (noValueOprList.includes(item.opr)) {
-      return false
-    }
-    if (Array.isArray(item.value)) {
-      return item.value.length === 0
-    }
-    return item.value === null || item.value === undefined || item.value === ''
-  }
-
-  const checkIfWhereQueryItemsValueEmpty = (items: WhereQueryItem<T>[]) => {
-    return items.every(isWhereQueryItemValueEmpty)
-  }
-
-  const checkIfWhereQueryGroupsValueEmpty = (groups: WhereQueryItemGroup<T>[]) => {
-    for (const group of groups) {
-      if (!checkIfWhereQueryItemsValueEmpty(group.items ?? [])) {
-        return false
-      }
-      if (!checkIfWhereQueryGroupsValueEmpty(group.groups ?? [])) {
-        return false
-      }
-    }
-    return true
-  }
-
   const isWhereQueryValueEmpty = computed(() => {
-    return checkIfWhereQueryItemsValueEmpty(
-      whereQuery.value?.items?.filter(query =>
-        whereQueryOptions.value.find(option => option.field === query.field)
-      ) ?? []
-    ) && checkIfWhereQueryGroupsValueEmpty(whereQuery.value?.groups ?? [])
+    return whereQueryRules.isUserWhereQueryValueEmpty(whereQuery.value)
   })
-
-  // prune where query (remove empty items)
-  const pruneWhereQuery = (query: WhereQuery<T> | undefined) => {
-    if (!query) return undefined
-    const clonedQuery = cloneJson(query)
-    const prunedItems = clonedQuery.items
-      ?.filter((item) => {
-        if (noValueOprList.includes(item.opr)) {
-          return true
-        } else {
-          return item.value !== null && item.value !== undefined && item.value !== ''
-        }
-      })
-      .map((item) => {
-        const newItem = { ...item }
-        delete (newItem as any).extraData
-        delete (newItem as any).whereQuerySection
-        return newItem
-      }) as WhereQueryItem<T>[]
-
-    const prunedGroups = clonedQuery.groups?.map(group =>
-      pruneWhereQuery({ items: group.items, groups: group.groups })
-    ).filter(Boolean) as WhereQueryItemGroup<T>[]
-
-    return {
-      ...clonedQuery,
-      items: prunedItems,
-      groups: prunedGroups
-    }
-  }
 
   return {
     whereQueryOptions,
@@ -181,6 +125,6 @@ export function useTableQuery<T>(props: {
     orderQuery,
     orderQueryOpen,
     isWhereQueryValueEmpty,
-    pruneWhereQuery
+    pruneWhereQuery: whereQueryRules.pruneWhereQuery
   }
 }
