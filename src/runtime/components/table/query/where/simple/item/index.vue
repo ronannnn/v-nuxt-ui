@@ -86,7 +86,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="w-full flex flex-col group/where-item">
+  <div class="w-full min-w-0 flex flex-col group/where-item">
     <div class="flex items-center rounded-t-md bg-elevated/40 border border-b-0 border-accented">
       <!-- <TableQueryWhereSimpleItemColumnPicker
         v-model:where-query-item="whereQueryItem"
@@ -96,9 +96,9 @@ defineExpose({
         class="!bg-elevated/40"
         :focus="() => oprRef?.focus()"
       /> -->
-      <div class="flex-1 flex items-center gap-1 pl-2.5">
+      <div class="min-w-0 flex-1 flex items-center gap-1 pl-2.5">
         <UIcon :name="tableWhereQueryItemIconMap.get(option?.type ?? 'unknown') || 'field'" class="size-3.5 text-highlighted" />
-        <span class="text-xs font-bold text-highlighted">
+        <span class="min-w-0 truncate text-xs font-bold text-highlighted">
           {{ option?.label ?? whereQueryItem.field }}
         </span>
       </div>
@@ -107,7 +107,7 @@ defineExpose({
         @confirm="onRemove(whereQueryItem.field as string)"
       />
     </div>
-    <UFieldGroup size="sm" class="w-full">
+    <UFieldGroup size="sm" class="w-full min-w-0">
       <TableQueryWhereSimpleItemOprPicker
         v-if="option?.type !== 'custom'"
         v-model:where-query-item="whereQueryItem"
@@ -123,7 +123,7 @@ defineExpose({
         :options="options"
         :fetching="fetching"
         :trigger-fetching="triggerFetching"
-        class="w-full"
+        class="min-w-0 flex-1"
       />
       <UDropdownMenu v-model:open="moveMenuOpen" :items="moveSectionItems" size="sm">
         <UButton

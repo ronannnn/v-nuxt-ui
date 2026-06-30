@@ -3,6 +3,7 @@ import type { VSelectProps } from '#v/types'
 import { focusElement, isEmptyString } from '#v/utils'
 import type { InputMenuItem } from '@nuxt/ui'
 import { computed, ref, useTemplateRef } from 'vue'
+import TruncateTooltip from '#v/components/TruncateTooltip.vue'
 
 const props = defineProps<VSelectProps<T>>()
 
@@ -26,9 +27,10 @@ const filteredItems = computed(() => {
 })
 
 const ui = computed(() => ({
-  root: [props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
-  base: 'peer',
+  root: ['w-full min-w-0', props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
+  base: ['peer w-full min-w-0', props.multiple ? 'overflow-hidden !pe-7' : 'truncate'].join(' '),
   content: 'min-w-fit',
+  tagsItem: 'max-w-full inline-flex min-w-0',
   tagsInput: 'min-w-4 w-0'
 }))
 
@@ -51,6 +53,14 @@ defineExpose({
     })
   }
 })
+
+function findLabel(tagItem: unknown): string {
+  if (tagItem && typeof tagItem === 'object' && 'label' in tagItem) {
+    return String((tagItem as Record<string, unknown>).label ?? '')
+  }
+  const match = props.items.find(i => i != null && String((i as any).value) === String(tagItem))
+  return (match as any)?.label ?? String(tagItem ?? '')
+}
 
 const showPlaceholder = computed(() => {
   if (props.multiple) {
@@ -89,5 +99,9 @@ const showPlaceholder = computed(() => {
     :content="{
       align: 'start'
     }"
-  />
+  >
+    <template v-if="multiple" #tags-item-text="{ item }">
+      <TruncateTooltip :text="findLabel(item)" />
+    </template>
+  </UInputMenu>
 </template>

@@ -39,6 +39,7 @@ defineExpose({
     v-if="option!.type === 'input'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
+    class="min-w-0 flex-1"
     :label="option.label || whereQueryItem.field"
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
@@ -47,6 +48,7 @@ defineExpose({
     v-else-if="option.type === 'input-number'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
+    class="min-w-0 flex-1"
     :label="option.label || whereQueryItem.field"
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
@@ -55,6 +57,7 @@ defineExpose({
     v-else-if="option!.type === 'select'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
+    class="min-w-0 flex-1"
     :disabled="fetching"
     v-bind="option"
     rounded-none
@@ -63,6 +66,7 @@ defineExpose({
     v-else-if="option!.type === 'date-picker'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
+    class="min-w-0 flex-1"
     :disabled="fetching"
     rounded-none
   />
@@ -70,6 +74,7 @@ defineExpose({
     v-else-if="option!.type === 'async-select'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
+    class="min-w-0 flex-1"
     :disabled="fetching"
     v-bind="option"
     rounded-none
@@ -79,6 +84,7 @@ defineExpose({
     v-else-if="option!.type === 'custom'"
     ref="item"
     v-model:where-query-item="whereQueryItem"
+    class="min-w-0 flex-1"
     :disabled="fetching"
     :trigger-fetching="triggerFetching"
     v-bind="(option as any).componentProps"

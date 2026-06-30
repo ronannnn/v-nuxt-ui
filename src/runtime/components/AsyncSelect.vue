@@ -7,6 +7,7 @@ import { useFetching } from '#v/composables/useBoolean'
 import { focusElement, isEmptyString } from '#v/utils'
 import type { AsyncSelectCombinedValue, AsyncSelectValue, QueryTemplate, VAsyncSelectProps } from '#v/types'
 import { useOverlay } from '@nuxt/ui/composables'
+import TruncateTooltip from '#v/components/TruncateTooltip.vue'
 
 const props = defineProps<VAsyncSelectProps<T>>()
 
@@ -115,10 +116,10 @@ const onSelect = (values: AsyncSelectValue) => {
 }
 
 const ui = computed(() => ({
-  root: [props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
-  base: 'peer',
+  root: ['w-full min-w-0', props.roundedNone && 'rounded-none'].filter(Boolean).join(' '),
+  base: ['peer w-full min-w-0', props.multiple ? 'overflow-hidden !pe-7' : 'truncate'].join(' '),
   content: 'min-w-fit',
-  tagsItem: 'max-w-48 inline-flex min-w-0',
+  tagsItem: 'max-w-full inline-flex min-w-0',
   tagsItemText: 'truncate',
   tagsInput: 'min-w-4 w-0'
 }))
@@ -211,9 +212,7 @@ const showPlaceholder = computed(() => {
     @create="onCreateNew"
   >
     <template v-if="multiple" #tags-item-text="{ item }">
-      <UTooltip :delay-duration="0" :text="findLabel(item)" :content="{ side: 'top' }">
-        <span class="truncate">{{ findLabel(item) }}</span>
-      </UTooltip>
+      <TruncateTooltip :text="findLabel(item)" />
     </template>
   </UInputMenu>
 </template>
