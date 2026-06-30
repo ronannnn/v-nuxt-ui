@@ -21,6 +21,8 @@ defineSlots<{
   'extra'?: () => any
   'inner-top'?: () => any
   'inner-bottom'?: () => any
+  'inner-left'?: () => any
+  'inner-right'?: () => any
 }>()
 
 const actionBarRef = useTemplateRef<HTMLElement>('actionBar')
@@ -102,52 +104,62 @@ defineExpose({ focusField })
     :style="panelStyle"
   >
     <ScrollArea
-      v-if="!empty || $slots['inner-top'] || $slots['inner-bottom']"
+      v-if="!empty || $slots['inner-top'] || $slots['inner-bottom'] || $slots['inner-left'] || $slots['inner-right']"
       class="!h-fit"
       viewport-class="!h-auto"
       :viewport-style="viewportStyle"
     >
-      <div class="@container p-4 space-y-6">
+      <div class="p-4 space-y-6">
         <div v-if="$slots['inner-top']">
           <slot name="inner-top" />
         </div>
-        <template
-          v-for="section in sections"
-          :key="section.key"
-        >
-          <div v-if="section.dndItems.length > 0">
-            <div class="font-bold text-xs text-dimmed mb-2.5">
-              {{ section.label }}
-            </div>
-            <Dnd
-              v-model="section.dndItems"
-              group="where-query"
-              handle=".where-query-handle"
-              :on-end="onDndEnd"
-              :class="conditionListClass"
-            >
-              <div
-                v-for="item in section.dndItems"
-                :key="item.field"
-                class="col-span-24 @2xl:col-span-12 @4xl:col-span-8 @6xl:col-span-6 @7xl:col-span-4"
-                :class="isDateRangeQueryItem(item) ? 'col-span-24 @2xl:col-span-12 @4xl:col-span-12 @6xl:col-span-8 @7xl:col-span-8' : undefined"
-              >
-                <TableQueryWhereSimpleItem
-                  :ref="(el) => setItemRef(item.field as string, el)"
-                  :where-query-item="item"
-                  :options="whereOptions"
-                  :fetching="fetching"
-                  :trigger-fetching="() => triggerFetching(true)"
-                  handle-class-name="where-query-handle"
-                  :section="section.key"
-                  @remove="onRemoveFilter"
-                  @move-section="onMoveItemSection"
-                  @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
-                />
-              </div>
-            </Dnd>
+        <div class="flex gap-4 max-sm:flex-col">
+          <div v-if="$slots['inner-left']" class="shrink-0">
+            <slot name="inner-left" />
           </div>
-        </template>
+          <div class="@container min-w-0 flex-1 space-y-6">
+            <template
+              v-for="section in sections"
+              :key="section.key"
+            >
+              <div v-if="section.dndItems.length > 0">
+                <div class="font-bold text-xs text-dimmed mb-2.5">
+                  {{ section.label }}
+                </div>
+                <Dnd
+                  v-model="section.dndItems"
+                  group="where-query"
+                  handle=".where-query-handle"
+                  :on-end="onDndEnd"
+                  :class="conditionListClass"
+                >
+                  <div
+                    v-for="item in section.dndItems"
+                    :key="item.field"
+                    class="col-span-24 @2xl:col-span-12 @4xl:col-span-8 @6xl:col-span-6 @7xl:col-span-4"
+                    :class="isDateRangeQueryItem(item) ? 'col-span-24 @2xl:col-span-12 @4xl:col-span-12 @6xl:col-span-8 @7xl:col-span-8' : undefined"
+                  >
+                    <TableQueryWhereSimpleItem
+                      :ref="(el) => setItemRef(item.field as string, el)"
+                      :where-query-item="item"
+                      :options="whereOptions"
+                      :fetching="fetching"
+                      :trigger-fetching="() => triggerFetching(true)"
+                      handle-class-name="where-query-handle"
+                      :section="section.key"
+                      @remove="onRemoveFilter"
+                      @move-section="onMoveItemSection"
+                      @update:where-query-item="newWhereQueryItem => onUpdateWhereQueryItem(item.field as string, newWhereQueryItem)"
+                    />
+                  </div>
+                </Dnd>
+              </div>
+            </template>
+          </div>
+          <div v-if="$slots['inner-right']" class="shrink-0">
+            <slot name="inner-right" />
+          </div>
+        </div>
         <div v-if="$slots['inner-bottom']">
           <slot name="inner-bottom" />
         </div>

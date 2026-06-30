@@ -20,6 +20,8 @@ defineSlots<{
   'where-extra'?: () => any
   'where-inner-top'?: () => any
   'where-inner-bottom'?: () => any
+  'where-inner-left'?: () => any
+  'where-inner-right'?: () => any
 }>()
 
 const tablePortalId = `v-table-portal-${useId().replace(/[^A-Za-z0-9_-]/g, '-')}`
@@ -144,6 +146,18 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
             #extra
           >
             <slot name="where-extra" />
+          </template>
+          <template
+            v-if="$slots['where-inner-left']"
+            #inner-left
+          >
+            <slot name="where-inner-left" />
+          </template>
+          <template
+            v-if="$slots['where-inner-right']"
+            #inner-right
+          >
+            <slot name="where-inner-right" />
           </template>
         </TableQueryWhere>
       </template>
