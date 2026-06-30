@@ -1,4 +1,4 @@
-import { ref, computed, watch, onMounted, onUnmounted, nextTick, useTemplateRef } from 'vue'
+import { ref, shallowRef, computed, watch, onMounted, onUnmounted, nextTick, useTemplateRef } from 'vue'
 import type { Ref, ComputedRef } from 'vue'
 import type { VTableProps, TableHeaderProps, TablePaginationProps, WhereQueryProps, StatsItem } from '#v/types'
 import type { TableProps, ContextMenuItem } from '@nuxt/ui'
@@ -16,6 +16,11 @@ type TableColumnLike = {
   columns?: TableColumnLike[]
 } & Record<string, unknown>
 
+type PinnedColumnOffsets = {
+  left: Array<[number, number]>
+  right: Array<[number, number]>
+}
+
 // 固定列阴影样式常量
 // light 模式使用 rgba(0,0,0,0.15)，dark 模式使用更明显的 rgba(0,0,0,0.45)
 // 通过 CSS 变量 --pinned-shadow-color 统一控制，配合 dark: 变体覆盖
@@ -32,9 +37,31 @@ const PINNED_SHADOW_CLASSES = {
   }
 } as const
 
-const EXPANDED_ROW_CLASS = '[&_tr[data-expanded=true]]:bg-default [&_tr[data-expanded=true]]:!transition-none [&_tr[data-expanded=true]_td]:!bg-default [&_tr[data-expanded=true]_td]:!transition-none [&_tbody_tr[data-expanded=true]:hover_td]:!bg-muted [&_tr[data-expanded-sticky=true]]:sticky [&_tr[data-expanded-sticky=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded-sticky=true]]:z-10 [&_tr[data-expanded=true]+tr_td]:!bg-default'
-const PINNED_POSITION_CLASS = '[&_th[data-pinned=left]]:!transition-colors [&_th[data-pinned=right]]:!transition-colors [&_td[data-pinned=left]]:!transition-colors [&_td[data-pinned=right]]:!transition-colors [&_th[data-pinned=left]]:!duration-150 [&_th[data-pinned=right]]:!duration-150 [&_td[data-pinned=left]]:!duration-150 [&_td[data-pinned=right]]:!duration-150'
+const EXPANDED_ROW_CLASS = [
+  '[&_tr[data-expanded=true]]:bg-default',
+  '[&_tr[data-expanded=true]]:!transition-none',
+  '[&_tr[data-expanded=true]_td]:!bg-default',
+  '[&_tr[data-expanded=true]_td]:!transition-none',
+  '[&_tbody_tr[data-expanded=true]:hover_td]:!bg-muted',
+  '[&_tr[data-expanded-sticky=true]]:sticky',
+  '[&_tr[data-expanded-sticky=true]]:top-[calc(var(--ui-table-header-height)+1px)]',
+  '[&_tr[data-expanded-sticky=true]]:z-10',
+  '[&_tr[data-expanded=true]+tr_td]:!bg-default'
+].join(' ')
+const PINNED_POSITION_CLASS = [
+  '[&_th[data-pinned=left]]:!transition-colors',
+  '[&_th[data-pinned=right]]:!transition-colors',
+  '[&_td[data-pinned=left]]:!transition-colors',
+  '[&_td[data-pinned=right]]:!transition-colors',
+  '[&_th[data-pinned=left]]:!duration-150',
+  '[&_th[data-pinned=right]]:!duration-150',
+  '[&_td[data-pinned=left]]:!duration-150',
+  '[&_td[data-pinned=right]]:!duration-150'
+].join(' ')
 const PINNED_HOVER_CLASS = '[&_tbody_tr:hover_td[data-pinned=left]]:!bg-muted [&_tbody_tr:hover_td[data-pinned=right]]:!bg-muted'
+const HIDE_LAST_ROW_BORDER_CLASS = '[&_tbody_tr:last-child_td]:border-b-0'
+const TABLE_ROOT_CLASS = 'relative overflow-clip'
+const TABLE_HEAD_CLASS = '!bg-default !backdrop-blur-none'
 
 export interface UseProTableViewReturn<T> {
   data: Ref<T[]>
@@ -104,7 +131,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     return classList.join(' ')
   })
 
-  const tableWidth = ref(0)
+  const tableWidth = shallowRef(0)
   const tableDiv = useTemplateRef<HTMLDivElement>('table')
   const columnSizing = ref<ColumnSizingState>({})
   let resizeObserver: ResizeObserver | null = null
@@ -115,11 +142,9 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
   let postRenderPinnedOffsetQueued = false
   let renderedTableStateQueued = false
 
-  // 固定列阴影控制
-  const showLeftPinnedShadow = ref(false)
-  const showRightPinnedShadow = ref(false)
-  // 垂直溢出检测（用于隐藏最后一行 border 避免与 pagination 重叠）
-  const hasVerticalOverflow = ref(false)
+  const showLeftPinnedShadow = shallowRef(false)
+  const showRightPinnedShadow = shallowRef(false)
+  const hasVerticalOverflow = shallowRef(false)
 
   const pinnedShadowClasses = computed(() => [
     PINNED_SHADOW_CLASSES.left.base,
@@ -128,9 +153,8 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     showRightPinnedShadow.value ? PINNED_SHADOW_CLASSES.right.show : PINNED_SHADOW_CLASSES.right.hide
   ])
 
-  const HIDE_LAST_ROW_BORDER_CLASS = '[&_tbody_tr:last-child_td]:border-b-0'
   const tblClasses = computed(() => [pinnedShadowClasses.value, EXPANDED_ROW_CLASS, PINNED_POSITION_CLASS, PINNED_HOVER_CLASS, hasVerticalOverflow.value && HIDE_LAST_ROW_BORDER_CLASS])
-  const tblUi = computed(() => ({ root: 'relative overflow-clip', thead: '!bg-default !backdrop-blur-none', th: thClass.value, td: tdClass.value }))
+  const tblUi = computed(() => ({ root: TABLE_ROOT_CLASS, thead: TABLE_HEAD_CLASS, th: thClass.value, td: tdClass.value }))
   const tblProps = computed<TableProps<T>>(() => ({
     ...baseTblProps.value,
     columnSizing: columnSizing.value
@@ -178,6 +202,23 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     return Array.from(row.children).filter((cell): cell is HTMLTableCellElement => cell instanceof HTMLTableCellElement && (cell.dataset.slot === 'th' || cell.dataset.slot === 'td'))
   }
 
+  function getTableRows(): HTMLTableRowElement[] {
+    if (!tableDiv.value) return []
+    return Array.from(tableDiv.value.querySelectorAll<HTMLTableRowElement>('tr[data-slot="tr"]'))
+  }
+
+  function findScrollContainer(): HTMLElement | null {
+    if (!tableDiv.value) return null
+
+    const selectors = ['[data-reka-scroll-area-viewport]', '.overflow-x-auto', '[data-scroll-container]', '.overflow-auto', 'div[style*="overflow"]']
+    for (const selector of selectors) {
+      const candidate = tableDiv.value.querySelector<HTMLElement>(selector)
+      if (candidate) return candidate
+    }
+
+    return null
+  }
+
   function updateColumnSizing(): boolean {
     if (!tableDiv.value) return false
 
@@ -205,6 +246,27 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     return true
   }
 
+  function getPinnedColumnOffsets(headerCells: HTMLTableCellElement[]): PinnedColumnOffsets {
+    const offsets: PinnedColumnOffsets = { left: [], right: [] }
+
+    let leftOffset = 0
+    headerCells.forEach((cell, index) => {
+      if (cell.dataset.pinned !== 'left') return
+      offsets.left.push([index, leftOffset])
+      leftOffset += getElementWidth(cell)
+    })
+
+    let rightOffset = 0
+    for (let index = headerCells.length - 1; index >= 0; index--) {
+      const cell = headerCells[index]
+      if (!cell || cell.dataset.pinned !== 'right') continue
+      offsets.right.push([index, rightOffset])
+      rightOffset += getElementWidth(cell)
+    }
+
+    return offsets
+  }
+
   function updatePinnedColumnOffsets() {
     if (!tableDiv.value) return
 
@@ -214,25 +276,9 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     const headerCells = getDirectTableCells(headerRow)
     if (!headerCells.length) return
 
-    const leftOffsets: Array<[number, number]> = []
-    const rightOffsets: Array<[number, number]> = []
+    const offsets = getPinnedColumnOffsets(headerCells)
 
-    let leftOffset = 0
-    headerCells.forEach((cell, index) => {
-      if (cell.dataset.pinned !== 'left') return
-      leftOffsets.push([index, leftOffset])
-      leftOffset += getElementWidth(cell)
-    })
-
-    let rightOffset = 0
-    for (let index = headerCells.length - 1; index >= 0; index--) {
-      const cell = headerCells[index]
-      if (!cell || cell.dataset.pinned !== 'right') continue
-      rightOffsets.push([index, rightOffset])
-      rightOffset += getElementWidth(cell)
-    }
-
-    if (!leftOffsets.length && !rightOffsets.length) return
+    if (!offsets.left.length && !offsets.right.length) return
 
     const setCellOffset = (cell: HTMLTableCellElement, side: 'left' | 'right', offset: number) => {
       const value = `${offset}px`
@@ -241,19 +287,18 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
       }
     }
 
-    const rows = Array.from(tableDiv.value.querySelectorAll<HTMLTableRowElement>('tr[data-slot="tr"]'))
-    rows.forEach((row) => {
+    getTableRows().forEach((row) => {
       const cells = getDirectTableCells(row)
       if (!cells.length) return
 
-      leftOffsets.forEach(([index, offset]) => {
+      offsets.left.forEach(([index, offset]) => {
         const cell = cells[index]
         if (cell?.dataset.pinned === 'left') {
           setCellOffset(cell, 'left', offset)
         }
       })
 
-      rightOffsets.forEach(([index, offset]) => {
+      offsets.right.forEach(([index, offset]) => {
         const cell = cells[index]
         if (cell?.dataset.pinned === 'right') {
           setCellOffset(cell, 'right', offset)
@@ -284,7 +329,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     nextTick(() => {
       postRenderPinnedOffsetQueued = false
       queuePinnedColumnOffsetUpdate()
-      checkShadowVisibility()
+      updateScrollState()
     })
   }
 
@@ -294,8 +339,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     if (columnSizingChanged) {
       queuePostRenderPinnedColumnOffsetUpdate()
     }
-    checkShadowVisibility()
-    updateExpandedStickyRows()
+    updateScrollState()
   }
 
   function queueRenderedTableStateUpdate() {
@@ -330,6 +374,11 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     }
   }
 
+  function updateScrollState() {
+    checkShadowVisibility()
+    updateExpandedStickyRows()
+  }
+
   function checkShadowVisibility() {
     if (!scrollContainer) return
 
@@ -337,6 +386,36 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     showLeftPinnedShadow.value = scrollLeft > 0
     showRightPinnedShadow.value = scrollLeft + clientWidth < scrollWidth - 1
     hasVerticalOverflow.value = scrollHeight > clientHeight + 1
+  }
+
+  function resetExpandedStickyRow(row: HTMLTableRowElement) {
+    delete row.dataset.expandedSticky
+    row.style.transform = ''
+  }
+
+  function getExpandedContentRow(row: HTMLTableRowElement): HTMLTableRowElement | null {
+    const nextRow = row.nextElementSibling
+    if (!(nextRow instanceof HTMLTableRowElement)) return null
+    return nextRow.querySelector('[role="expand-row"]') ? nextRow : null
+  }
+
+  function updateExpandedStickyRow(row: HTMLTableRowElement, headerBottom: number) {
+    const expandedContentRow = getExpandedContentRow(row)
+    if (!expandedContentRow) {
+      resetExpandedStickyRow(row)
+      return
+    }
+
+    const rowRect = row.getBoundingClientRect()
+    const expandedRect = expandedContentRow.getBoundingClientRect()
+    if (rowRect.top > headerBottom || expandedRect.bottom <= headerBottom) {
+      resetExpandedStickyRow(row)
+      return
+    }
+
+    const translateY = Math.min(0, expandedRect.bottom - headerBottom - rowRect.height)
+    row.dataset.expandedSticky = 'true'
+    row.style.transform = `translateY(${translateY}px)`
   }
 
   function updateExpandedStickyRows() {
@@ -347,25 +426,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     const expandedRows = Array.from(tableDiv.value.querySelectorAll<HTMLTableRowElement>('tbody tr[data-expanded="true"]'))
 
     expandedRows.forEach((row) => {
-      const expandedContentRow = row.nextElementSibling
-      if (!(expandedContentRow instanceof HTMLTableRowElement) || !expandedContentRow.querySelector('[role="expand-row"]')) {
-        delete row.dataset.expandedSticky
-        row.style.transform = ''
-        return
-      }
-
-      const rowRect = row.getBoundingClientRect()
-      const expandedRect = expandedContentRow.getBoundingClientRect()
-      const shouldStick = rowRect.top <= headerBottom && expandedRect.bottom > headerBottom
-
-      if (shouldStick) {
-        const translateY = Math.min(0, expandedRect.bottom - headerBottom - rowRect.height)
-        row.dataset.expandedSticky = 'true'
-        row.style.transform = `translateY(${translateY}px)`
-      } else {
-        delete row.dataset.expandedSticky
-        row.style.transform = ''
-      }
+      updateExpandedStickyRow(row, headerBottom)
     })
   }
 
@@ -383,37 +444,27 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     nextTick(() => {
       if (!tableDiv.value) return
 
-      // 查找滚动容器（优先查找 ProScrollArea 的 viewport）
-      const selectors = ['[data-reka-scroll-area-viewport]', '.overflow-x-auto', '[data-scroll-container]', '.overflow-auto', 'div[style*="overflow"]']
-      for (const selector of selectors) {
-        scrollContainer = tableDiv.value.querySelector(selector)
-        if (scrollContainer) break
-      }
-
+      scrollContainer = findScrollContainer()
       if (scrollContainer) {
         scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
       }
 
-      // 监听容器大小变化，重新检查是否需要显示阴影
-      if (tableDiv.value) {
-        resizeObserver = new ResizeObserver(() => {
-          updateTableWidth()
-          queueRenderedTableStateUpdate()
-        })
-        resizeObserver.observe(tableDiv.value)
-        mutationObserver = new MutationObserver(() => {
-          queueTableDomUpdate()
-        })
-        const observedTableBody = tableDiv.value.querySelector('tbody') ?? tableDiv.value
-        mutationObserver.observe(observedTableBody, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['data-expanded']
-        })
+      resizeObserver = new ResizeObserver(() => {
         updateTableWidth()
-        updateRenderedTableState()
-      }
+        queueRenderedTableStateUpdate()
+      })
+      resizeObserver.observe(tableDiv.value)
+
+      mutationObserver = new MutationObserver(queueTableDomUpdate)
+      mutationObserver.observe(tableDiv.value.querySelector('tbody') ?? tableDiv.value, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['data-expanded']
+      })
+
+      updateTableWidth()
+      updateRenderedTableState()
     })
   })
 
