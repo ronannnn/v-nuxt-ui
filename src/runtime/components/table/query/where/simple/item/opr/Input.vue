@@ -43,7 +43,8 @@ defineExpose({
     :disabled="disabled"
     color="neutral"
     :ui="{
-      base: 'h-full'
+      base: 'h-full',
+      trailing: 'pe-1'
     }"
     @keyup.enter="async () => {
       await triggerFetching?.()

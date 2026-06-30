@@ -111,7 +111,8 @@ defineExpose({
     :color="isInvalid ? 'error' : 'neutral'"
     :highlight="isInvalid"
     :ui="{
-      base: roundedNone && 'rounded-none'
+      base: roundedNone && 'rounded-none',
+      trailing: 'pe-1'
     }"
     @input="onInput"
     @focus="(e: FocusEvent) => emit('focus', e)"
