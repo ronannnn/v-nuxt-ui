@@ -186,6 +186,13 @@ defineExpose({ focusField })
             size: 'sm',
             icon: 'i-lucide-timer-reset'
           }"
+          :complete-button="{
+            label: '已清空',
+            color: 'success',
+            variant: 'outline',
+            size: 'sm',
+            icon: 'i-lucide-check'
+          }"
           @confirm="onClearValues"
         >
           清空

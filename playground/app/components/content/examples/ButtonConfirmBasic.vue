@@ -7,6 +7,7 @@ const rightCount = ref(0)
   <div class="space-y-4">
     <div class="flex w-48 justify-end">
       <ProButtonConfirm
+        complete
         class="rounded-md"
         :button="{
           icon: 'i-lucide-x',
@@ -16,6 +17,11 @@ const rightCount = ref(0)
         :confirm-button="{
           label: '确认',
           color: 'error',
+          variant: 'subtle'
+        }"
+        :complete-button="{
+          label: '完成',
+          color: 'success',
           variant: 'subtle'
         }"
         @confirm="leftCount++"
