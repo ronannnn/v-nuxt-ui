@@ -32,7 +32,7 @@ const PINNED_SHADOW_CLASSES = {
   }
 } as const
 
-const EXPANDED_STICKY_CLASS = '[&_tr[data-expanded=true]]:sticky [&_tr[data-expanded=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded=true]]:z-10 [&_tr[data-expanded=true]]:bg-default [&_tr[data-expanded=true]_td]:!bg-default [&_tr[data-expanded=true]_td]:!transition-none [&_tbody_tr[data-expanded=true]:hover_td]:!bg-muted [&_tr[data-expanded=true]+tr_td]:!bg-default'
+const EXPANDED_ROW_CLASS = '[&_tr[data-expanded=true]]:bg-default [&_tr[data-expanded=true]]:!transition-none [&_tr[data-expanded=true]_td]:!bg-default [&_tr[data-expanded=true]_td]:!transition-none [&_tbody_tr[data-expanded=true]:hover_td]:!bg-muted [&_tr[data-expanded-sticky=true]]:sticky [&_tr[data-expanded-sticky=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded-sticky=true]]:z-10 [&_tr[data-expanded=true]+tr_td]:!bg-default'
 const PINNED_POSITION_CLASS = '[&_th[data-pinned=left]]:!transition-colors [&_th[data-pinned=right]]:!transition-colors [&_td[data-pinned=left]]:!transition-colors [&_td[data-pinned=right]]:!transition-colors [&_th[data-pinned=left]]:!duration-150 [&_th[data-pinned=right]]:!duration-150 [&_td[data-pinned=left]]:!duration-150 [&_td[data-pinned=right]]:!duration-150'
 const PINNED_HOVER_CLASS = '[&_tbody_tr:hover_td[data-pinned=left]]:!bg-muted [&_tbody_tr:hover_td[data-pinned=right]]:!bg-muted'
 
@@ -129,7 +129,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
   ])
 
   const HIDE_LAST_ROW_BORDER_CLASS = '[&_tbody_tr:last-child_td]:border-b-0'
-  const tblClasses = computed(() => [pinnedShadowClasses.value, EXPANDED_STICKY_CLASS, PINNED_POSITION_CLASS, PINNED_HOVER_CLASS, hasVerticalOverflow.value && HIDE_LAST_ROW_BORDER_CLASS])
+  const tblClasses = computed(() => [pinnedShadowClasses.value, EXPANDED_ROW_CLASS, PINNED_POSITION_CLASS, PINNED_HOVER_CLASS, hasVerticalOverflow.value && HIDE_LAST_ROW_BORDER_CLASS])
   const tblUi = computed(() => ({ root: 'relative overflow-clip', thead: '!bg-default !backdrop-blur-none', th: thClass.value, td: tdClass.value }))
   const tblProps = computed<TableProps<T>>(() => ({
     ...baseTblProps.value,
@@ -295,6 +295,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
       queuePostRenderPinnedColumnOffsetUpdate()
     }
     checkShadowVisibility()
+    updateExpandedStickyRows()
   }
 
   function queueRenderedTableStateUpdate() {
@@ -338,6 +339,36 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     hasVerticalOverflow.value = scrollHeight > clientHeight + 1
   }
 
+  function updateExpandedStickyRows() {
+    if (!tableDiv.value) return
+
+    const header = tableDiv.value.querySelector<HTMLElement>('thead[data-slot="thead"]')
+    const headerBottom = header?.getBoundingClientRect().bottom ?? 0
+    const expandedRows = Array.from(tableDiv.value.querySelectorAll<HTMLTableRowElement>('tbody tr[data-expanded="true"]'))
+
+    expandedRows.forEach((row) => {
+      const expandedContentRow = row.nextElementSibling
+      if (!(expandedContentRow instanceof HTMLTableRowElement) || !expandedContentRow.querySelector('[role="expand-row"]')) {
+        delete row.dataset.expandedSticky
+        row.style.transform = ''
+        return
+      }
+
+      const rowRect = row.getBoundingClientRect()
+      const expandedRect = expandedContentRow.getBoundingClientRect()
+      const shouldStick = rowRect.top <= headerBottom && expandedRect.bottom > headerBottom
+
+      if (shouldStick) {
+        const translateY = Math.min(0, expandedRect.bottom - headerBottom - rowRect.height)
+        row.dataset.expandedSticky = 'true'
+        row.style.transform = `translateY(${translateY}px)`
+      } else {
+        delete row.dataset.expandedSticky
+        row.style.transform = ''
+      }
+    })
+  }
+
   function handleScroll(e: Event) {
     const target = e.target as HTMLElement
     const { scrollLeft, scrollWidth, clientWidth } = target
@@ -345,6 +376,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
     showLeftPinnedShadow.value = scrollLeft > 0
     showRightPinnedShadow.value = scrollLeft + clientWidth < scrollWidth - 1
     queuePinnedColumnOffsetUpdate(false)
+    updateExpandedStickyRows()
   }
 
   onMounted(() => {
