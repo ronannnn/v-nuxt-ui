@@ -96,7 +96,7 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
         >
           <template v-if="expandable" #expanded="{ row }">
             <div
-              class="px-1 py-3 sticky inset-4 overflow-hidden"
+              class="px-1 py-3 sticky inset-4 overflow-hidden bg-default"
               :style="{
                 width: `${tableWidth - 38}px`
               }"

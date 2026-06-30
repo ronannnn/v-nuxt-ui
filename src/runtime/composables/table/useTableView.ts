@@ -32,7 +32,7 @@ const PINNED_SHADOW_CLASSES = {
   }
 } as const
 
-const EXPANDED_STICKY_CLASS = '[&_tr[data-expanded=true]]:sticky [&_tr[data-expanded=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded=true]]:z-10 [&_tr[data-expanded=true]]:bg-default'
+const EXPANDED_STICKY_CLASS = '[&_tr[data-expanded=true]]:sticky [&_tr[data-expanded=true]]:top-[calc(var(--ui-table-header-height)+1px)] [&_tr[data-expanded=true]]:z-10 [&_tr[data-expanded=true]]:bg-default [&_tr[data-expanded=true]_td]:!bg-default [&_tr[data-expanded=true]_td]:!transition-none [&_tbody_tr[data-expanded=true]:hover_td]:!bg-muted [&_tr[data-expanded=true]+tr_td]:!bg-default'
 const PINNED_POSITION_CLASS = '[&_th[data-pinned=left]]:!transition-colors [&_th[data-pinned=right]]:!transition-colors [&_td[data-pinned=left]]:!transition-colors [&_td[data-pinned=right]]:!transition-colors [&_th[data-pinned=left]]:!duration-150 [&_th[data-pinned=right]]:!duration-150 [&_td[data-pinned=left]]:!duration-150 [&_td[data-pinned=right]]:!duration-150'
 const PINNED_HOVER_CLASS = '[&_tbody_tr:hover_td[data-pinned=left]]:!bg-muted [&_tbody_tr:hover_td[data-pinned=right]]:!bg-muted'
 
@@ -54,7 +54,7 @@ export interface UseProTableViewReturn<T> {
   tableDiv: Ref<HTMLDivElement | null>
   updateTableWidth: () => void
   tblClasses: ComputedRef<(string | boolean | (string | boolean)[])[]>
-  tblUi: ComputedRef<{ root: string, th: string, td: string }>
+  tblUi: ComputedRef<{ root: string, thead: string, th: string, td: string }>
   deletingRowKey: Ref<number | null>
   editingRowKey: Ref<number | null>
 }
@@ -80,7 +80,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
 
   // tr td class
   const thClass = computed(() => {
-    const classList: string[] = []
+    const classList: string[] = ['bg-default']
     if (!props.singleRow) {
       classList.push('[&:has([role=checkbox])]:pe-2')
     }
@@ -130,7 +130,7 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
 
   const HIDE_LAST_ROW_BORDER_CLASS = '[&_tbody_tr:last-child_td]:border-b-0'
   const tblClasses = computed(() => [pinnedShadowClasses.value, EXPANDED_STICKY_CLASS, PINNED_POSITION_CLASS, PINNED_HOVER_CLASS, hasVerticalOverflow.value && HIDE_LAST_ROW_BORDER_CLASS])
-  const tblUi = computed(() => ({ root: 'relative overflow-clip', th: thClass.value, td: tdClass.value }))
+  const tblUi = computed(() => ({ root: 'relative overflow-clip', thead: '!bg-default !backdrop-blur-none', th: thClass.value, td: tdClass.value }))
   const tblProps = computed<TableProps<T>>(() => ({
     ...baseTblProps.value,
     columnSizing: columnSizing.value
