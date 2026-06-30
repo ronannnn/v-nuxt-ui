@@ -129,13 +129,13 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
         >
           <template
             v-if="$slots['where-inner-top']"
-            #innerTop
+            #inner-top
           >
             <slot name="where-inner-top" />
           </template>
           <template
             v-if="$slots['where-inner-bottom']"
-            #innerBottom
+            #inner-bottom
           >
             <slot name="where-inner-bottom" />
           </template>

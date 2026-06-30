@@ -62,13 +62,13 @@ defineExpose({ createRow, updateRow, deleteRow, refresh: fetchList, stats, data 
           <TableQueryWhere ref="proTableQueryWhere" v-bind="tblWhereQueryProps" class="border-b border-default bg-muted">
             <template
               v-if="$slots['where-inner-top']"
-              #innerTop
+              #inner-top
             >
               <slot name="where-inner-top" />
             </template>
             <template
               v-if="$slots['where-inner-bottom']"
-              #innerBottom
+              #inner-bottom
             >
               <slot name="where-inner-bottom" />
             </template>

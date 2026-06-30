@@ -18,9 +18,9 @@ const props = defineProps<WhereQueryProps<T> & {
 }>()
 
 defineSlots<{
-  extra?: () => any
-  innerTop?: () => any
-  innerBottom?: () => any
+  'extra'?: () => any
+  'inner-top'?: () => any
+  'inner-bottom'?: () => any
 }>()
 
 const actionBarRef = useTemplateRef<HTMLElement>('actionBar')
@@ -102,14 +102,14 @@ defineExpose({ focusField })
     :style="panelStyle"
   >
     <ScrollArea
-      v-if="!empty || $slots.innerTop || $slots.innerBottom"
+      v-if="!empty || $slots['inner-top'] || $slots['inner-bottom']"
       class="!h-fit"
       viewport-class="!h-auto"
       :viewport-style="viewportStyle"
     >
       <div class="@container p-4 space-y-6">
-        <div v-if="$slots.innerTop">
-          <slot name="innerTop" />
+        <div v-if="$slots['inner-top']">
+          <slot name="inner-top" />
         </div>
         <template
           v-for="section in sections"
@@ -148,8 +148,8 @@ defineExpose({ focusField })
             </Dnd>
           </div>
         </template>
-        <div v-if="$slots.innerBottom">
-          <slot name="innerBottom" />
+        <div v-if="$slots['inner-bottom']">
+          <slot name="inner-bottom" />
         </div>
       </div>
     </ScrollArea>
