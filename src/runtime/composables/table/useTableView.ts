@@ -424,9 +424,12 @@ export function useProTableView<T>(props: VTableProps<T>): UseProTableViewReturn
 
     const header = tableDiv.value.querySelector<HTMLElement>('thead[data-slot="thead"]')
     const headerBottom = header?.getBoundingClientRect().bottom ?? 0
-    const expandedRows = Array.from(tableDiv.value.querySelectorAll<HTMLTableRowElement>('tbody tr[data-expanded="true"]'))
+    const rows = new Set([
+      ...tableDiv.value.querySelectorAll<HTMLTableRowElement>('tbody tr[data-expanded="true"]'),
+      ...tableDiv.value.querySelectorAll<HTMLTableRowElement>('tbody tr[data-expanded-sticky="true"]')
+    ])
 
-    expandedRows.forEach((row) => {
+    rows.forEach((row) => {
       updateExpandedStickyRow(row, headerBottom)
     })
   }
