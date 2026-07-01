@@ -30,6 +30,7 @@ const input = useTemplateRef('input')
       class="w-full"
       type="number"
       icon="i-lucide-hash"
+      :ui="{ trailing: 'pe-1' }"
       :disabled="disabled"
       :placeholder="placeholder"
     >

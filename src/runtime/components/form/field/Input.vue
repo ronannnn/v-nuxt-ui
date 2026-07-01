@@ -20,6 +20,7 @@ const input = useTemplateRef('input')
     :disabled="disabled"
     :placeholder="placeholder"
     :model-modifiers="{ trim: true }"
+    :ui="{ trailing: 'pe-1' }"
     @keydown.enter="(e: Event) => {
       if (enterKeydownSubmit) {
         onTriggerSubmit?.(e)
