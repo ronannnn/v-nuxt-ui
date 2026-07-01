@@ -40,6 +40,7 @@ export type WhereQueryColumnOption<T> = {
 
 export type OrderQueryColumnOption = {
   defaultOpr?: OrderQueryOpr
+  custom?: boolean
 }
 
 export type VColumn<T> = {

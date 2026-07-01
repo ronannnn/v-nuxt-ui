@@ -159,13 +159,14 @@ export function useTableColumns<T>(props: {
         const orderIndex = orderQuery.value.length > 1 && orderQueryIndex >= 0
           ? orderQueryIndex + 1
           : undefined
+        const orderQueryCustom = col.sortOption === true ? undefined : col.sortOption?.custom
         const onUpdateOrderOpr = (nextOrder: OrderQueryOpr) => {
           if (nextOrder !== null) {
             const newQuery = [...orderQuery.value]
             if (orderQueryIndex >= 0) {
-              newQuery[orderQueryIndex] = { field, order: nextOrder }
+              newQuery[orderQueryIndex] = { field, order: nextOrder, custom: orderQueryCustom }
             } else {
-              newQuery.push({ field, order: nextOrder })
+              newQuery.push({ field, order: nextOrder, custom: orderQueryCustom })
             }
             onUpdateOrderQuery(newQuery)
           } else {

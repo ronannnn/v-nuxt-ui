@@ -66,4 +66,5 @@ export type OrderQuery<T> = OrderQueryItem<T>[]
 export interface OrderQueryItem<T> {
   field: string & keyof T | string
   order: OrderQueryOpr
+  custom?: boolean
 }

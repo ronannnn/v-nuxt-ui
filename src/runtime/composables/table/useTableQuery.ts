@@ -51,7 +51,8 @@ export function useTableQuery<T>(props: {
       .map(col => ({
         field: (col as any)['accessorKey'],
         label: col.header as string,
-        defaultOpr: col.sortOption === true ? null : col.sortOption?.defaultOpr
+        defaultOpr: col.sortOption === true ? null : col.sortOption?.defaultOpr,
+        custom: col.sortOption === true ? undefined : col.sortOption?.custom
       }))
     extraOrderQueryOptions?.forEach((option) => {
       options.push(option)
@@ -62,7 +63,7 @@ export function useTableQuery<T>(props: {
   const orderQueryInitValues = computed<OrderQuery<T>>(() => {
     return orderQueryOptions.value
       .filter(option => option.defaultOpr)
-      .map(option => ({ field: option.field, order: option.defaultOpr ?? 'desc' }))
+      .map(option => ({ field: option.field, order: option.defaultOpr ?? 'desc', custom: option.custom }))
   })
 
   // local storage

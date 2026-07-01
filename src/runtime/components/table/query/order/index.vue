@@ -20,17 +20,22 @@ const onUpdateAndTriggerFetching = async (newOrderQuery: OrderQuery<T>) => {
   await props.triggerFetching()
 }
 
+const createOrderQueryItem = (field: string, order: OrderQueryOpr = 'desc') => {
+  const option = props.orderOptions.find(option => option.field === field)
+  return { field, order, custom: option?.custom }
+}
+
 const onNewField = (field: string) => {
-  onUpdateAndTriggerFetching([...props.orderQuery, { field, order: 'desc' }])
+  onUpdateAndTriggerFetching([...props.orderQuery, createOrderQueryItem(field)])
 }
 const onChangeField = (oldField: string, newField: string, opr: OrderQueryOpr) => {
   const oldIdx = props.orderQuery.findIndex(query => query.field === oldField)
   if (oldIdx !== -1) {
     onUpdateAndTriggerFetching(
-      props.orderQuery.map((query, idx) => (idx === oldIdx ? { field: newField, order: opr } : query))
+      props.orderQuery.map((query, idx) => (idx === oldIdx ? createOrderQueryItem(newField, opr) : query))
     )
   } else {
-    onUpdateAndTriggerFetching([...props.orderQuery, { field: newField, order: opr }])
+    onUpdateAndTriggerFetching([...props.orderQuery, createOrderQueryItem(newField, opr)])
   }
 }
 const onRemoveField = (field: string) => {
